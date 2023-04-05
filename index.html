@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Visby coding competition</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico"/>
+        <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+        <style>
+* {
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+html,body {
+	height: 100%;
+}
+.BG {
+    width: 100%;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-image: url(https://www.messagemagazine.com/wp-content/uploads/2021/04/Darkness-scaled.jpeg);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    z-index: -100;
+    filter: blur(5px);
+}
+.wrapper {
+    width: 1000px;
+    margin: auto;
+    text-align: center;
+}
+.padding {
+    padding: 50px;
+}
+
+#gameboard {
+    margin: auto;
+    border-spacing: 2px;
+}
+.box {
+    height: 13px;
+    width: 13px;
+    background-color: black;
+    padding: 0;
+}
+
+button {
+    border: none;
+    outline: none;
+    background: #555;
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+button:hover {
+    background: #777;
+}
+
+select {
+    border: none;
+    outline: none;
+    background: #555;
+    color: white;
+    padding: 5px 10px;
+}
+
+.slidecontainer {
+  width: 100%;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 500px;
+  height: 10px;
+  border-radius: 5px;
+  background: #333;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #04AA6D;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #04AA6D;
+  cursor: pointer;
+}
+        </style>
+    </head>
+    <body bgcolor="#224">
+        <div class="BG"></div>
+        
+        <div class="wrapper">
+            <div class="padding">
+                <h1 style="text-align: center; color: white">Visby coding competition</h1>
+                <br>
+                <input type="range" min="1" max="50" value="10" class="slider" id="myRange" oninput="setSpeed(this.value)">
+                <br>
+                <br>
+                <p style="text-align: center">
+                    <select id="player1"></select>
+                    <span style="padding: 0 10px; color: white">vs</span>
+                    <select id="player2"></select>
+                </p>
+                <br>
+                <button onclick="resetGame()">NEW GAME</button>
+                <button onclick="startGame()" id="startBtn" hidden>START</button>
+                <br>
+                <br>
+                <h2 style="text-align: center; color: white" id="result"></h2>
+                <br>
+                <div id="board"></div>
+            </div>
+        </div>
+        
+        <script>
+            var startX1, startY1, startX2, startY2, startMove1, startMove2, timer, simulationSpeed = 100;
+            const maxY = 40;
+            const maxX = 40;
+            const board = document.getElementById("board");
+            const tbl = document.createElement("table");
+            tbl.setAttribute("id", "gameboard");
+            for (let y=1; y<=maxY; y++)
+            {
+                let row = document.createElement("tr");
+                for (let x=1; x<=maxX; x++)
+                {
+                    let cell = document.createElement("td");
+                    let id = "x" + x + "y" + y;
+                    cell.setAttribute("id", id);
+                    cell.setAttribute("class", "box");
+                    row.appendChild(cell);
+                }
+                tbl.appendChild(row);
+            }
+            board.appendChild(tbl);
+            
+            function setSpeed(value) {
+                simulationSpeed = 1000/value
+            }
+            
+            function resetGame() {
+                clearTimeout(timer);
+                startX1 = Math.floor(Math.random()*maxX) + 1;
+                startY1 = Math.floor(Math.random()*maxY) + 1;
+                startX2 = Math.floor(Math.random()*maxX) + 1;
+                startY2 = Math.floor(Math.random()*maxY) + 1;
+                startMove1 = Math.floor(Math.random()*4) + 1;
+                startMove2 = Math.floor(Math.random()*4) + 1;
+                while (startX1 == startX2 && startY1 == startY2) {
+                    startX2 = Math.floor(Math.random()*maxX) + 1;
+                    startY2 = Math.floor(Math.random()*maxY) + 1;
+                }
+                $(".box").css("background", "");
+                let p1 = competitors[$("#player1").find(":selected").val()];
+                let p2 = competitors[$("#player2").find(":selected").val()];
+                $("#x"+startX1 + "y" + startY1).css("background", p1.color);
+                $("#x"+startX2 + "y" + startY2).css("background", p2.color);
+                $("#startBtn").show();
+                $("#result").css("color", "white");
+                $("#result").html("<span style='color: "+p1.color+"'>" + p1.name + "</span> vs <span style='color: "+p2.color+"'>" + p2.name + "</span>");
+            }
+            
+            function startGame() {
+                $("#startBtn").hide();
+                clearTimeout(timer);
+                let gameBoard = [];
+                for (let x=0; x<=maxX+1; x++)
+                {
+                    gameBoard[x] = []
+                    for (let y=0; y<=maxY+1; y++)
+                    {
+                        gameBoard[x][y] = 0;
+                        if (x == 0 || x == maxX+1 || y == 0 || y == maxY+1)
+                            gameBoard[x][y] = -1;
+                    }
+                }
+                let player1 = {x: startX1, y: startY1, move: startMove1};
+                let player2 = {x: startX2, y: startY2, move: startMove2};
+                
+                gameBoard[player1.x][player1.y] = 1;
+                gameBoard[player2.x][player2.y] = 2;
+                let p1 = competitors[$("#player1").find(":selected").val()];
+                let p2 = competitors[$("#player2").find(":selected").val()];
+                gameLoop(p1, p2, player1, player2, gameBoard, true, true, false);
+            }
+            
+            // 1 = up
+            // 2 = right
+            // 3 = down
+            // 4 = left
+            
+            function gameLoop(p1, p2, player1, player2, gameBoard, player1IsAlive, player2IsAlive, gameOver) {
+                
+                if (player1IsAlive) player1.move = p1.func(JSON.parse(JSON.stringify(player1)), JSON.parse(JSON.stringify(player2)), JSON.parse(JSON.stringify(gameBoard)));
+                if (player2IsAlive) player2.move = p2.func(JSON.parse(JSON.stringify(player2)), JSON.parse(JSON.stringify(player1)), JSON.parse(JSON.stringify(gameBoard)));
+                
+                if (player1IsAlive) {
+                    if (player1.move == 1)
+                        player1.y -= 1;
+                    else if (player1.move == 2)
+                        player1.x += 1;
+                    else if (player1.move == 3)
+                        player1.y += 1;
+                    else if (player1.move == 4)
+                        player1.x -= 1;
+                    else
+                        player1IsAlive = false;
+                }
+                
+                if (player2IsAlive) {
+                    if (player2.move == 1)
+                        player2.y -= 1;
+                    else if (player2.move == 2)
+                        player2.x += 1;
+                    else if (player2.move == 3)
+                        player2.y += 1;
+                    else if (player2.move == 4)
+                        player2.x -= 1;
+                    else
+                        player2IsAlive = false;
+                }
+                if (gameBoard[player1.x][player1.y] != 0)
+                    player1IsAlive = false;
+                
+                if (gameBoard[player2.x][player2.y] != 0)
+                    player2IsAlive = false;
+                
+                if (player1.x == player2.x && player1.y == player2.y) {
+                    player1IsAlive = false;
+                    player2IsAlive = false;
+                    $("#x"+player1.x + "y" + player1.y).css("background", "#aaaaaa");
+                }
+                
+                if (!player1IsAlive || !player2IsAlive) {
+                    if (!player1IsAlive && !player2IsAlive) {
+                        if (!gameOver) {
+                            $("#result").html("It's a tie!!!");
+                        }
+                        return;
+                    }
+                    if (player1IsAlive) {
+                        $("#result").html(p1.name + " wins!!!");
+                        $("#result").css("color", p1.color);
+                        gameOver = true;
+                    }
+                    if (player2IsAlive) {
+                        $("#result").html(p2.name + " wins!!!");
+                        $("#result").css("color", p2.color);
+                        gameOver = true;
+                    }
+                }
+                
+                gameBoard[player1.x][player1.y] = 1;
+                gameBoard[player2.x][player2.y] = 2;
+                
+                $("#x"+player1.x + "y" + player1.y).css("background", p1.color);
+                $("#x"+player2.x + "y" + player2.y).css("background", p2.color);
+                
+                timer = setTimeout(function() {
+                    gameLoop(p1, p2, player1, player2, gameBoard, player1IsAlive, player2IsAlive, gameOver);
+                }, simulationSpeed);
+            }
+            
+            function gustavsFunc(player, otherplayer, board) {
+                
+                let move = 0, x, y;
+                let maxIterations = 20;
+                do {
+                    x = player.x;
+                    y = player.y;
+                    if (Math.random() > 0.5) move = player.move;
+                    else move = Math.floor(Math.random()*4)+1;
+                    
+                    if (move == 1)
+                        y -= 1;
+                    else if (move == 2)
+                        x += 1;
+                    else if (move == 3)
+                        y += 1;
+                    else if (move == 4)
+                        x -= 1;
+                        
+                    maxIterations -= 1;
+                
+                } while (board[x][y] != 0 && maxIterations > 0);
+                
+                return move;
+            }
+            
+            function tomsFunc(player, otherplayer, board) {
+                let x = player.x;
+                let y = player.y;
+                if (player.move == 1)
+                    y -= 1;
+                else if (player.move == 2)
+                    x += 1;
+                else if (player.move == 3)
+                    y += 1;
+                else if (player.move == 4)
+                    x -= 1;
+                    
+                if (board[x][y] == 0) return player.move;
+                else return player.move % 4 + 1;
+            }
+            
+            const competitors = {
+                team1: {
+                    name: "Gustav",
+                    func: gustavsFunc,
+                    color: "#3d9"
+                },
+                team2: {
+                    name: "Tom",
+                    func: tomsFunc,
+                    color: "#d39"
+                }
+            }
+            
+            const select1 = document.getElementById("player1");
+            const select2 = document.getElementById("player2");
+            for (c in competitors) {
+                let option1 = document.createElement("option");
+                option1.setAttribute("value", c);
+                option1.innerHTML = competitors[c].name;
+                select1.appendChild(option1);
+                let option2 = document.createElement("option");
+                option2.setAttribute("value", c);
+                option2.innerHTML = competitors[c].name;
+                select2.appendChild(option2);
+            }
+            
+        </script>
+    </body>
+</html>
