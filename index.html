@@ -26,7 +26,7 @@ html,body {
     position: fixed;
     top: 0;
     left: 0;
-    background-image: url(https://www.messagemagazine.com/wp-content/uploads/2021/04/Darkness-scaled.jpeg);
+    /*background-image: url();*/
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -37,6 +37,7 @@ html,body {
     width: 1000px;
     margin: auto;
     text-align: center;
+    color: white;
 }
 .padding {
     padding: 50px;
@@ -82,7 +83,7 @@ select {
   width: 500px;
   height: 10px;
   border-radius: 5px;
-  background: #333;
+  background: #555;
   outline: none;
   opacity: 0.7;
   -webkit-transition: .2s;
@@ -110,9 +111,12 @@ select {
   background: #04AA6D;
   cursor: pointer;
 }
+.vs {
+    padding: 0 10px;
+}
         </style>
     </head>
-    <body bgcolor="#224">
+    <body style="background: #334">
         <div class="BG"></div>
         
         <div class="wrapper">
@@ -122,10 +126,28 @@ select {
                 <input type="range" min="1" max="50" value="10" class="slider" id="myRange" oninput="setSpeed(this.value)">
                 <br>
                 <br>
+                Number of players:
+                <select id="selectNrOfPlayers" onchange="setUpSelectPlayer()">
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                </select>
+                <br>
+                <br>
                 <p style="text-align: center">
                     <select id="player1"></select>
-                    <span style="padding: 0 10px; color: white">vs</span>
-                    <select id="player2"></select>
+                    <span class="vs player2">vs</span>
+                    <select id="player2" class="player2"></select>
+                    <span class="vs player3">vs</span>
+                    <select id="player3" class="player3"></select>
+                    <span class="vs player4">vs</span>
+                    <select id="player4" class="player4"></select>
+                    <span class="vs player5">vs</span>
+                    <select id="player5" class="player5"></select>
+                    <span class="vs player6">vs</span>
+                    <select id="player6" class="player6"></select>
                 </p>
                 <br>
                 <button onclick="resetGame()">NEW GAME</button>
@@ -139,51 +161,66 @@ select {
         </div>
         
         <script>
-            var startX1, startY1, startX2, startY2, startMove1, startMove2, timer, simulationSpeed = 100;
+            var timer, simulationSpeed = 100;
+            var nrOfPlayers = 2, startPositions = [], players = [];
             const maxY = 40;
             const maxX = 40;
-            const board = document.getElementById("board");
-            const tbl = document.createElement("table");
-            tbl.setAttribute("id", "gameboard");
-            for (let y=1; y<=maxY; y++)
-            {
-                let row = document.createElement("tr");
-                for (let x=1; x<=maxX; x++)
+
+            function initBoard() {
+                let board = document.getElementById("board");
+                let tbl = document.createElement("table");
+                tbl.setAttribute("id", "gameboard");
+                for (let y=1; y<=maxY; y++)
                 {
-                    let cell = document.createElement("td");
-                    let id = "x" + x + "y" + y;
-                    cell.setAttribute("id", id);
-                    cell.setAttribute("class", "box");
-                    row.appendChild(cell);
+                    let row = document.createElement("tr");
+                    for (let x=1; x<=maxX; x++)
+                    {
+                        let cell = document.createElement("td");
+                        let id = "x" + x + "y" + y;
+                        cell.setAttribute("id", id);
+                        cell.setAttribute("class", "box");
+                        row.appendChild(cell);
+                    }
+                    tbl.appendChild(row);
                 }
-                tbl.appendChild(row);
+                board.appendChild(tbl);
             }
-            board.appendChild(tbl);
+            initBoard();
             
             function setSpeed(value) {
-                simulationSpeed = 1000/value
+                simulationSpeed = 1000/value;
             }
             
             function resetGame() {
                 clearTimeout(timer);
-                startX1 = Math.floor(Math.random()*maxX) + 1;
-                startY1 = Math.floor(Math.random()*maxY) + 1;
-                startX2 = Math.floor(Math.random()*maxX) + 1;
-                startY2 = Math.floor(Math.random()*maxY) + 1;
-                startMove1 = Math.floor(Math.random()*4) + 1;
-                startMove2 = Math.floor(Math.random()*4) + 1;
-                while (startX1 == startX2 && startY1 == startY2) {
-                    startX2 = Math.floor(Math.random()*maxX) + 1;
-                    startY2 = Math.floor(Math.random()*maxY) + 1;
+                startPositions = [];
+                for (let i=0; i<nrOfPlayers; i++) {
+                    let x = Math.floor(Math.random()*maxX) + 1;
+                    let y = Math.floor(Math.random()*maxY) + 1;
+                    if (startPositions.includes(x*1000 + y)) i--;
+                    else startPositions[i] = x*1000 + y;
                 }
+                
+                players = [];
+                for (let i=1; i<=nrOfPlayers; i++) {
+                    players[i-1] = competitors[$("#player" + i).find(":selected").val()];
+                }
+                
                 $(".box").css("background", "");
-                let p1 = competitors[$("#player1").find(":selected").val()];
-                let p2 = competitors[$("#player2").find(":selected").val()];
-                $("#x"+startX1 + "y" + startY1).css("background", p1.color);
-                $("#x"+startX2 + "y" + startY2).css("background", p2.color);
+                for (let i=0; i<nrOfPlayers; i++) {
+                    let y = startPositions[i] % 1000;
+                    let x = parseInt((startPositions[i]-y)/1000);
+                    let color = players[i].color;
+                    $("#x"+x + "y" + y).css("background", color);
+                }
                 $("#startBtn").show();
                 $("#result").css("color", "white");
-                $("#result").html("<span style='color: "+p1.color+"'>" + p1.name + "</span> vs <span style='color: "+p2.color+"'>" + p2.name + "</span>");
+                $("#result").html("");
+                for (let i=0; i<nrOfPlayers; i++) {
+                    let vs = " vs ";
+                    if (i == 0) vs = "";
+                    $("#result").append(vs + "<span style='color: "+players[i].color+"'>" + players[i].name + "</span>");
+                }
             }
             
             function startGame() {
@@ -200,14 +237,16 @@ select {
                             gameBoard[x][y] = -1;
                     }
                 }
-                let player1 = {x: startX1, y: startY1, move: startMove1};
-                let player2 = {x: startX2, y: startY2, move: startMove2};
-                
-                gameBoard[player1.x][player1.y] = 1;
-                gameBoard[player2.x][player2.y] = 2;
-                let p1 = competitors[$("#player1").find(":selected").val()];
-                let p2 = competitors[$("#player2").find(":selected").val()];
-                gameLoop(p1, p2, player1, player2, gameBoard, true, true, false);
+                let playerPositions = [];
+                let playerIsAlive = [];
+                for (let i=0; i<nrOfPlayers; i++) {
+                    let y = startPositions[i] % 1000;
+                    let x = parseInt((startPositions[i]-y)/1000);
+                    playerPositions[i] = {x: x, y: y, move: 1};
+                    playerIsAlive[i] = true;
+                    gameBoard[x][y] = i+2;
+                }
+                gameLoop(gameBoard, players, playerPositions, playerIsAlive, nrOfPlayers, false);
             }
             
             // 1 = up
@@ -215,80 +254,83 @@ select {
             // 3 = down
             // 4 = left
             
-            function gameLoop(p1, p2, player1, player2, gameBoard, player1IsAlive, player2IsAlive, gameOver) {
+            function gameLoop(gameBoard, players, playerPositions, playerIsAlive, nrOfPlayers, gameOver) {
                 
-                if (player1IsAlive) player1.move = p1.func(JSON.parse(JSON.stringify(player1)), JSON.parse(JSON.stringify(player2)), JSON.parse(JSON.stringify(gameBoard)));
-                if (player2IsAlive) player2.move = p2.func(JSON.parse(JSON.stringify(player2)), JSON.parse(JSON.stringify(player1)), JSON.parse(JSON.stringify(gameBoard)));
+                let copyOfPlayerPositions = JSON.parse(JSON.stringify(playerPositions));
+                let copyOfBoard = JSON.parse(JSON.stringify(gameBoard));
                 
-                if (player1IsAlive) {
-                    if (player1.move == 1)
-                        player1.y -= 1;
-                    else if (player1.move == 2)
-                        player1.x += 1;
-                    else if (player1.move == 3)
-                        player1.y += 1;
-                    else if (player1.move == 4)
-                        player1.x -= 1;
-                    else
-                        player1IsAlive = false;
+                for (let i=0; i<nrOfPlayers; i++) {
+                    if (playerIsAlive[i]) {
+                        let myPosition = JSON.parse(JSON.stringify(playerPositions[i]));
+                        let m = players[i].func(myPosition, copyOfPlayerPositions, copyOfBoard);
+                        console.log(m);
+                        playerPositions[i].move = m;
+                    }
                 }
                 
-                if (player2IsAlive) {
-                    if (player2.move == 1)
-                        player2.y -= 1;
-                    else if (player2.move == 2)
-                        player2.x += 1;
-                    else if (player2.move == 3)
-                        player2.y += 1;
-                    else if (player2.move == 4)
-                        player2.x -= 1;
-                    else
-                        player2IsAlive = false;
-                }
-                if (gameBoard[player1.x][player1.y] != 0)
-                    player1IsAlive = false;
-                
-                if (gameBoard[player2.x][player2.y] != 0)
-                    player2IsAlive = false;
-                
-                if (player1.x == player2.x && player1.y == player2.y) {
-                    player1IsAlive = false;
-                    player2IsAlive = false;
-                    $("#x"+player1.x + "y" + player1.y).css("background", "#aaaaaa");
+                for (let i=0; i<nrOfPlayers; i++) {
+                    if (playerIsAlive[i]) {
+                        if (playerPositions[i].move == 1)
+                            playerPositions[i].y -= 1;
+                        else if (playerPositions[i].move == 2)
+                            playerPositions[i].x += 1;
+                        else if (playerPositions[i].move == 3)
+                            playerPositions[i].y += 1;
+                        else if (playerPositions[i].move == 4)
+                            playerPositions[i].x -= 1;
+                        else
+                            playerIsAlive[i] = false;
+                    }
                 }
                 
-                if (!player1IsAlive || !player2IsAlive) {
-                    if (!player1IsAlive && !player2IsAlive) {
-                        if (!gameOver) {
-                            $("#result").html("It's a tie!!!");
+                for (let i=0; i<nrOfPlayers; i++) {
+                    if (gameBoard[playerPositions[i].x][playerPositions[i].y] != 0)
+                        playerIsAlive[i] = false;
+                    
+                    for (let j=i+1; j<nrOfPlayers; j++) {
+                        if (playerPositions[i].x == playerPositions[j].x && playerPositions[i].y == playerPositions[j].y) {
+                            playerIsAlive[i] = false;
+                            playerIsAlive[j] = false;
+                            $("#x"+playerPositions[i].x + "y" + playerPositions[i].y).css("background", "#aaaaaa");
                         }
+                    }
+                }
+                
+                if (playerIsAlive.includes(false)) {
+                    let nrOfPlayersAlive = 0;
+                    let winner = 0;
+                    for (let i=0; i<nrOfPlayers; i++) {
+                        if (playerIsAlive[i]) {
+                            nrOfPlayersAlive++;
+                            winner = i;
+                        }
+                    }
+                    if (nrOfPlayersAlive == 1) {
+                        $("#result").html(players[winner].name + " wins!!!");
+                        $("#result").css("color", players[winner].color);
+                        gameOver = true;
+                    }
+                    if (nrOfPlayersAlive == 0) {
                         return;
                     }
-                    if (player1IsAlive) {
-                        $("#result").html(p1.name + " wins!!!");
-                        $("#result").css("color", p1.color);
-                        gameOver = true;
-                    }
-                    if (player2IsAlive) {
-                        $("#result").html(p2.name + " wins!!!");
-                        $("#result").css("color", p2.color);
-                        gameOver = true;
+                }
+                
+                for (let i=0; i<nrOfPlayers; i++) {
+                    if (playerIsAlive[i]) {
+                        let x = playerPositions[i].x;
+                        let y = playerPositions[i].y;
+                        let color = players[i].color;
+                        gameBoard[x][y] = i+2;
+                        $("#x"+x + "y" + y).css("background", color);
                     }
                 }
                 
-                gameBoard[player1.x][player1.y] = 1;
-                gameBoard[player2.x][player2.y] = 2;
-                
-                $("#x"+player1.x + "y" + player1.y).css("background", p1.color);
-                $("#x"+player2.x + "y" + player2.y).css("background", p2.color);
-                
                 timer = setTimeout(function() {
-                    gameLoop(p1, p2, player1, player2, gameBoard, player1IsAlive, player2IsAlive, gameOver);
+                    gameLoop(gameBoard, players, playerPositions, playerIsAlive, nrOfPlayers, gameOver);
                 }, simulationSpeed);
             }
             
-            function gustavsFunc(player, otherplayer, board) {
-                
+            function randomFunc(player, otherplayers, board) {
                 let move = 0, x, y;
                 let maxIterations = 20;
                 do {
@@ -313,7 +355,7 @@ select {
                 return move;
             }
             
-            function tomsFunc(player, otherplayer, board) {
+            function rightFunc(player, otherplayers, board) {
                 let x = player.x;
                 let y = player.y;
                 if (player.move == 1)
@@ -329,31 +371,96 @@ select {
                 else return player.move % 4 + 1;
             }
             
-            const competitors = {
-                team1: {
-                    name: "Gustav",
-                    func: gustavsFunc,
-                    color: "#3d9"
-                },
-                team2: {
-                    name: "Tom",
-                    func: tomsFunc,
-                    color: "#d39"
+            function leftFunc(player, otherplayers, board) {
+                let x = player.x;
+                let y = player.y;
+                if (player.move == 1)
+                    y -= 1;
+                else if (player.move == 2)
+                    x += 1;
+                else if (player.move == 3)
+                    y += 1;
+                else if (player.move == 4)
+                    x -= 1;
+                    
+                if (board[x][y] == 0) return player.move;
+                else {
+                    if (player.move == 1) return 4;
+                    if (player.move == 2) return 1;
+                    if (player.move == 3) return 2;
+                    if (player.move == 4) return 3;
                 }
             }
             
-            const select1 = document.getElementById("player1");
-            const select2 = document.getElementById("player2");
-            for (c in competitors) {
-                let option1 = document.createElement("option");
-                option1.setAttribute("value", c);
-                option1.innerHTML = competitors[c].name;
-                select1.appendChild(option1);
-                let option2 = document.createElement("option");
-                option2.setAttribute("value", c);
-                option2.innerHTML = competitors[c].name;
-                select2.appendChild(option2);
+            function bullyFunc(player, otherplayers, board) {
+                let x = player.x;
+                let y = player.y;
+                let best = 9999;
+                let target = 0;
+                for (let i=0; i<otherplayers.length; i++) {
+                    let d = Math.abs(otherplayers[i].x - x) + Math.abs(otherplayers[i].y - y);
+                    if (d > 0 && d < best) {
+                        best = d;
+                        target = i;
+                    }
+                }
+                let x2 = otherplayers[target].x;
+                let y2 = otherplayers[target].y;
+                let dx = x2 - x;
+                let dy = y2 - y;
+                if (dx > 0 && Math.abs(dx) > Math.abs(dy) && board[x+1][y] == 0) return 2;
+                if (dx < 0 && Math.abs(dx) > Math.abs(dy) && board[x-1][y] == 0) return 4;
+                if (dy > 0 && Math.abs(dx) < Math.abs(dy) && board[x][y+1] == 0) return 3;
+                if (dy < 0 && Math.abs(dx) < Math.abs(dy) && board[x][y-1] == 0) return 1;
+                if (board[x+1][y] == 0) return 2;
+                if (board[x-1][y] == 0) return 4;
+                if (board[x][y+1] == 0) return 3;
+                if (board[x][y-1] == 0) return 1;
+                return player.move;
             }
+            
+            var competitors = {
+                team1: {
+                    name: "Random",
+                    func: randomFunc,
+                    color: "#3d9"
+                },
+                team2: {
+                    name: "Always right",
+                    func: rightFunc,
+                    color: "#d39"
+                },
+                team3: {
+                    name: "Bully",
+                    func: bullyFunc,
+                    color: "#93d"
+                },
+                team4: {
+                    name: "Always left",
+                    func: leftFunc,
+                    color: "orange"
+                }
+            }
+            
+            function setUpSelectPlayer() {
+                nrOfPlayers = parseInt($("#selectNrOfPlayers").find(":selected").val());
+                for (let i=1; i<=6; i++) {
+                    $("#player" + i).html("");
+                    if (i <= nrOfPlayers) {
+                        for (c in competitors) {
+                            $(".player" + i).show();
+                            let option = document.createElement("option");
+                            option.setAttribute("value", c);
+                            option.innerHTML = competitors[c].name;
+                            document.getElementById("player" + i).appendChild(option);
+                        }
+                    }
+                    else {
+                        $(".player" + i).hide();
+                    }
+                }
+            }
+            setUpSelectPlayer();
             
         </script>
     </body>
