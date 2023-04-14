@@ -167,6 +167,7 @@ select {
             const maxX = 40;
 
             function initBoard() {
+                $("#board").html("");
                 let board = document.getElementById("board");
                 let tbl = document.createElement("table");
                 tbl.setAttribute("id", "gameboard");
@@ -229,7 +230,7 @@ select {
                 let gameBoard = [];
                 for (let x=0; x<=maxX+1; x++)
                 {
-                    gameBoard[x] = []
+                    gameBoard[x] = [];
                     for (let y=0; y<=maxY+1; y++)
                     {
                         gameBoard[x][y] = 0;
@@ -237,61 +238,103 @@ select {
                             gameBoard[x][y] = -1;
                     }
                 }
-                let playerPositions = [];
+                let playerState = [];
                 let playerIsAlive = [];
                 for (let i=0; i<nrOfPlayers; i++) {
                     let y = startPositions[i] % 1000;
                     let x = parseInt((startPositions[i]-y)/1000);
-                    playerPositions[i] = {x: x, y: y, move: 1};
+                    
+                    playerState[i] = {x: x, y: y, dx: 0, dy: -1, power: ""};
                     playerIsAlive[i] = true;
-                    gameBoard[x][y] = i+2;
+                    
+                    gameBoard[x][y] = i+2; // the player number stored in the gameboard
                 }
-                gameLoop(gameBoard, players, playerPositions, playerIsAlive, nrOfPlayers, false);
+                gameLoop(gameBoard, players, playerState, playerIsAlive, nrOfPlayers, false);
             }
             
-            // 1 = up
-            // 2 = right
-            // 3 = down
-            // 4 = left
+            function getGameBoardCopy(gameBoard, player) {
+                let gameBoardCopy = JSON.parse(JSON.stringify(gameBoard));
+                let playerNr = player + 2;
+                for (let x=1; x<=maxX; x++)
+                {
+                    for (let y=1; y<=maxY; y++)
+                    {
+                        if (gameBoardCopy[x][y] == playerNr) {
+                            gameBoardCopy[x][y] = 1;
+                        }
+                    }
+                }
+                return gameBoardCopy;
+            }
             
-            function gameLoop(gameBoard, players, playerPositions, playerIsAlive, nrOfPlayers, gameOver) {
+            function gameLoop(gameBoard, players, playerState, playerIsAlive, nrOfPlayers, gameOver) {
                 
-                let copyOfPlayerPositions = JSON.parse(JSON.stringify(playerPositions));
-                let copyOfBoard = JSON.parse(JSON.stringify(gameBoard));
-                
+                // Ask clients for their move {dx: _, dy: _}
                 for (let i=0; i<nrOfPlayers; i++) {
-                    if (playerIsAlive[i]) {
-                        let myPosition = JSON.parse(JSON.stringify(playerPositions[i]));
-                        let m = players[i].func(myPosition, copyOfPlayerPositions, copyOfBoard);
-                        console.log(m);
-                        playerPositions[i].move = m;
+                    if (playerIsAlive[i] && playerState[i].power != "frozen") {
+                        
+                        let gameBoardCopy = getGameBoardCopy(gameBoard, i);
+                        
+                        let playerStateCopy = JSON.parse(JSON.stringify(playerState));
+                        let otherPlayersState = {};
+                        let myState;
+                        for (let p=0; p<nrOfPlayers; p++) {
+                            if (p == i) {
+                                myState = playerStateCopy[p];
+                            } else {
+                                let playerNr = p + 2;
+                                otherPlayersState[playerNr] = playerStateCopy[p];
+                            }
+                        }
+                        
+                        let move = players[i].func(myState, playerStateCopy, gameBoardCopy);
+                        playerState[i].dx = move.dx;
+                        playerState[i].dy = move.dy;
                     }
                 }
                 
+                // Move players according to their selected move.
                 for (let i=0; i<nrOfPlayers; i++) {
                     if (playerIsAlive[i]) {
-                        if (playerPositions[i].move == 1)
-                            playerPositions[i].y -= 1;
-                        else if (playerPositions[i].move == 2)
-                            playerPositions[i].x += 1;
-                        else if (playerPositions[i].move == 3)
-                            playerPositions[i].y += 1;
-                        else if (playerPositions[i].move == 4)
-                            playerPositions[i].x -= 1;
-                        else
+                        let validMove = false;
+                        let dx = playerState[i].dx;
+                        let dy = playerState[i].dy;
+                        
+                        if (dx == -1 && dy == 0 ||
+                            dx == 1  && dy == 0 ||
+                            dx == 0  && dy == 1 ||
+                            dx == 0  && dy == -1) {
+                            validMove = true;
+                        }
+                        
+                        if (playerState[i].power == "diagonal") {
+                            if (dx == -1 && dy == -1 ||
+                                dx == 1 && dy == -1 ||
+                                dx == -1 && dy == 1 ||
+                                dx == 1 && dy == 1) {
+                                validMove = true;
+                            }
+                        }
+                        
+                        if (validMove) {
+                            playerState[i].x += dx;
+                            playerState[i].y += dy;
+                        } else {
                             playerIsAlive[i] = false;
+                        }
                     }
                 }
                 
+                // Check if player craches into other players or wall
                 for (let i=0; i<nrOfPlayers; i++) {
-                    if (gameBoard[playerPositions[i].x][playerPositions[i].y] != 0)
+                    if (gameBoard[playerState[i].x][playerState[i].y] != 0)
                         playerIsAlive[i] = false;
                     
                     for (let j=i+1; j<nrOfPlayers; j++) {
-                        if (playerPositions[i].x == playerPositions[j].x && playerPositions[i].y == playerPositions[j].y) {
+                        if (playerState[i].x == playerState[j].x && playerState[i].y == playerState[j].y) {
                             playerIsAlive[i] = false;
                             playerIsAlive[j] = false;
-                            $("#x"+playerPositions[i].x + "y" + playerPositions[i].y).css("background", "#aaaaaa");
+                            $("#x"+playerState[i].x + "y" + playerState[i].y).css("background", "#aaaaaa");
                         }
                     }
                 }
@@ -316,107 +359,103 @@ select {
                 }
                 
                 for (let i=0; i<nrOfPlayers; i++) {
-                    if (playerIsAlive[i]) {
-                        let x = playerPositions[i].x;
-                        let y = playerPositions[i].y;
-                        let color = players[i].color;
-                        gameBoard[x][y] = i+2;
-                        $("#x"+x + "y" + y).css("background", color);
-                    }
+                    let x = playerState[i].x;
+                    let y = playerState[i].y;
+                    let color = players[i].color;
+                    gameBoard[x][y] = i+2;
+                    $("#x"+x + "y" + y).css("background", color);
                 }
                 
                 timer = setTimeout(function() {
-                    gameLoop(gameBoard, players, playerPositions, playerIsAlive, nrOfPlayers, gameOver);
+                    gameLoop(gameBoard, players, playerState, playerIsAlive, nrOfPlayers, gameOver);
                 }, simulationSpeed);
             }
             
-            function randomFunc(player, otherplayers, board) {
-                let move = 0, x, y;
+            function randomFunc(me, otherPlayers, gameBoard) {
+                let dx, dy;
                 let maxIterations = 20;
                 do {
-                    x = player.x;
-                    y = player.y;
-                    if (Math.random() > 0.5) move = player.move;
-                    else move = Math.floor(Math.random()*4)+1;
+                    random = Math.random();
+                
+                    dx = 0;
+                    dy = 0;
                     
-                    if (move == 1)
-                        y -= 1;
-                    else if (move == 2)
-                        x += 1;
-                    else if (move == 3)
-                        y += 1;
-                    else if (move == 4)
-                        x -= 1;
-                        
+                    if (random < 0.125)
+                        dx = -1;
+                    else if (random < 0.25)
+                        dx = 1;
+                    else if (random < 0.375)
+                        dy = -1;
+                    else if (random < 0.5)
+                        dy = 1;
+                    else {
+                        dx = me.dx;
+                        dy = me.dy;
+                    }
+                    
                     maxIterations -= 1;
                 
-                } while (board[x][y] != 0 && maxIterations > 0);
+                } while (gameBoard[me.x + dx][me.y + dy] != 0 && maxIterations > 0);
                 
-                return move;
+                return {dx: dx, dy: dy};
             }
             
-            function rightFunc(player, otherplayers, board) {
-                let x = player.x;
-                let y = player.y;
-                if (player.move == 1)
-                    y -= 1;
-                else if (player.move == 2)
-                    x += 1;
-                else if (player.move == 3)
-                    y += 1;
-                else if (player.move == 4)
-                    x -= 1;
+            function rightFunc(me, otherPlayers, gameBoard) {
+                let dx = 0, dy = 0;
+                if (me.dx == 1) // right
+                    dy = 1;
+                else if (me.dy == 1) // down
+                    dx = -1;
+                else if (me.dx == -1) // left
+                    dy = -1;
+                else if (me.dy == -1) // up
+                    dx = 1;
                     
-                if (board[x][y] == 0) return player.move;
-                else return player.move % 4 + 1;
+                if (gameBoard[me.x + me.dx][me.y + me.dy] == 0) return {dx: me.dx, dy: me.dy};
+                else return {dx: dx, dy: dy};
             }
             
-            function leftFunc(player, otherplayers, board) {
-                let x = player.x;
-                let y = player.y;
-                if (player.move == 1)
-                    y -= 1;
-                else if (player.move == 2)
-                    x += 1;
-                else if (player.move == 3)
-                    y += 1;
-                else if (player.move == 4)
-                    x -= 1;
+            function leftFunc(me, otherPlayers, gameBoard) {
+                let dx = 0, dy = 0;
+                if (me.dx == 1) // right
+                    dy = -1;
+                else if (me.dy == -1) // up
+                    dx = -1;
+                else if (me.dx == -1) // left
+                    dy = 1;
+                else if (me.dy == 1) // down
+                    dx = 1;
                     
-                if (board[x][y] == 0) return player.move;
-                else {
-                    if (player.move == 1) return 4;
-                    if (player.move == 2) return 1;
-                    if (player.move == 3) return 2;
-                    if (player.move == 4) return 3;
-                }
+                if (gameBoard[me.x + me.dx][me.y + me.dy] == 0) return {dx: me.dx, dy: me.dy};
+                else return {dx: dx, dy: dy};
             }
             
-            function bullyFunc(player, otherplayers, board) {
-                let x = player.x;
-                let y = player.y;
+            function bullyFunc(me, otherPlayers, gameBoard) {
+                let x = me.x;
+                let y = me.y;
                 let best = 9999;
                 let target = 0;
-                for (let i=0; i<otherplayers.length; i++) {
-                    let d = Math.abs(otherplayers[i].x - x) + Math.abs(otherplayers[i].y - y);
+                for (let p in otherPlayers) {
+                    let d = Math.abs(otherPlayers[p].x - x) + Math.abs(otherPlayers[p].y - y);
                     if (d > 0 && d < best) {
                         best = d;
-                        target = i;
+                        target = p;
                     }
                 }
-                let x2 = otherplayers[target].x;
-                let y2 = otherplayers[target].y;
+                
+                let x2 = otherPlayers[target].x;
+                let y2 = otherPlayers[target].y;
                 let dx = x2 - x;
                 let dy = y2 - y;
-                if (dx > 0 && Math.abs(dx) > Math.abs(dy) && board[x+1][y] == 0) return 2;
-                if (dx < 0 && Math.abs(dx) > Math.abs(dy) && board[x-1][y] == 0) return 4;
-                if (dy > 0 && Math.abs(dx) < Math.abs(dy) && board[x][y+1] == 0) return 3;
-                if (dy < 0 && Math.abs(dx) < Math.abs(dy) && board[x][y-1] == 0) return 1;
-                if (board[x+1][y] == 0) return 2;
-                if (board[x-1][y] == 0) return 4;
-                if (board[x][y+1] == 0) return 3;
-                if (board[x][y-1] == 0) return 1;
-                return player.move;
+                if (dx > 0 && Math.abs(dx) > Math.abs(dy) && gameBoard[x+1][y] == 0) return {dx: 1, dy: 0};
+                if (dx < 0 && Math.abs(dx) > Math.abs(dy) && gameBoard[x-1][y] == 0) return {dx: -1, dy: 0};
+                if (dy > 0 && Math.abs(dx) < Math.abs(dy) && gameBoard[x][y+1] == 0) return {dx: 0, dy: 1};
+                if (dy < 0 && Math.abs(dx) < Math.abs(dy) && gameBoard[x][y-1] == 0) return {dx: 0, dy: -1};
+                if (gameBoard[x+1][y] == 0) return {dx: 1, dy: 0};
+                if (gameBoard[x-1][y] == 0) return {dx: -1, dy: 0};
+                if (gameBoard[x][y+1] == 0) return {dx: 0, dy: 1};
+                if (gameBoard[x][y-1] == 0) return {dx: 0, dy: -1};
+                return {dx: me.dx, dy: me.dy};
             }
             
             var competitors = {
@@ -461,7 +500,7 @@ select {
                 }
             }
             setUpSelectPlayer();
-            
+
         </script>
     </body>
 </html>
