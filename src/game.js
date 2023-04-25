@@ -1,3 +1,5 @@
+import { allPowerups } from "./powerups.js";
+
 var timer, simulationSpeed = 100;
 var nrOfPlayers = 2, startPositions = [], players = [];
 const maxY = 40;
