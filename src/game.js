@@ -29,7 +29,7 @@ function setSpeed(value) {
     simulationSpeed = 1000/value;
 }
 
-function resetGame() {
+export function resetGame() {
     clearTimeout(timer);
     startPositions = [];
     for (let i=0; i<nrOfPlayers; i++) {
@@ -61,7 +61,7 @@ function resetGame() {
     }
 }
 
-function startGame() {
+export function startGame() {
     $("#startBtn").hide();
     clearTimeout(timer);
     let gameBoard = [];
