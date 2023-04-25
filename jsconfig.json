@@ -1,0 +1,9 @@
+{
+    "compilerOptions": {
+        "checkJs": true,
+        "module": "commonjs",
+        "strict": false,
+        "target": "ES2021"
+    },
+    "exclude": ["node_modules"]
+}
