@@ -214,7 +214,7 @@ function randomFunc(me, otherPlayers, gameBoard) {
     let dx, dy;
     let maxIterations = 20;
     do {
-        random = Math.random();
+        const random = Math.random();
     
         dx = 0;
         dy = 0;
@@ -325,7 +325,7 @@ function setUpSelectPlayer() {
     for (let i=1; i<=6; i++) {
         $("#player" + i).html("");
         if (i <= nrOfPlayers) {
-            for (c in competitors) {
+            for (let c in competitors) {
                 $(".player" + i).show();
                 let option = document.createElement("option");
                 option.setAttribute("value", c);
