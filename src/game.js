@@ -81,7 +81,7 @@ export function startGame() {
     let playerIsAlive = [];
     for (let i=0; i<nrOfPlayers; i++) {
         let y = startPositions[i] % 1000;
-        let x = parseInt((startPositions[i]-y)/1000);
+        let x = Math.round((startPositions[i]-y)/1000);
         
         playerState[i] = {x: x, y: y, dx: 0, dy: -1, activePower: {name: null, step: 0}};
         playerIsAlive[i] = true;
@@ -188,7 +188,7 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
                 // Player found a powerup
                 console.log("Player", i, "found", boardPower.name, gameBoard[playerX][playerY], playerX, playerY);
                 playerState[i].activePower = {name:boardPower.name, step:step};
-                gameBoard[playerX][playerY] = i // So don't get killed
+                gameBoard[playerX][playerY] = i;
                 boardPower = null;
             }
         }       
@@ -204,7 +204,6 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
             if (gameBoard[playerX][playerY] != 0) {
                 console.log("Player", i, "killed", gameBoard[playerX][playerY], playerX, playerY);
                 playerIsAlive[i] = false;
-                $("#x"+playerX + "y" + playerY).css("background", "#aaaaaa");
             }
         }
 
