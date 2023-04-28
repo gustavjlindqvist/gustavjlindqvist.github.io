@@ -46,12 +46,14 @@ export function resetGame() {
         players[i-1] = competitors[$("#player" + i).find(":selected").val()];
     }
     
-    $(".box").css("background", "");
+    $(".box").attr("style", "");
+    $(".box").attr("class", "box");
     for (let i=0; i<nrOfPlayers; i++) {
         let y = startPositions[i] % 1000;
         let x = Math.round((startPositions[i]-y)/1000);
         let color = players[i].color;
-        $("#x"+x + "y" + y).css("background", color);
+        $("#x"+x + "y" + y).attr("style", "--color:" +color);
+        $("#x"+x + "y" + y).addClass("head").addClass("headUp");
     }
     $("#startBtn").show();
     $("#result").css("color", "white");
