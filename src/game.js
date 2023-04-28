@@ -49,7 +49,7 @@ export function resetGame() {
     $(".box").css("background", "");
     for (let i=0; i<nrOfPlayers; i++) {
         let y = startPositions[i] % 1000;
-        let x = parseInt((startPositions[i]-y)/1000);
+        let x = Math.round((startPositions[i]-y)/1000);
         let color = players[i].color;
         $("#x"+x + "y" + y).css("background", color);
     }
@@ -108,6 +108,9 @@ function getGameBoardCopy(gameBoard, player) {
 
 function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlayers, gameOver, boardPower) {
     
+    // save copy for later
+    let lastPlayerState = JSON.parse(JSON.stringify(playerState));
+
     // Check for powerup expiry
     for (let i=0; i<nrOfPlayers; i++) {
         if (playerState[i].activePower.name) {
@@ -239,11 +242,54 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
     
     // Update game board with new player head
     for (let i=0; i<nrOfPlayers; i++) {
-        let x = playerState[i].x;
-        let y = playerState[i].y;
-        let color = players[i].color;
-        gameBoard[x][y] = i+2;
-        $("#x"+x + "y" + y).css("background", color);
+        if (playerIsAlive[i]) {
+            let x = playerState[i].x;
+            let y = playerState[i].y;
+            let dx = playerState[i].dx;
+            let dy = playerState[i].dy;
+            let color = players[i].color;
+            let lastX = lastPlayerState[i].x;
+            let lastY = lastPlayerState[i].y;
+            let lastDx = lastPlayerState[i].dx;
+            let lastDy = lastPlayerState[i].dy;
+            gameBoard[x][y] = i+2;
+            
+            $("#x"+x + "y" + y).attr("style", "--color: " + color);
+            $("#x"+x + "y" + y).addClass("head");
+            if (dx == 1 && dy == 0) {
+                $("#x"+x + "y" + y).addClass("headRight");
+            } else if (dx == -1 && dy == 0) {
+                $("#x"+x + "y" + y).addClass("headLeft");
+            } else if (dx == 0 && dy == 1) {
+                $("#x"+x + "y" + y).addClass("headDown");
+            } else if (dx == 0 && dy == -1) {
+                $("#x"+x + "y" + y).addClass("headUp");
+            }
+            
+            $("#x"+lastX + "y" + lastY).removeClass("head").removeClass("headRight").removeClass("headLeft").removeClass("headDown").removeClass("headUp");
+            if (dy == 0 && lastDy == 0) {
+                $("#x"+lastX + "y" + lastY).addClass("horizontal");
+            }
+            else if (dx == 0 && lastDx == 0) {
+                $("#x"+lastX + "y" + lastY).addClass("vertical");
+            }
+            else if (dx == 1 && dy == 0 && lastDx == 0 && lastDy == 1 ||
+                     dx == 0 && dy == -1 && lastDx == -1 && lastDy == 0) {
+                $("#x"+lastX + "y" + lastY).addClass("downLeft");
+            }
+            else if (dx == 1 && dy == 0 && lastDx == 0 && lastDy == -1 || 
+                     dx == 0 && dy == 1 && lastDx == -1 && lastDy == 0) {
+                $("#x"+lastX + "y" + lastY).addClass("downRight");
+            }
+            else if (dx == -1 && dy == 0 && lastDx == 0 && lastDy == -1 ||
+                     dx == 0 && dy == 1 && lastDx == 1 && lastDy == 0) {
+                $("#x"+lastX + "y" + lastY).addClass("upRight");
+            }
+            else if (dx == -1 && dy == 0 && lastDx == 0 && lastDy == 1 ||
+                     dx == 0 && dy == -1 && lastDx == 1 && lastDy == 0) {
+                $("#x"+lastX + "y" + lastY).addClass("upLeft");
+            }
+        }
     }
     
     // Add powerup to board if needed

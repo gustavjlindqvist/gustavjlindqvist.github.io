@@ -52,8 +52,9 @@ html,body {
     width: 13px;
     background-color: black;
     padding: 0;
+    position: relative;
+    --color: white;
 }
-
 button {
     border: none;
     outline: none;
@@ -65,7 +66,6 @@ button {
 button:hover {
     background: #777;
 }
-
 select {
     border: none;
     outline: none;
@@ -73,46 +73,90 @@ select {
     color: white;
     padding: 5px 10px;
 }
-
 .slidecontainer {
   width: 100%;
 }
-
 .slider {
-  -webkit-appearance: none;
-  width: 500px;
-  height: 10px;
-  border-radius: 5px;
-  background: #555;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
+    -webkit-appearance: none;
+    width: 500px;
+    height: 10px;
+    border-radius: 5px;
+    background: #555;
+    outline: none;
+    opacity: 0.7;
+    -webkit-transition: .2s;
+    transition: opacity .2s;
 }
-
 .slider:hover {
-  opacity: 1;
+    opacity: 1;
 }
-
 .slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #04AA6D;
-  cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #04AA6D;
+    cursor: pointer;
 }
-
 .slider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #04AA6D;
-  cursor: pointer;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #04AA6D;
+    cursor: pointer;
 }
 .vs {
     padding: 0 10px;
+}
+.horizontal {
+    border-top: 2px solid black;
+    border-right: none;
+    border-bottom: 2px solid black;
+    border-left: none;
+    background: var(--color);
+}
+.vertical {
+    border-top: none;
+    border-right: 2px solid black;
+    border-bottom: none;
+    border-left: 2px solid black;
+    background: var(--color);
+}
+.head {
+    background: conic-gradient(from calc(180deg/-2 - 30deg) at top 3.5px left 3.5px, #000 180deg,var(--color) 0) 0 0/82% 52% no-repeat,
+                conic-gradient(from calc(180deg/-2 - 150deg) at bottom 3.5px left 3.5px,#000 180deg,var(--color) 0) 0 100%/82% 52% no-repeat,
+                conic-gradient(from calc(180deg/-2 + 30deg) at top 1px right 1px,#000 180deg,var(--color) 0) 100% 0/23% 52% no-repeat, 
+                conic-gradient(from calc(180deg/-2 + 150deg) at bottom 1px right 1px,#000 180deg,var(--color) 0) 100% 100%/23% 52% no-repeat;
+}
+.head:after {
+    content: ":";
+    position: absolute;
+    top: -4.5px;
+}
+.headLeft {
+    transform: rotate(0deg);
+}
+.headRight {
+    transform: rotate(180deg);
+}
+.headUp {
+    transform: rotate(90deg);
+}
+.headDown {
+    transform: rotate(270deg);
+}
+.upRight {
+    background: radial-gradient(12px at -1px 14px, #000 3px, var(--color) 0 100%, #000);
+}
+.upLeft {
+    background: radial-gradient(12px at -1px -1px, #000 3px, var(--color) 0 100%, #000);
+}
+.downRight {
+    background: radial-gradient(12px at 14px 14px, #000 3px, var(--color) 0 100%, #000);
+}
+.downLeft {
+    background: radial-gradient(12px at 14px -1px, #000 3px, var(--color) 0 100%, #000);
 }
         </style>
     </head>
