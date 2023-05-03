@@ -134,11 +134,12 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
 
     // Check for powerup expiry
     for (let i=0; i<nrOfPlayers; i++) {
-        if (playerState[i].activePower.name) {
+        if (isFrozen(playerState[i])) {
             const stepsSinceActive = step - (playerState[i].activePower.step)
-            if (stepsSinceActive > 10) {
+            if (stepsSinceActive > 20) {
                 console.log("Player", i, "expired power up", playerState[i].activePower.name);
                 playerState[i].activePower = {name: null, step: step}
+                $("#x" + playerState[i].x + "y" + playerState[i].y).removeClass("blink");
             }
         }
     }
@@ -232,7 +233,7 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
             if (playerX == playerState[j].x && playerY == playerState[j].y) {
                 playerIsAlive[i] = false;
                 playerIsAlive[j] = false;
-                $("#x"+playerX + "y" + playerY).css("background", "#aaaaaa");
+                $("#x" + playerX + "y" + playerY).css("background", "#aaaaaa");
             }
         }
     }
@@ -283,28 +284,28 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
                 $("#x"+x + "y" + y).addClass("headUp");
             }
             
-            $("#x"+lastX + "y" + lastY).removeClass("head").removeClass("headRight").removeClass("headLeft").removeClass("headDown").removeClass("headUp");
+            $("#x" + lastX + "y" + lastY).removeClass("head").removeClass("headRight").removeClass("headLeft").removeClass("headDown").removeClass("headUp");
             if (dy == 0 && lastDy == 0) {
-                $("#x"+lastX + "y" + lastY).addClass("horizontal");
+                $("#x" + lastX + "y" + lastY).addClass("horizontal");
             }
             else if (dx == 0 && lastDx == 0) {
-                $("#x"+lastX + "y" + lastY).addClass("vertical");
+                $("#x" + lastX + "y" + lastY).addClass("vertical");
             }
             else if (dx == 1 && dy == 0 && lastDx == 0 && lastDy == 1 ||
                      dx == 0 && dy == -1 && lastDx == -1 && lastDy == 0) {
-                $("#x"+lastX + "y" + lastY).addClass("downLeft");
+                $("#x" + lastX + "y" + lastY).addClass("downLeft");
             }
             else if (dx == 1 && dy == 0 && lastDx == 0 && lastDy == -1 || 
                      dx == 0 && dy == 1 && lastDx == -1 && lastDy == 0) {
-                $("#x"+lastX + "y" + lastY).addClass("downRight");
+                $("#x" + lastX + "y" + lastY).addClass("downRight");
             }
             else if (dx == -1 && dy == 0 && lastDx == 0 && lastDy == -1 ||
                      dx == 0 && dy == 1 && lastDx == 1 && lastDy == 0) {
-                $("#x"+lastX + "y" + lastY).addClass("upRight");
+                $("#x" + lastX + "y" + lastY).addClass("upRight");
             }
             else if (dx == -1 && dy == 0 && lastDx == 0 && lastDy == 1 ||
                      dx == 0 && dy == -1 && lastDx == 1 && lastDy == 0) {
-                $("#x"+lastX + "y" + lastY).addClass("upLeft");
+                $("#x" + lastX + "y" + lastY).addClass("upLeft");
             }
         }
     }
@@ -320,7 +321,8 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
                 //     console.log("Found", boardPowerUp.name, "id:", gameBoard[playerX][playerY], "at:", playerX, playerY);
                 // }
                 playerState[i].activePower = {name:boardPowerUp.name, step:step};
-                $("#x"+playerX + "y" + playerY).removeClass("powerup_" + boardPowerUp.name);
+                $("#x" + playerX + "y" + playerY).removeClass("powerup_" + boardPowerUp.name);
+                $("#x" + playerX + "y" + playerY).addClass("blink");
                 boardPowerUp = null;
             }      
         }
@@ -341,7 +343,7 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
         
         if (powerX >= 0 && powerY >= 0) {
             const chosenPower = allPowerups[0];            
-            $("#x"+powerX + "y" + powerY).addClass("powerup_" + chosenPower.name);
+            $("#x" + powerX + "y" + powerY).addClass("powerup_" + chosenPower.name);
             boardPowerUp = {name: chosenPower.name, id: chosenPower.id, x: powerX, y: powerY};
         }
     }
