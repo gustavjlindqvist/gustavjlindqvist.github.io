@@ -27,9 +27,29 @@ function initBoard() {
 }
 initBoard();
 
-function setSpeed(value) {
+export function setSpeed(value) {
     simulationSpeed = 1000/value;
 }
+
+export function setUpSelectPlayer(num) {
+    nrOfPlayers = num
+    for (let i=1; i<=6; i++) {
+        $("#player" + i).html("");
+        if (i <= nrOfPlayers) {
+            for (let c in competitors) {
+                $(".player" + i).show();
+                let option = document.createElement("option");
+                option.setAttribute("value", c);
+                option.innerHTML = competitors[c].name;
+                document.getElementById("player" + i).appendChild(option);
+            }
+        }
+        else {
+            $(".player" + i).hide();
+        }
+    }
+}
+
 
 export function resetGame() {
     clearTimeout(timer);
@@ -457,22 +477,4 @@ var competitors = {
     },
 }
 
-function setUpSelectPlayer() {
-    nrOfPlayers = parseInt($("#selectNrOfPlayers").find(":selected").val());
-    for (let i=1; i<=6; i++) {
-        $("#player" + i).html("");
-        if (i <= nrOfPlayers) {
-            for (let c in competitors) {
-                $(".player" + i).show();
-                let option = document.createElement("option");
-                option.setAttribute("value", c);
-                option.innerHTML = competitors[c].name;
-                document.getElementById("player" + i).appendChild(option);
-            }
-        }
-        else {
-            $(".player" + i).hide();
-        }
-    }
-}
-setUpSelectPlayer();
+setUpSelectPlayer(nrOfPlayers);

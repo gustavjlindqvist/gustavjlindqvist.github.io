@@ -167,11 +167,11 @@ select {
             <div class="padding">
                 <h1 style="text-align: center; color: white">Visby coding competition</h1>
                 <br>
-                <input type="range" min="1" max="50" value="10" class="slider" id="myRange" oninput="setSpeed(this.value)">
+                <input type="range" min="1" max="50" value="10" class="slider" id="gameSpeed">
                 <br>
                 <br>
                 Number of players:
-                <select id="selectNrOfPlayers" onchange="setUpSelectPlayer()">
+                <select id="selectNrOfPlayers">
                     <option value="2">2</option>
                     <option value="3">3</option>
                     <option value="4">4</option>
@@ -207,9 +207,21 @@ select {
         <script type="module">
             import {resetGame} from './src/game.js'
             import {startGame} from './src/game.js'
+            import {setUpSelectPlayer} from './src/game.js'
+            import {setSpeed} from './src/game.js'
 
-            document.querySelector('#resetBtn').addEventListener('click', resetGame)
-            document.querySelector('#startBtn').addEventListener('click', startGame)
+            document.querySelector('#resetBtn').addEventListener('click', resetGame);
+            document.querySelector('#startBtn').addEventListener('click', startGame);
+            
+            let nrOfPlayersSelector = document.getElementById("selectNrOfPlayers"); 
+            nrOfPlayersSelector.addEventListener("change", () => {
+                setUpSelectPlayer(nrOfPlayersSelector.value)
+            });
+
+            let gameSpeedSelector = document.getElementById("gameSpeed"); 
+            gameSpeedSelector.addEventListener("change", () => {
+                setSpeed(gameSpeedSelector.value)
+            });
         </script>
     </body>
 </html>
