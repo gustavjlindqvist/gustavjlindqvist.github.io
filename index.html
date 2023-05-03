@@ -158,7 +158,19 @@ select {
 .downLeft {
     background: radial-gradient(circle at 14px -1px, black 15%, var(--color) 16% 60%, black 61%);
 }
-        </style>
+.powerup_frozen {
+  animation: blinker 1s linear infinite;
+  background: white;
+  transform:rotate(45deg);
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+  
+</style>
     </head>
     <body style="background: #334">
         <div class="BG"></div>

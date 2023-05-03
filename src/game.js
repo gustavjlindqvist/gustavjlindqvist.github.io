@@ -50,7 +50,6 @@ export function setUpSelectPlayer(num) {
     }
 }
 
-
 export function resetGame() {
     clearTimeout(timer);
     startPositions = [];
@@ -128,8 +127,8 @@ function getGameBoardCopy(gameBoard, player) {
     return gameBoardCopy;
 }
 
-function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlayers, gameOver, boardPower) {
-    
+function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlayers, gameOver, boardPowerUp) {
+    // console.log("STEP");    
     // save copy for later
     let lastPlayerState = JSON.parse(JSON.stringify(playerState));
 
@@ -137,7 +136,7 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
     for (let i=0; i<nrOfPlayers; i++) {
         if (playerState[i].activePower.name) {
             const stepsSinceActive = step - (playerState[i].activePower.step)
-            if (stepsSinceActive > 5) {
+            if (stepsSinceActive > 10) {
                 console.log("Player", i, "expired power up", playerState[i].activePower.name);
                 playerState[i].activePower = {name: null, step: step}
             }
@@ -147,7 +146,7 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
     // Ask clients for their move {dx: _, dy: _}
     for (let i=0; i<nrOfPlayers; i++) {
 
-        if (playerIsAlive[i]) {
+        if (playerIsAlive[i] && !isFrozen(playerState[i])) {
             
             let gameBoardCopy = getGameBoardCopy(gameBoard, i);
             
@@ -163,15 +162,19 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
                 }
             }
             
-            let move = players[i].func(myState, playerStateCopy, gameBoardCopy);
+            let move = players[i].func(myState, playerStateCopy, gameBoardCopy, boardPowerUp);
             playerState[i].dx = move.dx;
             playerState[i].dy = move.dy;
+
+            // if (i == 0) {
+            //     console.log("Move is", playerState[i].dx, playerState[i].dy);
+            // }
         }
     }
     
     // Move players according to their selected move.
     for (let i=0; i<nrOfPlayers; i++) {
-        if (playerIsAlive[i] && playerState[i].activePower.name != "frozen") {
+        if (playerIsAlive[i] && !isFrozen(playerState[i])) {
             let validMove = false;
             let dx = playerState[i].dx;
             let dy = playerState[i].dy;
@@ -195,28 +198,18 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
             if (validMove) {
                 playerState[i].x += dx;
                 playerState[i].y += dy;
+
+                // if (i == 0) {
+                //     console.log("New pos:", playerState[i].x, playerState[i].y);
+                // }
+
             } else {
-                console.log("Dead no valid move");
+                // if (i == 0) {
+                //    console.log("Dead no valid move");
+                // }
                 playerIsAlive[i] = false;
             }
         }
-    }
-    
-    // Check if any player finds a powerup
-    for (let i=0; i<nrOfPlayers; i++) {
-        const playerX = playerState[i].x;
-        const playerY = playerState[i].y;
-
-        if (boardPower) {
-            if (gameBoard[playerX][playerY] == boardPower.id) {
-
-                // Player found a powerup
-                console.log("Player", i, "found", boardPower.name, gameBoard[playerX][playerY], playerX, playerY);
-                playerState[i].activePower = {name:boardPower.name, step:step};
-                gameBoard[playerX][playerY] = i;
-                boardPower = null;
-            }
-        }       
     }
 
     // Check if player crashes into other players or wall
@@ -224,15 +217,17 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
         const playerX = playerState[i].x;
         const playerY = playerState[i].y;
 
-        if (playerIsAlive[i] && playerState[i].activePower.name != "frozen") {
-            // Wall
-            if (gameBoard[playerX][playerY] != 0) {
-                console.log("Player", i, "killed", gameBoard[playerX][playerY], playerX, playerY);
+        if (playerIsAlive[i] && !isFrozen(playerState[i])) {
+            // Wall or snake
+            if (gameBoard[playerX][playerY] != 0 && gameBoard[playerX][playerY] != 100) {
+                // if (i == 0) {
+                //     console.log("Killed id:", gameBoard[playerX][playerY], "at:", playerX, playerY);
+                // }
                 playerIsAlive[i] = false;
             }
         }
 
-        // Other players
+        // Same head position as another player
         for (let j=i+1; j<nrOfPlayers; j++) {
             if (playerX == playerState[j].x && playerY == playerState[j].y) {
                 playerIsAlive[i] = false;
@@ -261,10 +256,10 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
             return;
         }
     }
-    
+
     // Update game board with new player head
     for (let i=0; i<nrOfPlayers; i++) {
-        if (playerIsAlive[i]) {
+        if (playerIsAlive[i] && !isFrozen(playerState[i])) {
             let x = playerState[i].x;
             let y = playerState[i].y;
             let dx = playerState[i].dx;
@@ -314,30 +309,59 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
         }
     }
     
+    // Check if any player finds a powerup
+    for (let i=0; i<nrOfPlayers; i++) {
+        const playerX = playerState[i].x;
+        const playerY = playerState[i].y;
+
+        if (boardPowerUp) {
+            if (boardPowerUp.x == playerX && boardPowerUp.y == playerY) {
+                // if (i == 0) {
+                //     console.log("Found", boardPowerUp.name, "id:", gameBoard[playerX][playerY], "at:", playerX, playerY);
+                // }
+                playerState[i].activePower = {name:boardPowerUp.name, step:step};
+                $("#x"+playerX + "y" + playerY).removeClass("powerup_" + boardPowerUp.name);
+                boardPowerUp = null;
+            }      
+        }
+    }
+
     // Add powerup to board if needed
-    if (!boardPower) {
-
-        // For test, just get a position that's conveniently in player 0's path
-        // TODO: choose random available square
-        const anyPlayer = playerState[0]
-        const powerX = anyPlayer.x + anyPlayer.dx*5
-        const powerY = anyPlayer.y + anyPlayer.dy*5
-
-        const chosenPower = allPowerups[0];
-        gameBoard[powerX][powerY] = chosenPower.id;
-      
-        $("#x"+powerX + "y" + powerY).css("background", chosenPower.color); 
-        boardPower = chosenPower;
+    const powerUpChance = Math.floor(Math.random() * 20);
+    if (!boardPowerUp && powerUpChance == 0) {
+        let iteration = 10;
+        let powerX = -1;
+        let powerY = -1;
+        do {
+            powerX = Math.round(Math.random() * maxX);
+            powerY = Math.round(Math.random() * maxY);
+            iteration -= 1;
+        
+        } while (gameBoard[powerX][powerY] != 0 && iteration > 0);
+        
+        if (powerX >= 0 && powerY >= 0) {
+            const chosenPower = allPowerups[0];            
+            $("#x"+powerX + "y" + powerY).addClass("powerup_" + chosenPower.name);
+            boardPowerUp = {name: chosenPower.name, id: chosenPower.id, x: powerX, y: powerY};
+        }
     }
     
     // Run next loop
     timer = setTimeout(function() {
         const newStep = step + 1;
-        gameLoop(newStep, gameBoard, players, playerState, playerIsAlive, nrOfPlayers, gameOver, boardPower);
+        gameLoop(newStep, gameBoard, players, playerState, playerIsAlive, nrOfPlayers, gameOver, boardPowerUp);
     }, simulationSpeed);
 }
 
-function randomFunc(me, otherPlayers, gameBoard) {
+function isFrozen(playerState) {
+    return playerState.activePower.name == "frozen"
+}
+
+//-----------------
+// PLAYER FUNCTIONS
+//-----------------
+
+function randomFunc(me, otherPlayers, gameBoard, boardPowerUp) {
     let dx, dy;
     let maxIterations = 20;
     do {
@@ -366,7 +390,7 @@ function randomFunc(me, otherPlayers, gameBoard) {
     return {dx: dx, dy: dy};
 }
 
-function rightFunc(me, otherPlayers, gameBoard) {
+function rightFunc(me, otherPlayers, gameBoard, boardPowerUp) {
     let dx = 0, dy = 0;
     if (me.dx == 1) // right
         dy = 1;
@@ -381,32 +405,57 @@ function rightFunc(me, otherPlayers, gameBoard) {
     else return {dx: dx, dy: dy};
 }
 
-function rightFuncNotAvoidingPowers(me, otherPlayers, gameBoard) {
+function powerHunterFunc(me, otherPlayers, gameBoard, boardPowerUp) {
+    let dx = me.dx;
+    let dy = me.dy;
 
-    const nextSquare = gameBoard[me.x + me.dx][me.y + me.dy]
-    const notEmpty = nextSquare != 0;
-    const notPowerUp = nextSquare != 100;
+    // Try and move towards power up
+    if (boardPowerUp) {
+        const px = boardPowerUp.x;
+        const py = boardPowerUp.y;
 
-    if (notEmpty && notPowerUp) {
-        // Better turn!
-        let dx = 0, dy = 0;
-        if (me.dx == 1) // right
-            dy = 1;
-        else if (me.dy == 1) // down
-            dx = -1;
-        else if (me.dx == -1) // left
-            dy = -1;
-        else if (me.dy == -1) // up
-            dx = 1;
+        const powerUpIsToRight= me.x < px;
+        const powerUpIsAbove = me.y < py;
 
-        return {dx: dx, dy: dy};
-    } else {
-        // Can just carry on 
-        return {dx: me.dx, dy: me.dy};
+        // Moving vertically away from powerup, so turn horizontally to it
+        if ((me.dy == 1 && py <= me.y) || (me.dy == -1 && py >= me.y)) {
+            dx = powerUpIsToRight ? 1 : -1;
+            dy = 0;
+        }
+
+        // Moving horizontally way from powerup, so turn vertically to it
+        else if ((me.dx == 1 && px <= me.x) || (me.dx == -1 && px >= me.x)) {
+            dx = 0;
+            dy = powerUpIsAbove ? 1 : -1
+        }
     }
+
+    // Check move is ok and try another if not
+    let iteration = 4;
+    while (gameBoard[me.x + dx][me.y + dy] != 0 && iteration > 0) {
+        if (dx == 1) { // right -> down
+            dx = 0;
+            dy = 1;
+        }
+        else if (dy == 1) { // down -> left
+            dx = -1;
+            dy = 0;
+        }
+        else if (dx == -1) { // left -> up
+            dx = 0;
+            dy = -1;
+        }
+        else if (dy == -1) { // up -> right
+            dx = 1;
+            dy = 0;
+        }
+        iteration -= 1;
+    } 
+    
+    return {dx: dx, dy: dy};
 }
 
-function leftFunc(me, otherPlayers, gameBoard) {
+function leftFunc(me, otherPlayers, gameBoard, boardPowerUp) {
     let dx = 0, dy = 0;
     if (me.dx == 1) // right
         dy = -1;
@@ -421,7 +470,7 @@ function leftFunc(me, otherPlayers, gameBoard) {
     else return {dx: dx, dy: dy};
 }
 
-function bullyFunc(me, otherPlayers, gameBoard) {
+function bullyFunc(me, otherPlayers, gameBoard, boardPowerUp) {
     let x = me.x;
     let y = me.y;
     let best = 9999;
@@ -430,7 +479,7 @@ function bullyFunc(me, otherPlayers, gameBoard) {
         let d = Math.abs(otherPlayers[p].x - x) + Math.abs(otherPlayers[p].y - y);
         if (d > 0 && d < best) {
             best = d;
-            target = p;
+           // target = p;
         }
     }
     
@@ -451,19 +500,19 @@ function bullyFunc(me, otherPlayers, gameBoard) {
 
 var competitors = {
     team1: {
-        name: "Random",
-        func: randomFunc,
-        color: "#3d9"
+        name: "Power hunter",
+        func: powerHunterFunc,
+        color: "pink"
     },
     team2: {
         name: "Always right",
         func: rightFunc,
-        color: "#d39"
+        color: "purple"
     },
     team3: {
         name: "Bully",
         func: bullyFunc,
-        color: "#93d"
+        color: "green"
     },
     team4: {
         name: "Always left",
@@ -471,8 +520,8 @@ var competitors = {
         color: "orange"
     },
     team5: {
-        name: "Power hunter",
-        func: rightFuncNotAvoidingPowers,
+        name: "Random",
+        func: randomFunc,
         color: "#d39"
     },
 }
