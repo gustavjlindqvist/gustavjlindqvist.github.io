@@ -39,10 +39,21 @@ html,body {
     text-align: center;
     color: white;
 }
+.boardAndOutputwrapper {
+    display: inline-grid;
+}
+.output {
+  display: inline-block;
+  height: 100px;
+  border: 1px solid;
+  background: #555;
+  color: white;
+  overflow: auto;
+  text-align: left;
+}
 .padding {
     padding: 50px;
 }
-
 #gameboard {
     margin: auto;
     border-spacing: 2px;
@@ -216,7 +227,10 @@ select {
                 <br>
                 <h2 style="text-align: center; color: white" id="result"></h2>
                 <br>
-                <div id="board"></div>
+                <div class="boardAndOutputwrapper">
+                    <div id="board"></div>
+                    <div id="output" class="output"></div>
+                </div>
             </div>
         </div>
                 
@@ -229,12 +243,12 @@ select {
             document.querySelector('#resetBtn').addEventListener('click', resetGame);
             document.querySelector('#startBtn').addEventListener('click', startGame);
             
-            let nrOfPlayersSelector = document.getElementById("selectNrOfPlayers"); 
+            const nrOfPlayersSelector = document.getElementById("selectNrOfPlayers"); 
             nrOfPlayersSelector.addEventListener("change", () => {
                 setUpSelectPlayer(nrOfPlayersSelector.value)
             });
 
-            let gameSpeedSelector = document.getElementById("gameSpeed"); 
+            const gameSpeedSelector = document.getElementById("gameSpeed"); 
             gameSpeedSelector.addEventListener("change", () => {
                 setSpeed(gameSpeedSelector.value)
             });

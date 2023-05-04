@@ -80,11 +80,15 @@ export function resetGame() {
     for (let i=0; i<nrOfPlayers; i++) {
         let vs = " vs ";
         if (i == 0) vs = "";
-        $("#result").append(vs + "<span style='color: "+players[i].color+"'>" + players[i].name + "</span>");
+        $("#result").append(vs + "<span style='color: " + players[i].color + "'>" + players[i].name + "</span>");
     }
+
+    clearOutput();
 }
 
 export function startGame() {
+    writeOutput("And the snakes are off... ");
+
     $("#startBtn").hide();
     clearTimeout(timer);
     let gameBoard = [];
@@ -128,7 +132,6 @@ function getGameBoardCopy(gameBoard, player) {
 }
 
 function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlayers, gameOver, boardPowerUp) {
-    // console.log("STEP");    
     // Save copy for later
     let lastPlayerState = JSON.parse(JSON.stringify(playerState));
 
@@ -144,7 +147,6 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
         if (isFrozen(playerState[i])) {
             const stepsSinceActive = step - (playerState[i].activePower.step)
             if (stepsSinceActive > 20) {
-                console.log("Player", i, "expired power up", playerState[i].activePower.name);
                 playerState[i].activePower = {name: null, step: step}
                 $("#x" + playerState[i].x + "y" + playerState[i].y).removeClass("blink");
             }
@@ -173,10 +175,6 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
             let move = players[i].func(myState, playerStateCopy, gameBoardCopy, boardPowerUp);
             playerState[i].dx = move.dx;
             playerState[i].dy = move.dy;
-
-            // if (i == 0) {
-            //     console.log("Move is", playerState[i].dx, playerState[i].dy);
-            // }
         }
     }
     
@@ -206,15 +204,8 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
             if (validMove) {
                 playerState[i].x += dx;
                 playerState[i].y += dy;
-
-                // if (i == 0) {
-                //     console.log("New pos:", playerState[i].x, playerState[i].y);
-                // }
-
             } else {
-                // if (i == 0) {
-                //    console.log("Dead no valid move");
-                // }
+                writeOutput(playersNameInColor(players[i]) + " gave an invalid move and died.");
                 playerIsAlive[i] = false;
             }
         }
@@ -228,9 +219,16 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
         if (playerIsAlive[i] && !isFrozen(playerState[i])) {
             // Player hits wall or snake (they die)
             if (squareNotEmpty(gameBoard, playerX, playerY)) {
-                // if (i == 0) {
-                //     console.log("Killed id:", gameBoard[playerX][playerY], "at:", playerX, playerY);
-                // }
+                console.log(i, "died on", gameBoard[playerX][playerY]);
+                if (gameBoard[playerX][playerY] == -1) {
+                    writeOutput(playersNameInColor(players[i]) + " crashed into the edge ☠️");
+                } else if (gameBoard[playerX][playerY] == (i + 2)) {
+                    writeOutput(playersNameInColor(players[i]) + " crashed into itself ☠️");
+                } else {
+                    const otherSnakeIndex = gameBoard[playerX][playerY] - 2;
+                    writeOutput(playersNameInColor(players[i]) + " crashed into " + playersNameInColor(players[otherSnakeIndex]) + " ☠️");
+                }
+
                 playerIsAlive[i] = false;
             }
         }
@@ -238,6 +236,13 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
         // Player hits another players head (both die)
         for (let j=i+1; j<nrOfPlayers; j++) {
             if (playerX == playerState[j].x && playerY == playerState[j].y) {
+                if (playerIsAlive[i] && playerIsAlive[j]) {
+                    writeOutput(playersNameInColor(players[i]) + " and " + playersNameInColor(players[j]) + " crashed into each other ☠️");
+                } else if (playerIsAlive[i]) {
+                    writeOutput(playersNameInColor(players[i]) + " crashed into " + playersNameInColor(players[j]) + " ☠️");
+                } else if (playerIsAlive[j]) {
+                    writeOutput(playersNameInColor(players[j]) + " crashed into " + playersNameInColor(players[i]) + " ☠️");
+                }
                 playerIsAlive[i] = false;
                 playerIsAlive[j] = false;
                 $("#x" + playerX + "y" + playerY).css("background", "#aaaaaa");
@@ -255,9 +260,13 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
                 winner = i;
             }
         }
+
         if (nrOfPlayersAlive == 1) {
-            $("#result").html(players[winner].name + " wins!!!");
-            $("#result").css("color", players[winner].color);
+            if (playersAliveAtBeginningOfStep.length > 1) {
+                let output = playersNameInColor(players[winner]) + " wins 🏁";
+                $("#result").html(output);
+                writeOutput(output);
+            }
             gameOver = true;
         }
 
@@ -265,17 +274,21 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
         if (nrOfPlayersAlive == 0) {
             // If there was more than one player alive before, but now zero players alive, it's a draw.
             if (playersAliveAtBeginningOfStep.length > 1) {
-                $("#result").html("It's a draw between ");
+                let output = "It's a draw between ";
                 for (let drawPlayerIndex=0; drawPlayerIndex<playersAliveAtBeginningOfStep.length; drawPlayerIndex++) {
-                    $("#result").append("<span style='color: "+players[drawPlayerIndex].color+"'>" + players[drawPlayerIndex].name + "</span>");
+                    output = output + "<span style='color: " + players[drawPlayerIndex].color + "'>" + players[drawPlayerIndex].name + "</span>";
                     if (drawPlayerIndex < playersAliveAtBeginningOfStep.length - 2) {
-                        $("#result").append(", ");
-                    }
-                    if (drawPlayerIndex == playersAliveAtBeginningOfStep.length - 2) {
-                        $("#result").append(" and ");
+                        output = output +  ", ";
+                    } else if (drawPlayerIndex == playersAliveAtBeginningOfStep.length - 2) {
+                        output = output +  " and ";
+                    } else {
+                        output = output +  " 🏁";
                     }
                 }
+                $("#result").html(output);
+                writeOutput(output);
             }
+
             return
         }
     }
@@ -339,13 +352,13 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
 
         if (boardPowerUp) {
             if (boardPowerUp.x == playerX && boardPowerUp.y == playerY) {
-                // if (i == 0) {
-                //     console.log("Found", boardPowerUp.name, "id:", gameBoard[playerX][playerY], "at:", playerX, playerY);
-                // }
+                writeOutput(playersNameInColor(players[i]) + " is " + boardPowerUp.name + " 🧊");
+
                 playerState[i].activePower = {name:boardPowerUp.name, step:step};
                 $("#x" + playerX + "y" + playerY).removeClass("powerup_" + boardPowerUp.name);
                 $("#x" + playerX + "y" + playerY).addClass("blink");
                 boardPowerUp = null;
+
             }      
         }
     }
@@ -383,6 +396,23 @@ function isFrozen(playerState) {
 
 function squareNotEmpty(gameBoard, x, y) {
     return gameBoard[x][y] != 0
+}
+
+function clearOutput() {
+    const output = document.getElementById("output");
+    output.innerHTML = "";
+}
+
+function playersNameInColor(player) {
+    return "<span style='color: " + player.color + "'>" + player.name + "</span>";
+}
+
+function writeOutput(html) {
+    const output = document.getElementById("output");
+    output.innerHTML += "＞ " + html;
+    output.innerHTML += "<br>";
+    output.scrollTop = output.scrollHeight;
+
 }
 
 //-----------------
