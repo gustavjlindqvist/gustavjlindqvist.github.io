@@ -80,7 +80,7 @@ export function resetGame() {
     for (let i=0; i<nrOfPlayers; i++) {
         let vs = " vs ";
         if (i == 0) vs = "";
-        $("#result").append(vs + "<span style='color: " + players[i].color + "'>" + players[i].name + "</span>");
+        $("#result").append(vs + playersNameInColor(players[i]));
     }
 
     clearOutput();
@@ -274,7 +274,7 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
             if (playersAliveAtBeginningOfStep.length > 1) {
                 let output = "It's a draw between ";
                 for (let drawPlayerIndex=0; drawPlayerIndex<playersAliveAtBeginningOfStep.length; drawPlayerIndex++) {
-                    output = output + "<span style='color: " + players[drawPlayerIndex].color + "'>" + players[drawPlayerIndex].name + "</span>";
+                    output = output + playersNameInColor(players[drawPlayerIndex]);
                     if (drawPlayerIndex < playersAliveAtBeginningOfStep.length - 2) {
                         output = output +  ", ";
                     } else if (drawPlayerIndex == playersAliveAtBeginningOfStep.length - 2) {
