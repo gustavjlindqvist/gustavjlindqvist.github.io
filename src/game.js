@@ -205,7 +205,7 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
                 playerState[i].x += dx;
                 playerState[i].y += dy;
             } else {
-                writeOutput(playersNameInColor(players[i]) + " gave an invalid move and died.");
+                writeOutput(playersNameInColor(players[i]) + " gave an invalid move ☠️");
                 playerIsAlive[i] = false;
             }
         }
@@ -219,7 +219,6 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
         if (playerIsAlive[i] && !isFrozen(playerState[i])) {
             // Player hits wall or snake (they die)
             if (squareNotEmpty(gameBoard, playerX, playerY)) {
-                console.log(i, "died on", gameBoard[playerX][playerY]);
                 if (gameBoard[playerX][playerY] == -1) {
                     writeOutput(playersNameInColor(players[i]) + " crashed into the edge ☠️");
                 } else if (gameBoard[playerX][playerY] == (i + 2)) {
@@ -228,7 +227,6 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
                     const otherSnakeIndex = gameBoard[playerX][playerY] - 2;
                     writeOutput(playersNameInColor(players[i]) + " crashed into " + playersNameInColor(players[otherSnakeIndex]) + " ☠️");
                 }
-
                 playerIsAlive[i] = false;
             }
         }
