@@ -71,8 +71,8 @@ export function resetGame() {
         let y = startPositions[i] % 1000;
         let x = Math.round((startPositions[i]-y)/1000);
         let color = players[i].color;
-        $("#x"+x + "y" + y).attr("style", "--color:" +color);
-        $("#x"+x + "y" + y).addClass("head").addClass("headUp");
+        $("#x" + x + "y" + y).attr("style", "--color:" +color);
+        $("#x" + x + "y" + y).addClass("head").addClass("headUp");
     }
     $("#startBtn").show();
     $("#result").css("color", "white");
@@ -213,14 +213,14 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
         }
     }
 
-    // Check if player crashes into other players or wall
+    // Check if player gets killed
     for (let i=0; i<nrOfPlayers; i++) {
         const playerX = playerState[i].x;
         const playerY = playerState[i].y;
 
         if (playerIsAlive[i] && !isFrozen(playerState[i])) {
-            // Wall or snake
-            if (gameBoard[playerX][playerY] != 0 && gameBoard[playerX][playerY] != 100) {
+            // Player hits wall or snake (they die)
+            if (squareNotEmpty(gameBoard, playerX, playerY)) {
                 // if (i == 0) {
                 //     console.log("Killed id:", gameBoard[playerX][playerY], "at:", playerX, playerY);
                 // }
@@ -228,7 +228,7 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
             }
         }
 
-        // Same head position as another player
+        // Player hits another players head (both die)
         for (let j=i+1; j<nrOfPlayers; j++) {
             if (playerX == playerState[j].x && playerY == playerState[j].y) {
                 playerIsAlive[i] = false;
@@ -339,7 +339,7 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
             powerY = Math.round(Math.random() * maxY);
             iteration -= 1;
         
-        } while (gameBoard[powerX][powerY] != 0 && iteration > 0);
+        } while (squareNotEmpty(gameBoard, powerX, powerY) && iteration > 0);
         
         if (powerX >= 0 && powerY >= 0) {
             const chosenPower = allPowerups[0];            
@@ -357,6 +357,10 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
 
 function isFrozen(playerState) {
     return playerState.activePower.name == "frozen"
+}
+
+function squareNotEmpty(gameBoard, x, y) {
+    return gameBoard[x][y] != 0
 }
 
 //-----------------
