@@ -129,8 +129,15 @@ function getGameBoardCopy(gameBoard, player) {
 
 function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlayers, gameOver, boardPowerUp) {
     // console.log("STEP");    
-    // save copy for later
+    // Save copy for later
     let lastPlayerState = JSON.parse(JSON.stringify(playerState));
+
+    let playersAliveAtBeginningOfStep = [];
+    for (let i=0; i<nrOfPlayers; i++) {
+        if (playerIsAlive[i]) {
+            playersAliveAtBeginningOfStep.push(i);
+        }
+    }
 
     // Check for powerup expiry
     for (let i=0; i<nrOfPlayers; i++) {
@@ -253,8 +260,23 @@ function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlay
             $("#result").css("color", players[winner].color);
             gameOver = true;
         }
+
+        // Check for end of game when no players alive
         if (nrOfPlayersAlive == 0) {
-            return;
+            // If there was more than one player alive before, but now zero players alive, it's a draw.
+            if (playersAliveAtBeginningOfStep.length > 1) {
+                $("#result").html("It's a draw between ");
+                for (let drawPlayerIndex=0; drawPlayerIndex<playersAliveAtBeginningOfStep.length; drawPlayerIndex++) {
+                    $("#result").append("<span style='color: "+players[drawPlayerIndex].color+"'>" + players[drawPlayerIndex].name + "</span>");
+                    if (drawPlayerIndex < playersAliveAtBeginningOfStep.length - 2) {
+                        $("#result").append(", ");
+                    }
+                    if (drawPlayerIndex == playersAliveAtBeginningOfStep.length - 2) {
+                        $("#result").append(" and ");
+                    }
+                }
+            }
+            return
         }
     }
 
