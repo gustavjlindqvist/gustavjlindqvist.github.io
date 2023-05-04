@@ -531,11 +531,12 @@ function bullyFunc(me, otherPlayers, gameBoard, boardPowerUp) {
     let y = me.y;
     let best = 9999;
     let target = 0;
-    for (let p in otherPlayers) {
+  
+    for (let p = 0; p < otherPlayers.length; p++) {
         let d = Math.abs(otherPlayers[p].x - x) + Math.abs(otherPlayers[p].y - y);
         if (d > 0 && d < best) {
             best = d;
-           // target = p;
+            target = p;
         }
     }
     
