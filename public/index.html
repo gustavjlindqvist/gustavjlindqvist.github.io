@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Visby coding competition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.png" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        .BG {
+            width: 100%;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            /*background-image: url();*/
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            z-index: -100;
+            filter: blur(5px);
+        }
+
+        .wrapper {
+            width: 1000px;
+            margin: auto;
+            text-align: center;
+            color: white;
+        }
+
+        .boardAndOutputwrapper {
+            display: inline-grid;
+        }
+
+        .output {
+            display: inline-block;
+            height: 100px;
+            border: 1px solid;
+            background: #555;
+            color: white;
+            overflow: auto;
+            text-align: left;
+        }
+
+        .padding {
+            padding: 50px;
+        }
+
+        #gameboard {
+            margin: auto;
+            border-spacing: 2px;
+        }
+
+        .box {
+            height: 13px;
+            width: 13px;
+            background-color: black;
+            padding: 0;
+            position: relative;
+            --color: white;
+        }
+
+        button {
+            border: none;
+            outline: none;
+            background: #555;
+            color: white;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #777;
+        }
+
+        select {
+            border: none;
+            outline: none;
+            background: #555;
+            color: white;
+            padding: 5px 10px;
+        }
+
+        .slidecontainer {
+            width: 100%;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 500px;
+            height: 10px;
+            border-radius: 5px;
+            background: #555;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #04AA6D;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #04AA6D;
+            cursor: pointer;
+        }
+
+        .vs {
+            padding: 0 10px;
+        }
+
+        .horizontal {
+            border-top: 2px solid black;
+            border-right: none;
+            border-bottom: 2px solid black;
+            border-left: none;
+            background: var(--color);
+        }
+
+        .vertical {
+            border-top: none;
+            border-right: 2px solid black;
+            border-bottom: none;
+            border-left: 2px solid black;
+            background: var(--color);
+        }
+
+        .head {
+            background: conic-gradient(from calc(180deg/-2 - 30deg) at top 3.5px left 3.5px, #000 180deg, var(--color) 0) 0 0/82% 52% no-repeat,
+                conic-gradient(from calc(180deg/-2 - 150deg) at bottom 3.5px left 3.5px, #000 180deg, var(--color) 0) 0 100%/82% 52% no-repeat,
+                conic-gradient(from calc(180deg/-2 + 30deg) at top 1px right 1px, #000 180deg, var(--color) 0) 100% 0/23% 52% no-repeat,
+                conic-gradient(from calc(180deg/-2 + 150deg) at bottom 1px right 1px, #000 180deg, var(--color) 0) 100% 100%/23% 52% no-repeat;
+        }
+
+        .head:after {
+            content: ":";
+            position: absolute;
+            top: -4.5px;
+        }
+
+        .headLeft {
+            transform: rotate(0deg);
+        }
+
+        .headRight {
+            transform: rotate(180deg);
+        }
+
+        .headUp {
+            transform: rotate(90deg);
+        }
+
+        .headDown {
+            transform: rotate(270deg);
+        }
+
+        .upRight {
+            background: radial-gradient(circle at -1px 14px, black 15%, var(--color) 16% 60%, black 61%);
+        }
+
+        .upLeft {
+            background: radial-gradient(circle at -1px -1px, black 15%, var(--color) 16% 60%, black 61%);
+        }
+
+        .downRight {
+            background: radial-gradient(circle at 14px 14px, black 15%, var(--color) 16% 60%, black 61%);
+        }
+
+        .downLeft {
+            background: radial-gradient(circle at 14px -1px, black 15%, var(--color) 16% 60%, black 61%);
+        }
+
+        .powerup_frozen {
+            animation: blinker 1s linear infinite;
+            background: white;
+            transform: rotate(45deg);
+        }
+
+        .blink {
+            animation: blinker 1s linear infinite;
+        }
+
+        @keyframes blinker {
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body style="background: #334">
+    <div class="BG"></div>
+
+    <div class="wrapper">
+        <div class="padding">
+            <h1 style="text-align: center; color: white">Visby coding competition</h1>
+            <br>
+            <input type="range" min="1" max="50" value="10" class="slider" id="gameSpeed">
+            <br>
+            <br>
+            Number of players:
+            <select id="selectNrOfPlayers">
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+            </select>
+            <br>
+            <br>
+            <p style="text-align: center">
+                <select id="player1"></select>
+                <span class="vs player2">vs</span>
+                <select id="player2" class="player2"></select>
+                <span class="vs player3">vs</span>
+                <select id="player3" class="player3"></select>
+                <span class="vs player4">vs</span>
+                <select id="player4" class="player4"></select>
+                <span class="vs player5">vs</span>
+                <select id="player5" class="player5"></select>
+                <span class="vs player6">vs</span>
+                <select id="player6" class="player6"></select>
+            </p>
+            <br>
+            <button id="resetBtn">NEW GAME</button>
+            <button id="startBtn" hidden>START</button>
+            <br>
+            <br>
+            <h2 style="text-align: center; color: white" id="result"></h2>
+            <br>
+            <div class="boardAndOutputwrapper">
+                <div id="board"></div>
+                <div id="output" class="output"></div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { resetGame } from './src/game.js'
+        import { startGame } from './src/game.js'
+        import { setUpSelectPlayer } from './src/game.js'
+        import { setSpeed } from './src/game.js'
+
+        document.querySelector('#resetBtn').addEventListener('click', resetGame);
+        document.querySelector('#startBtn').addEventListener('click', startGame);
+
+        const nrOfPlayersSelector = document.getElementById("selectNrOfPlayers");
+        nrOfPlayersSelector.addEventListener("change", () => {
+            setUpSelectPlayer(nrOfPlayersSelector.value)
+        });
+
+        const gameSpeedSelector = document.getElementById("gameSpeed");
+        gameSpeedSelector.addEventListener("change", () => {
+            setSpeed(gameSpeedSelector.value)
+        });
+    </script>
+</body>
+
+</html>
