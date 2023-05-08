@@ -272,6 +272,9 @@
         import { startGame } from './src/game.js'
         import { setUpSelectPlayer } from './src/game.js'
         import { setSpeed } from './src/game.js'
+        import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
+
+        const socket = io("localhost:3000");
 
         document.querySelector('#resetBtn').addEventListener('click', resetGame);
         document.querySelector('#startBtn').addEventListener('click', startGame);
