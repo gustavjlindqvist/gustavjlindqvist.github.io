@@ -277,17 +277,38 @@
         const socket = io("localhost:3000");
 
         document.querySelector('#resetBtn').addEventListener('click', resetGame);
+
+        // document.querySelector('#resetBtn').addEventListener('click', () => {
+        //     socket.emit('resetGame')
+        // });
+
         document.querySelector('#startBtn').addEventListener('click', startGame);
+
+        // document.querySelector('#startBtn').addEventListener('click', () => {
+        //     socket.emit('startGame')
+        // });
 
         const nrOfPlayersSelector = document.getElementById("selectNrOfPlayers");
         nrOfPlayersSelector.addEventListener("change", () => {
             setUpSelectPlayer(nrOfPlayersSelector.value)
         });
 
+        // nrOfPlayersSelector.addEventListener("change", () => {
+        //     socket.emit('selectNumberOfPlayers', {
+        //         numbersOfPlayers: nrOfPlayersSelector.value
+        //     })
+        // });
+
         const gameSpeedSelector = document.getElementById("gameSpeed");
         gameSpeedSelector.addEventListener("change", () => {
             setSpeed(gameSpeedSelector.value)
         });
+
+        // gameSpeedSelector.addEventListener("change", () => {
+        //     socket.emit('selectGameSpeed', {
+        //         gameSpeed: gameSpeedSelector.value
+        //     })
+        // });
     </script>
 </body>
 
