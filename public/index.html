@@ -268,18 +268,25 @@
     </div>
 
     <script type="module">
-        import { resetGame, startGame, setUpSelectPlayer, setSpeed } from './src/game.js'
+        import { resetGame, startGame, setUpSelectPlayer, setSpeed, initBoard, initPlayerPositions } from './src/game.js'
         import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 
         const socket = io("localhost:3000");
 
-        document.querySelector('#resetBtn').addEventListener('click', resetGame);
+        document.querySelector('#resetBtn').addEventListener('click', () => {
+            console.log("did tap reset");
+            socket.emit('resetGame');
+        });
+
+
 
         // document.querySelector('#resetBtn').addEventListener('click', () => {
         //     socket.emit('resetGame')
         // });
 
-        document.querySelector('#startBtn').addEventListener('click', startGame);
+        document.querySelector('#startBtn').addEventListener('click', () => {
+            socket.emit('startGame')
+        });
 
         // document.querySelector('#startBtn').addEventListener('click', () => {
         //     socket.emit('startGame')
@@ -287,7 +294,8 @@
 
         const nrOfPlayersSelector = document.getElementById("selectNrOfPlayers");
         nrOfPlayersSelector.addEventListener("change", () => {
-            setUpSelectPlayer(nrOfPlayersSelector.value)
+            socket.emit('setNumberOfPlayers', nrOfPlayersSelector.value)
+            //setUpSelectPlayer(nrOfPlayersSelector.value)
         });
 
         // nrOfPlayersSelector.addEventListener("change", () => {
@@ -298,8 +306,27 @@
 
         const gameSpeedSelector = document.getElementById("gameSpeed");
         gameSpeedSelector.addEventListener("change", () => {
-            setSpeed(gameSpeedSelector.value)
+            socket.emit('setSimulationSpeed', gameSpeedSelector.value);
         });
+
+        socket.addEventListener('renderInitialGameState', (gameState) => {
+            reinitializeGame(gameState);
+        })
+
+        socket.addEventListener('didChangeNumberOfPlayers', (gameState) => {
+            reinitializeGame(gameState);
+        })
+
+        socket.addEventListener('didResetGame', (gameState) => {
+            console.log("hej")
+            initPlayerPositions(gameState);
+        })
+
+        function reinitializeGame(gameState) {
+            initBoard(gameState.gameBoard);
+            initPlayerPositions(gameState);
+            setUpSelectPlayer(gameState);
+        }
 
         // gameSpeedSelector.addEventListener("change", () => {
         //     socket.emit('selectGameSpeed', {

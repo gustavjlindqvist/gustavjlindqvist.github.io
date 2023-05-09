@@ -5,63 +5,14 @@ var nrOfPlayers = 2, startPositions = [], players = [];
 const maxY = 40;
 const maxX = 40;
 
-export function initialGameState() {
-    //start positions
-    startPositions = [];
-    for (let i = 0; i < nrOfPlayers; i++) {
-        let x = Math.floor(Math.random() * maxX) + 1;
-        let y = Math.floor(Math.random() * maxY) + 1;
-        if (startPositions.includes(x * 1000 + y)) i--;
-        else startPositions[i] = x * 1000 + y;
-    }
-
-    //players
-    players = Object.values(competitors).map((value, _) => value)
-
-    //gameboard
-    let gameBoard = [];
-    for (let x = 0; x <= maxX + 1; x++) {
-        gameBoard[x] = [];
-        for (let y = 0; y <= maxY + 1; y++) {
-            gameBoard[x][y] = 0;
-            if (x == 0 || x == maxX + 1 || y == 0 || y == maxY + 1)
-                gameBoard[x][y] = -1;
-        }
-    }
-
-    let playerState = [];
-    let playerIsAlive = [];
-
-    for (let i = 0; i < nrOfPlayers; i++) {
-        let y = startPositions[i] % 1000;
-        let x = Math.round((startPositions[i] - y) / 1000);
-
-        playerState[i] = { x: x, y: y, dx: 0, dy: -1, activePower: { name: null, step: 0 } };
-        playerIsAlive[i] = true;
-
-        gameBoard[x][y] = i + 2; // the player number stored in the gameboard
-    }
-
-    return {
-        step: 0,
-        gameBoard: gameBoard,
-        players: players,
-        playerState: playerState,
-        playerIsAlive: playerIsAlive,
-        nrOfPlayers: nrOfPlayers,
-        gameOver: false,
-        boardPowerUp: null
-    }
-}
-
-function initBoard() {
+export function initBoard(gameBoard) {
     $("#board").html("");
     let board = document.getElementById("board");
     let tbl = document.createElement("table");
     tbl.setAttribute("id", "gameboard");
-    for (let y = 1; y <= maxY; y++) {
+    for (let y = 1; y <= gameBoard[0].length; y++) {
         let row = document.createElement("tr");
-        for (let x = 1; x <= maxX; x++) {
+        for (let x = 1; x <= gameBoard.length; x++) {
             let cell = document.createElement("td");
             let id = "x" + x + "y" + y;
             cell.setAttribute("id", id);
@@ -72,28 +23,48 @@ function initBoard() {
     }
     board.appendChild(tbl);
 }
-initBoard();
+//initBoard();
 
 export function setSpeed(value) {
     simulationSpeed = 1000 / value;
 }
 
-export function setUpSelectPlayer(num) {
-    nrOfPlayers = num
+export function setUpSelectPlayer(gameState) {
     for (let i = 1; i <= 6; i++) {
         $("#player" + i).html("");
-        if (i <= nrOfPlayers) {
-            for (let c in competitors) {
+        if (i <= gameState.nrOfPlayers) {
+            for (let c of gameState.players) {
                 $(".player" + i).show();
                 let option = document.createElement("option");
                 option.setAttribute("value", c);
-                option.innerHTML = competitors[c].name;
+                option.innerHTML = c.name;
                 document.getElementById("player" + i).appendChild(option);
             }
         }
         else {
             $(".player" + i).hide();
         }
+    }
+}
+
+export function initPlayerPositions(gameState) {
+    $(".box").attr("style", "");
+    $(".box").attr("class", "box");
+    for (let i = 0; i < gameState.nrOfPlayers; i++) {
+        let y = gameState.playerState[i].y;
+        let x = gameState.playerState[i].x;
+        console.log(x, y);
+        let color = gameState.players[i].color;
+        $("#x" + x + "y" + y).attr("style", "--color:" + color);
+        $("#x" + x + "y" + y).addClass("head").addClass("headUp");
+    }
+    $("#startBtn").show();
+    $("#result").css("color", "white");
+    $("#result").html("");
+    for (let i = 0; i < gameState.nrOfPlayers; i++) {
+        let vs = " vs ";
+        if (i == 0) vs = "";
+        $("#result").append(vs + playersNameInColor(gameState.players[i]));
     }
 }
 
@@ -172,6 +143,10 @@ function getGameBoardCopy(gameBoard, player) {
         }
     }
     return gameBoardCopy;
+}
+
+function renderGameState(gameState) {
+
 }
 
 function gameLoop(step, gameBoard, players, playerState, playerIsAlive, nrOfPlayers, gameOver, boardPowerUp) {
