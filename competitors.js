@@ -140,7 +140,7 @@ function bullyFunc(me, otherPlayers, gameBoard, boardPowerUp) {
     return { dx: me.dx, dy: me.dy };
 }
 
-export var competitors = {
+exports.competitors = {
     team1: {
         name: "Power hunter",
         func: powerHunterFunc,

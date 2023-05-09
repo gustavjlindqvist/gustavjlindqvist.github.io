@@ -318,8 +318,11 @@
         })
 
         socket.addEventListener('didResetGame', (gameState) => {
-            console.log("hej")
             initPlayerPositions(gameState);
+        })
+
+        socket.addEventListener('updatedGameState', (oldGameState, newGameState) => {
+            console.log("update game state")
         })
 
         function reinitializeGame(gameState) {

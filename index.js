@@ -5,11 +5,22 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const gameClientServer = new Server(server);
 
+const { competitors } = require('./competitors');
+const { start } = require('repl');
+
 //import { resetGame, startGame, setUpSelectPlayer, setSpeed } from './public/src/game.js'
 
 var timer;
 
-function createInitialGameState(nrOfPlayers, maxX, maxY, simulationSpeed) {
+const allPowerups = [
+    {
+        name: "frozen",
+        id: 100,
+        color: "#FFFFFF"
+    }
+];
+
+function createInitialGameState(nrOfPlayers, maxX, maxY, simulationSpeed, competitors) {
     const availableColors = ['red', 'blue', 'green'];
 
     //start positions
@@ -22,7 +33,8 @@ function createInitialGameState(nrOfPlayers, maxX, maxY, simulationSpeed) {
     }
 
     //players
-    let players = [{ name: "Tom", color: 'red' }, { name: "Timas", color: 'blue' }, { name: "Gustav", color: 'green' }]//Object.values(competitors).map((value, _) => value)
+
+    let players = Object.values(competitors).map((value, _) => value) //[{ name: "Tom", color: 'red' }, { name: "Timas", color: 'blue' }, { name: "Gustav", color: 'green' }]
 
     //gameboard
     let gameBoard = [];
@@ -59,21 +71,41 @@ function createInitialGameState(nrOfPlayers, maxX, maxY, simulationSpeed) {
         playerIsAlive: playerIsAlive,
         nrOfPlayers: nrOfPlayers,
         gameOver: false,
-        boardPowerUp: null
+        boardPowerUp: null,
+        messageBuffer: []
     }
 }
 
-function startGame(gameState) {
-    writeOutput("And the snakes are off... ");
-
+function startGame(socket) {
+    //gameState.messages.push("And the snakes are off... ");
+    console.log("started game");
     clearTimeout(timer);
-    gameLoop(gameState);
+    gameLoop(socket)
 }
 
-function getGameBoardCopy(gameBoard, player) {
+function gameLoop(socket) {
+    const lastGameState = currentGameState
+    currentGameState = gameStep(currentGameState);
+
+    if (currentGameState.messageBuffer.length != 0) {
+        console.log(currentGameState.messageBuffer)
+    }
+
+    socket.emit('updatedGameState', lastGameState, currentGameState);
+
+    if (currentGameState.gameOver) {
+        return
+    }
+
+    timer = setTimeout(function () {
+        gameLoop(socket)
+    }, currentGameState.simulationSpeed);
+}
+
+function getGameBoardCopy(gameBoard, maxX, maxY, player) {
     let gameBoardCopy = JSON.parse(JSON.stringify(gameBoard));
     let playerNr = player + 2;
-    for (let x = 1; x <= maxX; x++) {
+    for (let x = 1; x <= gameBoard.max; x++) {
         for (let y = 1; y <= maxY; y++) {
             if (gameBoardCopy[x][y] == playerNr) {
                 gameBoardCopy[x][y] = 1;
@@ -83,7 +115,7 @@ function getGameBoardCopy(gameBoard, player) {
     return gameBoardCopy;
 }
 
-function gameLoop({
+function gameStep({
     step,
     simulationSpeed,
     gameBoard,
@@ -96,6 +128,7 @@ function gameLoop({
     gameOver,
     boardPowerUp }) {
     // Save copy for later
+    let messages = []
 
     let lastPlayerState = JSON.parse(JSON.stringify(playerState));
 
@@ -112,7 +145,6 @@ function gameLoop({
             const stepsSinceActive = step - (playerState[i].activePower.step)
             if (stepsSinceActive > 20) {
                 playerState[i].activePower = { name: null, step: step }
-                $("#x" + playerState[i].x + "y" + playerState[i].y).removeClass("blink");
             }
         }
     }
@@ -122,7 +154,7 @@ function gameLoop({
 
         if (playerIsAlive[i] && !isFrozen(playerState[i])) {
 
-            let gameBoardCopy = getGameBoardCopy(gameBoard, i);
+            let gameBoardCopy = getGameBoardCopy(gameBoard, maxX, maxY, i);
 
             let playerStateCopy = JSON.parse(JSON.stringify(playerState));
             let otherPlayersState = {};
@@ -169,7 +201,7 @@ function gameLoop({
                 playerState[i].x += dx;
                 playerState[i].y += dy;
             } else {
-                writeOutput(playersNameInColor(players[i]) + " gave an invalid move ☠️");
+                messages.push(playersNameInColor(players[i]) + " gave an invalid move ☠️");
                 playerIsAlive[i] = false;
             }
         }
@@ -184,12 +216,12 @@ function gameLoop({
             // Player hits wall or snake (they die)
             if (squareNotEmpty(gameBoard, playerX, playerY)) {
                 if (gameBoard[playerX][playerY] == -1) {
-                    writeOutput(playersNameInColor(players[i]) + " crashed into the edge ☠️");
+                    messages.push(playersNameInColor(players[i]) + " crashed into the edge ☠️");
                 } else if (gameBoard[playerX][playerY] == (i + 2)) {
-                    writeOutput(playersNameInColor(players[i]) + " crashed into itself ☠️");
+                    messages.push(playersNameInColor(players[i]) + " crashed into itself ☠️");
                 } else {
                     const otherSnakeIndex = gameBoard[playerX][playerY] - 2;
-                    writeOutput(playersNameInColor(players[i]) + " crashed into " + playersNameInColor(players[otherSnakeIndex]) + " ☠️");
+                    messages.push(playersNameInColor(players[i]) + " crashed into " + playersNameInColor(players[otherSnakeIndex]) + " ☠️");
                 }
                 playerIsAlive[i] = false;
             }
@@ -199,15 +231,14 @@ function gameLoop({
         for (let j = i + 1; j < nrOfPlayers; j++) {
             if (playerX == playerState[j].x && playerY == playerState[j].y) {
                 if (playerIsAlive[i] && playerIsAlive[j]) {
-                    writeOutput(playersNameInColor(players[i]) + " and " + playersNameInColor(players[j]) + " crashed into each other ☠️");
+                    messages.push(playersNameInColor(players[i]) + " and " + playersNameInColor(players[j]) + " crashed into each other ☠️");
                 } else if (playerIsAlive[i]) {
-                    writeOutput(playersNameInColor(players[i]) + " crashed into " + playersNameInColor(players[j]) + " ☠️");
+                    messages.push(playersNameInColor(players[i]) + " crashed into " + playersNameInColor(players[j]) + " ☠️");
                 } else if (playerIsAlive[j]) {
-                    writeOutput(playersNameInColor(players[j]) + " crashed into " + playersNameInColor(players[i]) + " ☠️");
+                    messages.push(playersNameInColor(players[j]) + " crashed into " + playersNameInColor(players[i]) + " ☠️");
                 }
                 playerIsAlive[i] = false;
                 playerIsAlive[j] = false;
-                $("#x" + playerX + "y" + playerY).css("background", "#aaaaaa");
             }
         }
     }
@@ -226,10 +257,8 @@ function gameLoop({
         if (nrOfPlayersAlive == 1) {
             if (playersAliveAtBeginningOfStep.length > 1) {
                 let output = playersNameInColor(players[winner]) + " wins 🏁";
-                $("#result").html(output);
-                writeOutput(output);
+                messages.push(output);
             }
-            gameOver = true;
         }
 
         // Check for end of game when no players alive
@@ -247,11 +276,23 @@ function gameLoop({
                         output = output + " 🏁";
                     }
                 }
-                $("#result").html(output);
-                writeOutput(output);
+                messages.push(output);
             }
 
-            return
+            return {
+                step: step + 1,
+                simulationSpeed: simulationSpeed,
+                gameBoard: gameBoard,
+                maxX: maxX,
+                maxY: maxY,
+                players: players,
+                playerState: playerState,
+                playerIsAlive: playerIsAlive,
+                nrOfPlayers: nrOfPlayers,
+                gameOver: true,
+                boardPowerUp: null,
+                messageBuffer: messages
+            }
         }
     }
 
@@ -260,50 +301,7 @@ function gameLoop({
         if (playerIsAlive[i] && !isFrozen(playerState[i])) {
             let x = playerState[i].x;
             let y = playerState[i].y;
-            let dx = playerState[i].dx;
-            let dy = playerState[i].dy;
-            let color = players[i].color;
-            let lastX = lastPlayerState[i].x;
-            let lastY = lastPlayerState[i].y;
-            let lastDx = lastPlayerState[i].dx;
-            let lastDy = lastPlayerState[i].dy;
             gameBoard[x][y] = i + 2;
-
-            $("#x" + x + "y" + y).attr("style", "--color: " + color);
-            $("#x" + x + "y" + y).addClass("head");
-            if (dx == 1 && dy == 0) {
-                $("#x" + x + "y" + y).addClass("headRight");
-            } else if (dx == -1 && dy == 0) {
-                $("#x" + x + "y" + y).addClass("headLeft");
-            } else if (dx == 0 && dy == 1) {
-                $("#x" + x + "y" + y).addClass("headDown");
-            } else if (dx == 0 && dy == -1) {
-                $("#x" + x + "y" + y).addClass("headUp");
-            }
-
-            $("#x" + lastX + "y" + lastY).removeClass("head").removeClass("headRight").removeClass("headLeft").removeClass("headDown").removeClass("headUp");
-            if (dy == 0 && lastDy == 0) {
-                $("#x" + lastX + "y" + lastY).addClass("horizontal");
-            }
-            else if (dx == 0 && lastDx == 0) {
-                $("#x" + lastX + "y" + lastY).addClass("vertical");
-            }
-            else if (dx == 1 && dy == 0 && lastDx == 0 && lastDy == 1 ||
-                dx == 0 && dy == -1 && lastDx == -1 && lastDy == 0) {
-                $("#x" + lastX + "y" + lastY).addClass("downLeft");
-            }
-            else if (dx == 1 && dy == 0 && lastDx == 0 && lastDy == -1 ||
-                dx == 0 && dy == 1 && lastDx == -1 && lastDy == 0) {
-                $("#x" + lastX + "y" + lastY).addClass("downRight");
-            }
-            else if (dx == -1 && dy == 0 && lastDx == 0 && lastDy == -1 ||
-                dx == 0 && dy == 1 && lastDx == 1 && lastDy == 0) {
-                $("#x" + lastX + "y" + lastY).addClass("upRight");
-            }
-            else if (dx == -1 && dy == 0 && lastDx == 0 && lastDy == 1 ||
-                dx == 0 && dy == -1 && lastDx == 1 && lastDy == 0) {
-                $("#x" + lastX + "y" + lastY).addClass("upLeft");
-            }
         }
     }
 
@@ -314,13 +312,10 @@ function gameLoop({
 
         if (boardPowerUp) {
             if (boardPowerUp.x == playerX && boardPowerUp.y == playerY) {
-                writeOutput(playersNameInColor(players[i]) + " is " + boardPowerUp.name + " 🧊");
+                messages.push(playersNameInColor(players[i]) + " is " + boardPowerUp.name + " 🧊");
 
                 playerState[i].activePower = { name: boardPowerUp.name, step: step };
-                $("#x" + playerX + "y" + playerY).removeClass("powerup_" + boardPowerUp.name);
-                $("#x" + playerX + "y" + playerY).addClass("blink");
                 boardPowerUp = null;
-
             }
         }
     }
@@ -340,16 +335,24 @@ function gameLoop({
 
         if (powerX >= 0 && powerY >= 0) {
             const chosenPower = allPowerups[0];
-            $("#x" + powerX + "y" + powerY).addClass("powerup_" + chosenPower.name);
             boardPowerUp = { name: chosenPower.name, id: chosenPower.id, x: powerX, y: powerY };
         }
     }
 
-    // Run next loop
-    timer = setTimeout(function () {
-        const newStep = step + 1;
-        gameLoop(newStep, gameBoard, players, playerState, playerIsAlive, nrOfPlayers, gameOver, boardPowerUp);
-    }, simulationSpeed);
+    return {
+        step: step + 1,
+        simulationSpeed: simulationSpeed,
+        gameBoard: gameBoard,
+        maxX: maxX,
+        maxY: maxY,
+        players: players,
+        playerState: playerState,
+        playerIsAlive: playerIsAlive,
+        nrOfPlayers: nrOfPlayers,
+        gameOver: false,
+        boardPowerUp: null,
+        messageBuffer: messages
+    }
 }
 
 function isFrozen(playerState) {
@@ -360,24 +363,11 @@ function squareNotEmpty(gameBoard, x, y) {
     return gameBoard[x][y] != 0
 }
 
-function clearOutput() {
-    const output = document.getElementById("output");
-    output.innerHTML = "";
-}
-
 function playersNameInColor(player) {
     return "<span style='color: " + player.color + "'>" + player.name + "</span>";
 }
 
-function writeOutput(html) {
-    const output = document.getElementById("output");
-    output.innerHTML += "＞ " + html;
-    output.innerHTML += "<br>";
-    output.scrollTop = output.scrollHeight;
-
-}
-
-let currentGameState = createInitialGameState(2, 40, 40);
+let currentGameState = createInitialGameState(2, 40, 40, 10, competitors);
 
 app.use(express.static('public'));
 
@@ -391,11 +381,12 @@ gameClientServer.on('connection', (socket) => {
     socket.emit('renderInitialGameState', currentGameState);
 
     socket.on('startGame', () => {
+        startGame(socket);
         console.log('start game')
     })
 
     socket.on('resetGame', () => {
-        currentGameState = createInitialGameState(currentGameState.nrOfPlayers, currentGameState.maxX, currentGameState.maxY);
+        currentGameState = createInitialGameState(currentGameState.nrOfPlayers, currentGameState.maxX, currentGameState.maxY, currentGameState.simulationSpeed, competitors);
 
         socket.emit('didResetGame', currentGameState);
     })
