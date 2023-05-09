@@ -84,7 +84,7 @@ function startGame(socket) {
 }
 
 function gameLoop(socket) {
-    const lastGameState = currentGameState
+    const lastGameState = JSON.parse(JSON.stringify(currentGameState));
     currentGameState = gameStep(currentGameState);
 
     if (currentGameState.messageBuffer.length != 0) {
@@ -386,18 +386,19 @@ gameClientServer.on('connection', (socket) => {
     })
 
     socket.on('resetGame', () => {
+        clearTimeout(timer);
         currentGameState = createInitialGameState(currentGameState.nrOfPlayers, currentGameState.maxX, currentGameState.maxY, currentGameState.simulationSpeed, competitors);
 
         socket.emit('didResetGame', currentGameState);
     })
 
     socket.on('setNumberOfPlayers', (numberOfPlayers) => {
-        currentGameState.nrOfPlayers = numberOfPlayers
+        currentGameState = createInitialGameState(numberOfPlayers, currentGameState.maxX, currentGameState.maxY, currentGameState.simulationSpeed, competitors);
         socket.emit('didChangeNumberOfPlayers', currentGameState);
     })
 
     socket.on('setSimulationSpeed', (speed) => {
-        currentGameState.simulationSpeed = speed
+        currentGameState.simulationSpeed = 1000 / speed;
     })
 
     socket.on('gameSpeedSelector', (data) => {

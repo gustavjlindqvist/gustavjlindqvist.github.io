@@ -268,7 +268,7 @@
     </div>
 
     <script type="module">
-        import { resetGame, startGame, setUpSelectPlayer, setSpeed, initBoard, initPlayerPositions } from './src/game.js'
+        import { setUpSelectPlayer, initBoard, initPlayerPositions, drawPlayers, drawMessages, clearOutput } from './src/game.js'
         import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 
         const socket = io("localhost:3000");
@@ -277,8 +277,6 @@
             console.log("did tap reset");
             socket.emit('resetGame');
         });
-
-
 
         // document.querySelector('#resetBtn').addEventListener('click', () => {
         //     socket.emit('resetGame')
@@ -318,17 +316,19 @@
         })
 
         socket.addEventListener('didResetGame', (gameState) => {
-            initPlayerPositions(gameState);
+            reinitializeGame(gameState);
         })
 
         socket.addEventListener('updatedGameState', (oldGameState, newGameState) => {
-            console.log("update game state")
+            drawPlayers(oldGameState, newGameState);
+            drawMessages(newGameState);
         })
 
         function reinitializeGame(gameState) {
             initBoard(gameState.gameBoard);
             initPlayerPositions(gameState);
             setUpSelectPlayer(gameState);
+            clearOutput();
         }
 
         // gameSpeedSelector.addEventListener("change", () => {
