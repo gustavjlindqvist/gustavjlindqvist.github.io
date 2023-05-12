@@ -144,26 +144,31 @@ exports.competitors = {
     team1: {
         name: "Power hunter",
         func: powerHunterFunc,
-        color: "pink"
+        color: "#d39"
     },
     team2: {
         name: "Always right",
         func: rightFunc,
-        color: "purple"
+        color: "#3d9"
     },
     team3: {
         name: "Bully",
         func: bullyFunc,
-        color: "green"
+        color: "#d93"
     },
     team4: {
         name: "Always left",
         func: leftFunc,
-        color: "orange"
+        color: "#39d"
     },
     team5: {
         name: "Random",
         func: randomFunc,
-        color: "#d39"
+        color: "#93d"
+    },
+    team6: {
+        name: "Random2",
+        func: randomFunc,
+        color: "#9d3"
     },
 }

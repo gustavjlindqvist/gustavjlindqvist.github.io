@@ -8,8 +8,6 @@ const gameClientServer = new Server(server);
 const { competitors } = require('./competitors');
 const { start } = require('repl');
 
-//import { resetGame, startGame, setUpSelectPlayer, setSpeed } from './public/src/game.js'
-
 var timer;
 
 const allPowerups = [
@@ -21,7 +19,7 @@ const allPowerups = [
 ];
 
 function createInitialGameState(nrOfPlayers, maxX, maxY, simulationSpeed, competitors) {
-    const availableColors = ['red', 'blue', 'green'];
+    const availableColors = ["#d39", "#3d9", "#d93", "#39d", "#93d", "#9d3"];
 
     //start positions
     let startPositions = [];
@@ -105,7 +103,7 @@ function gameLoop(socket) {
 function getGameBoardCopy(gameBoard, maxX, maxY, player) {
     let gameBoardCopy = JSON.parse(JSON.stringify(gameBoard));
     let playerNr = player + 2;
-    for (let x = 1; x <= gameBoard.max; x++) {
+    for (let x = 1; x <= maxX; x++) {
         for (let y = 1; y <= maxY; y++) {
             if (gameBoardCopy[x][y] == playerNr) {
                 gameBoardCopy[x][y] = 1;
@@ -225,20 +223,15 @@ function gameStep({
                 }
                 playerIsAlive[i] = false;
             }
-        }
-
-        // Player hits another players head (both die)
-        for (let j = i + 1; j < nrOfPlayers; j++) {
-            if (playerX == playerState[j].x && playerY == playerState[j].y) {
-                if (playerIsAlive[i] && playerIsAlive[j]) {
-                    messages.push(playersNameInColor(players[i]) + " and " + playersNameInColor(players[j]) + " crashed into each other ☠️");
-                } else if (playerIsAlive[i]) {
-                    messages.push(playersNameInColor(players[i]) + " crashed into " + playersNameInColor(players[j]) + " ☠️");
-                } else if (playerIsAlive[j]) {
-                    messages.push(playersNameInColor(players[j]) + " crashed into " + playersNameInColor(players[i]) + " ☠️");
+            else {
+                // Player hits another players head (both die)
+                for (let j = i + 1; j < nrOfPlayers; j++) {
+                    if (playerX == playerState[j].x && playerY == playerState[j].y) {
+                        messages.push(playersNameInColor(players[i]) + " and " + playersNameInColor(players[j]) + " crashed into each other ☠️");
+                        playerIsAlive[i] = false;
+                        playerIsAlive[j] = false;
+                    }
                 }
-                playerIsAlive[i] = false;
-                playerIsAlive[j] = false;
             }
         }
     }
@@ -333,7 +326,7 @@ function gameStep({
 
         } while (squareNotEmpty(gameBoard, powerX, powerY) && iteration > 0);
 
-        if (powerX >= 0 && powerY >= 0) {
+        if (iteration > 0) {
             const chosenPower = allPowerups[0];
             boardPowerUp = { name: chosenPower.name, id: chosenPower.id, x: powerX, y: powerY };
         }
@@ -350,7 +343,7 @@ function gameStep({
         playerIsAlive: playerIsAlive,
         nrOfPlayers: nrOfPlayers,
         gameOver: false,
-        boardPowerUp: null,
+        boardPowerUp: boardPowerUp,
         messageBuffer: messages
     }
 }
