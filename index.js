@@ -11,6 +11,8 @@ const { start } = require('repl');
 //import { resetGame, startGame, setUpSelectPlayer, setSpeed } from './public/src/game.js'
 
 var timer;
+var gameCanvasSocket;
+var gameClientsSocket;
 
 const allPowerups = [
     {
@@ -76,14 +78,14 @@ function createInitialGameState(nrOfPlayers, maxX, maxY, simulationSpeed, compet
     }
 }
 
-function startGame(socket) {
+function startGame() {
     //gameState.messages.push("And the snakes are off... ");
     console.log("started game");
     clearTimeout(timer);
-    gameLoop(socket)
+    gameLoop()
 }
 
-function gameLoop(socket) {
+function gameLoop() {
     const lastGameState = JSON.parse(JSON.stringify(currentGameState));
     currentGameState = gameStep(currentGameState);
 
@@ -91,14 +93,15 @@ function gameLoop(socket) {
         console.log(currentGameState.messageBuffer)
     }
 
-    socket.emit('updatedGameState', lastGameState, currentGameState);
+    gameCanvasSocket.emit('updatedGameState', lastGameState, currentGameState);
+    gameClientsSocket.emit('updatedGameStateForClient', currentGameState);
 
     if (currentGameState.gameOver) {
         return
     }
 
     timer = setTimeout(function () {
-        gameLoop(socket)
+        gameLoop()
     }, currentGameState.simulationSpeed);
 }
 
@@ -376,12 +379,13 @@ app.get('/', (req, res) => {
 });
 
 gameClientServer.on('connection', (socket) => {
+    gameCanvasSocket = socket
     console.log('game connected');
 
     socket.emit('renderInitialGameState', currentGameState);
 
     socket.on('startGame', () => {
-        startGame(socket);
+        startGame();
         console.log('start game')
     })
 
@@ -408,6 +412,11 @@ gameClientServer.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('game disconnected');
     })
+});
+
+gameClientServer.of('/gameClient').on("connection", (socket) => {
+    gameClientsSocket = socket;
+    console.log('game client connected');
 });
 
 server.listen(3000, () => {
