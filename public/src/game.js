@@ -5,9 +5,9 @@ export function initBoard(gameBoard) {
     let board = document.getElementById("board");
     let tbl = document.createElement("table");
     tbl.setAttribute("id", "gameboard");
-    for (let y = 1; y <= gameBoard[0].length; y++) {
+    for (let y = 1; y < gameBoard[0].length-1; y++) {
         let row = document.createElement("tr");
-        for (let x = 1; x <= gameBoard.length; x++) {
+        for (let x = 1; x < gameBoard.length-1; x++) {
             let cell = document.createElement("td");
             let id = "x" + x + "y" + y;
             cell.setAttribute("id", id);
