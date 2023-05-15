@@ -5,8 +5,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const gameClientServer = new Server(server);
 
-const { competitors } = require('./competitors');
-const { start } = require('repl');
+const { bots } = require('./bots');
 
 var timer;
 var gameCanvasSocket;
@@ -21,7 +20,7 @@ const allPowerups = [
     }
 ];
 
-function createInitialGameState(nrOfPlayers, maxX, maxY, simulationSpeed, competitors) {
+function createInitialGameState(nrOfPlayers, maxX, maxY, simulationSpeed, bots) {
     const availableColors = ["#d39", "#3d9", "#d93", "#39d", "#93d", "#9d3"];
 
     //start positions
@@ -35,7 +34,7 @@ function createInitialGameState(nrOfPlayers, maxX, maxY, simulationSpeed, compet
 
     //players
 
-    let players = Object.values(competitors).map((value, _) => value) //[{ name: "Tom", color: 'red' }, { name: "Timas", color: 'blue' }, { name: "Gustav", color: 'green' }]
+    let players = Object.values(bots).map((value, _) => value)
 
     //gameboard
     let gameBoard = [];
@@ -145,6 +144,17 @@ async function gameLoop() {
     timer = setTimeout(function () {
         gameLoop()
     }, currentGameState.simulationSpeed);
+}
+
+function addNewPlayerToGame(playerName) {
+    currentGameState.players.push({
+        name: playerName,
+        color: '#f60'
+    });
+
+    if (gameCanvasSocket != null) {
+        gameCanvasSocket.emit('playerJoined', currentGameState);
+    }
 }
 
 function getGameBoardCopy(gameBoard, maxX, maxY, player) {
@@ -407,7 +417,7 @@ function playersNameInColor(player) {
     return "<span style='color: " + player.color + "'>" + player.name + "</span>";
 }
 
-let currentGameState = createInitialGameState(2, 40, 40, 10, competitors);
+let currentGameState = createInitialGameState(2, 40, 40, 10, bots);
 
 app.use(express.static('public'));
 
@@ -428,13 +438,13 @@ gameClientServer.on('connection', (socket) => {
 
     socket.on('resetGame', () => {
         clearTimeout(timer);
-        currentGameState = createInitialGameState(currentGameState.nrOfPlayers, currentGameState.maxX, currentGameState.maxY, currentGameState.simulationSpeed, competitors);
+        currentGameState = createInitialGameState(currentGameState.nrOfPlayers, currentGameState.maxX, currentGameState.maxY, currentGameState.simulationSpeed, bots);
 
         socket.emit('didResetGame', currentGameState);
     })
 
     socket.on('setNumberOfPlayers', (numberOfPlayers) => {
-        currentGameState = createInitialGameState(numberOfPlayers, currentGameState.maxX, currentGameState.maxY, currentGameState.simulationSpeed, competitors);
+        currentGameState = createInitialGameState(numberOfPlayers, currentGameState.maxX, currentGameState.maxY, currentGameState.simulationSpeed, bots);
         socket.emit('didChangeNumberOfPlayers', currentGameState);
     })
 
@@ -452,8 +462,15 @@ gameClientServer.on('connection', (socket) => {
 });
 
 gameClientsNameSpace.on("connection", (socket) => {
-    console.log('game client connected');
+    socket.on('playerJoined', input => {
+        if (input[0].name !== null) {
+            const playerName = input[0].name
+
+            addNewPlayerToGame(playerName)
+        }
+    })
 });
+
 
 server.listen(3000, () => {
     console.log('listening on localhost:3000');

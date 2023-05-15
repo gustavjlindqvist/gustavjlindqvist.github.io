@@ -277,7 +277,7 @@
             </div>
         </div>
     </div>
-    
+
 
     <script type="module">
         import { setUpSelectPlayer, initBoard, initPlayerPositions, drawPlayers, drawMessages, clearOutput } from './src/game.js'
@@ -286,7 +286,6 @@
         const socket = io("localhost:3000");
 
         document.querySelector('#resetBtn').addEventListener('click', () => {
-            console.log("did tap reset");
             socket.emit('resetGame');
         });
 
@@ -328,6 +327,10 @@
         })
 
         socket.addEventListener('didResetGame', (gameState) => {
+            reinitializeGame(gameState);
+        })
+
+        socket.addEventListener('playerJoined', gameState => {
             reinitializeGame(gameState);
         })
 
