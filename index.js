@@ -9,6 +9,8 @@ const { competitors } = require('./competitors');
 const { start } = require('repl');
 
 var timer;
+var gameCanvasSocket;
+var gameClientsSocket;
 
 const allPowerups = [
     {
@@ -74,29 +76,79 @@ function createInitialGameState(nrOfPlayers, maxX, maxY, simulationSpeed, compet
     }
 }
 
-function startGame(socket) {
+function startGame() {
     //gameState.messages.push("And the snakes are off... ");
     console.log("started game");
     clearTimeout(timer);
-    gameLoop(socket)
+    gameLoop()
 }
 
-function gameLoop(socket) {
+function getClientState(gameState) {
+    // Ask clients for their move {dx: _, dy: _}
+    for (let i = 0; i < gameState.nrOfPlayers; i++) {
+        var gameBoardCopy = getGameBoardCopy(gameState.gameBoard, gameState.maxX, gameState.maxY, i);
+
+        var playerStateCopy = JSON.parse(JSON.stringify(gameState.playerState));
+        var otherPlayersState = {};
+        var myState;
+        for (let p = 0; p < gameState.nrOfPlayers; p++) {
+            if (p == i) {
+                myState = playerStateCopy[p];
+            } else {
+                let playerNr = p + 2;
+                otherPlayersState[playerNr] = playerStateCopy[p];
+            }
+        }
+    }
+
+    return {
+        "gameBoard": gameBoardCopy,
+        "myState": myState,
+        "otherPlayersState": playerStateCopy,
+        "boardPowerUp": gameState.boardPowerUp
+    }
+}
+
+async function playerDirections() {
+    let playerMoves = []
+
+    if (gameClientsSocket != null) {
+        const clientState = getClientState(currentGameState);
+
+        const playerMove = await new Promise(resolve => {
+            gameClientsSocket.emit('clientMove', clientState, (response) => {
+                resolve(response.move)
+            });
+        });
+
+        playerMoves.push(playerMove)
+    }
+
+    return playerMoves
+}
+
+async function gameLoop() {
+    const playerMoves = await playerDirections()
+
+    console.log(playerMoves);
+
     const lastGameState = JSON.parse(JSON.stringify(currentGameState));
-    currentGameState = gameStep(currentGameState);
+    currentGameState = gameStep(currentGameState, playerMoves);
 
     if (currentGameState.messageBuffer.length != 0) {
         console.log(currentGameState.messageBuffer)
     }
 
-    socket.emit('updatedGameState', lastGameState, currentGameState);
+    if (gameCanvasSocket != null) {
+        gameCanvasSocket.emit('updatedGameState', lastGameState, currentGameState);
+    }
 
     if (currentGameState.gameOver) {
         return
     }
 
     timer = setTimeout(function () {
-        gameLoop(socket)
+        gameLoop()
     }, currentGameState.simulationSpeed);
 }
 
@@ -124,7 +176,7 @@ function gameStep({
     playerIsAlive,
     nrOfPlayers,
     gameOver,
-    boardPowerUp }) {
+    boardPowerUp }, playerMoves) {
     // Save copy for later
     let messages = []
 
@@ -369,12 +421,13 @@ app.get('/', (req, res) => {
 });
 
 gameClientServer.on('connection', (socket) => {
+    gameCanvasSocket = socket
     console.log('game connected');
 
     socket.emit('renderInitialGameState', currentGameState);
 
     socket.on('startGame', () => {
-        startGame(socket);
+        startGame();
         console.log('start game')
     })
 
@@ -401,6 +454,11 @@ gameClientServer.on('connection', (socket) => {
     socket.on('disconnect', () => {
         console.log('game disconnected');
     })
+});
+
+gameClientServer.of('/gameClient').on("connection", (socket) => {
+    gameClientsSocket = socket;
+    console.log('game client connected');
 });
 
 server.listen(3000, () => {
