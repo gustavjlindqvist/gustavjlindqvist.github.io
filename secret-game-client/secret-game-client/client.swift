@@ -159,8 +159,4 @@ final class SecretClient {
     func tactic(gameState: GameState) -> Move {
         return Move(dx: 1, dy: 1)
     }
-    
-    func handleGameState(gameState: String) -> String {
-        return gameState
-    }
 }

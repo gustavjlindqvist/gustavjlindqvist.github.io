@@ -10,7 +10,8 @@ const { start } = require('repl');
 
 var timer;
 var gameCanvasSocket;
-var gameClientsSocket;
+
+const gameClientsNameSpace = gameClientServer.of("/gameClient");
 
 const allPowerups = [
     {
@@ -109,28 +110,22 @@ function getClientState(gameState) {
     }
 }
 
-async function playerDirections() {
-    let playerMoves = []
+async function getPlayerMoves() {
+    const clientState = getClientState(currentGameState);
 
-    if (gameClientsSocket != null) {
-        const clientState = getClientState(currentGameState);
+    try {
+        const responses = await gameClientsNameSpace.timeout(1000).emitWithAck('clientMove', clientState);
+        console.log(responses)
 
-        const playerMove = await new Promise(resolve => {
-            gameClientsSocket.emit('clientMove', clientState, (response) => {
-                resolve(response.move)
-            });
-        });
-
-        playerMoves.push(playerMove)
+        return responses
+    } catch (e) {
+        // some clients did not acknowledge the event in the given delay, try again
+        return []
     }
-
-    return playerMoves
 }
 
 async function gameLoop() {
-    const playerMoves = await playerDirections()
-
-    console.log(playerMoves);
+    const playerMoves = await getPlayerMoves()
 
     const lastGameState = JSON.parse(JSON.stringify(currentGameState));
     currentGameState = gameStep(currentGameState, playerMoves);
@@ -456,8 +451,7 @@ gameClientServer.on('connection', (socket) => {
     })
 });
 
-gameClientServer.of('/gameClient').on("connection", (socket) => {
-    gameClientsSocket = socket;
+gameClientsNameSpace.on("connection", (socket) => {
     console.log('game client connected');
 });
 

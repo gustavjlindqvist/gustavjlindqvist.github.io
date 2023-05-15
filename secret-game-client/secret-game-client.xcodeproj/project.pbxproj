@@ -10,10 +10,22 @@
 		0312D4D12A0E59C80093D122 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312D4D02A0E59C80093D122 /* main.swift */; };
 		0312D4D92A0E5A730093D122 /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 0312D4D82A0E5A730093D122 /* SocketIO */; };
 		0312D4DB2A0E5B390093D122 /* client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312D4DA2A0E5B390093D122 /* client.swift */; };
+		0358A87A2A123E5200F043BA /* client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312D4DA2A0E5B390093D122 /* client.swift */; };
+		0358A87B2A123E5200F043BA /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312D4D02A0E59C80093D122 /* main.swift */; };
+		0358A87D2A123E5200F043BA /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 0358A8772A123E5200F043BA /* SocketIO */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		0312D4CB2A0E59C80093D122 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		0358A87E2A123E5200F043BA /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -28,6 +40,7 @@
 		0312D4CD2A0E59C80093D122 /* secret-game-client */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "secret-game-client"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0312D4D02A0E59C80093D122 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		0312D4DA2A0E5B390093D122 /* client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = client.swift; sourceTree = "<group>"; };
+		0358A8822A123E5200F043BA /* secret-game-client-2 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "secret-game-client-2"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,6 +49,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				0312D4D92A0E5A730093D122 /* SocketIO in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0358A87C2A123E5200F043BA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0358A87D2A123E5200F043BA /* SocketIO in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,6 +75,7 @@
 			isa = PBXGroup;
 			children = (
 				0312D4CD2A0E59C80093D122 /* secret-game-client */,
+				0358A8822A123E5200F043BA /* secret-game-client-2 */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -90,6 +112,26 @@
 			productReference = 0312D4CD2A0E59C80093D122 /* secret-game-client */;
 			productType = "com.apple.product-type.tool";
 		};
+		0358A8762A123E5200F043BA /* secret-game-client-2 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0358A87F2A123E5200F043BA /* Build configuration list for PBXNativeTarget "secret-game-client-2" */;
+			buildPhases = (
+				0358A8792A123E5200F043BA /* Sources */,
+				0358A87C2A123E5200F043BA /* Frameworks */,
+				0358A87E2A123E5200F043BA /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "secret-game-client-2";
+			packageProductDependencies = (
+				0358A8772A123E5200F043BA /* SocketIO */,
+			);
+			productName = "secret-game-client";
+			productReference = 0358A8822A123E5200F043BA /* secret-game-client-2 */;
+			productType = "com.apple.product-type.tool";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -122,6 +164,7 @@
 			projectRoot = "";
 			targets = (
 				0312D4CC2A0E59C80093D122 /* secret-game-client */,
+				0358A8762A123E5200F043BA /* secret-game-client-2 */,
 			);
 		};
 /* End PBXProject section */
@@ -133,6 +176,15 @@
 			files = (
 				0312D4DB2A0E5B390093D122 /* client.swift in Sources */,
 				0312D4D12A0E59C80093D122 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		0358A8792A123E5200F043BA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0358A87A2A123E5200F043BA /* client.swift in Sources */,
+				0358A87B2A123E5200F043BA /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,6 +326,28 @@
 			};
 			name = Release;
 		};
+		0358A8802A123E5200F043BA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = TPWEY3KE9V;
+				ENABLE_HARDENED_RUNTIME = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		0358A8812A123E5200F043BA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = TPWEY3KE9V;
+				ENABLE_HARDENED_RUNTIME = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -295,10 +369,27 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		0358A87F2A123E5200F043BA /* Build configuration list for PBXNativeTarget "secret-game-client-2" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0358A8802A123E5200F043BA /* Debug */,
+				0358A8812A123E5200F043BA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
 		0312D4D72A0E5A730093D122 /* XCRemoteSwiftPackageReference "socket" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/socketio/socket.io-client-swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		0358A8782A123E5200F043BA /* XCRemoteSwiftPackageReference "socket" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/socketio/socket.io-client-swift";
 			requirement = {
@@ -312,6 +403,11 @@
 		0312D4D82A0E5A730093D122 /* SocketIO */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0312D4D72A0E5A730093D122 /* XCRemoteSwiftPackageReference "socket" */;
+			productName = SocketIO;
+		};
+		0358A8772A123E5200F043BA /* SocketIO */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0358A8782A123E5200F043BA /* XCRemoteSwiftPackageReference "socket" */;
 			productName = SocketIO;
 		};
 /* End XCSwiftPackageProductDependency section */
