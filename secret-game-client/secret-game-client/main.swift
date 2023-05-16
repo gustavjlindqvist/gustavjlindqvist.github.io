@@ -11,17 +11,12 @@ struct MyTactic: ClientTactic {
     //TODO: Settle on a name
     let name = "Timas"
     
-    
-    func getNextMove(gameState: GameState) -> (dx: Int, dy: Int) {
-        //TODO: Implement a tactic
-        return (1, 1)
+    //Return an enum
+    func getNextMove(gameState: GameState) -> Move {
+        return .right
     }
 }
 
 let client = SnakesOnAPlaneClient<MyTactic>(socketUrlString: "http://localhost:3000", tactic: MyTactic())
 
 RunLoop.main.run()
-
-
-
-

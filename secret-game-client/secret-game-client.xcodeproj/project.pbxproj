@@ -25,6 +25,8 @@
 		03ECB45A2A128A9A00DE24E4 /* ActivePowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB4582A128A9A00DE24E4 /* ActivePowerUp.swift */; };
 		03ECB45C2A128AD900DE24E4 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB45B2A128AD900DE24E4 /* Json.swift */; };
 		03ECB45D2A128AD900DE24E4 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB45B2A128AD900DE24E4 /* Json.swift */; };
+		03ECB45F2A1386B000DE24E4 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB45E2A1386B000DE24E4 /* Move.swift */; };
+		03ECB4602A1386B000DE24E4 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB45E2A1386B000DE24E4 /* Move.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -59,6 +61,7 @@
 		03ECB4552A1289AA00DE24E4 /* BoardPowerUpState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardPowerUpState.swift; sourceTree = "<group>"; };
 		03ECB4582A128A9A00DE24E4 /* ActivePowerUp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivePowerUp.swift; sourceTree = "<group>"; };
 		03ECB45B2A128AD900DE24E4 /* Json.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Json.swift; sourceTree = "<group>"; };
+		03ECB45E2A1386B000DE24E4 /* Move.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Move.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,6 +120,7 @@
 				03ECB4522A12899A00DE24E4 /* PlayerState.swift */,
 				03ECB45B2A128AD900DE24E4 /* Json.swift */,
 				03ECB4552A1289AA00DE24E4 /* BoardPowerUpState.swift */,
+				03ECB45E2A1386B000DE24E4 /* Move.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -207,6 +211,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				03ECB4592A128A9A00DE24E4 /* ActivePowerUp.swift in Sources */,
+				03ECB45F2A1386B000DE24E4 /* Move.swift in Sources */,
 				03ECB4532A12899A00DE24E4 /* PlayerState.swift in Sources */,
 				0312D4DB2A0E5B390093D122 /* SnakesOnAPlaneClient.swift in Sources */,
 				03ECB4502A12898700DE24E4 /* GameState.swift in Sources */,
@@ -222,6 +227,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				03ECB45A2A128A9A00DE24E4 /* ActivePowerUp.swift in Sources */,
+				03ECB4602A1386B000DE24E4 /* Move.swift in Sources */,
 				03ECB4542A12899A00DE24E4 /* PlayerState.swift in Sources */,
 				0358A87A2A123E5200F043BA /* SnakesOnAPlaneClient.swift in Sources */,
 				03ECB4512A12898700DE24E4 /* GameState.swift in Sources */,

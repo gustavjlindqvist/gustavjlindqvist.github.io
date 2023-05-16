@@ -57,7 +57,7 @@ final class SnakesOnAPlaneClient<T: ClientTactic> {
                 return
             }
             
-            let move = self.tactic.getNextMove(gameState: parsedGameState)
+            let move = self.tactic.getNextMove(gameState: parsedGameState).asDxDy
             let response: Json = [
                 "name": self.tactic.name,
                 "dx": move.dx,
