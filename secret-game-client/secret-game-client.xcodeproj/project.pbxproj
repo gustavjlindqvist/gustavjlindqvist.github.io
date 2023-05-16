@@ -9,24 +9,10 @@
 /* Begin PBXBuildFile section */
 		0312D4D12A0E59C80093D122 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312D4D02A0E59C80093D122 /* main.swift */; };
 		0312D4D92A0E5A730093D122 /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 0312D4D82A0E5A730093D122 /* SocketIO */; };
-		0312D4DB2A0E5B390093D122 /* SnakesOnAPlaneClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312D4DA2A0E5B390093D122 /* SnakesOnAPlaneClient.swift */; };
-		0358A87A2A123E5200F043BA /* SnakesOnAPlaneClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312D4DA2A0E5B390093D122 /* SnakesOnAPlaneClient.swift */; };
+		0312D4DB2A0E5B390093D122 /* client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312D4DA2A0E5B390093D122 /* client.swift */; };
+		0358A87A2A123E5200F043BA /* client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312D4DA2A0E5B390093D122 /* client.swift */; };
 		0358A87B2A123E5200F043BA /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312D4D02A0E59C80093D122 /* main.swift */; };
 		0358A87D2A123E5200F043BA /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 0358A8772A123E5200F043BA /* SocketIO */; };
-		03ECB44C2A12890000DE24E4 /* ClientTactic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB44B2A12890000DE24E4 /* ClientTactic.swift */; };
-		03ECB44D2A12890000DE24E4 /* ClientTactic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB44B2A12890000DE24E4 /* ClientTactic.swift */; };
-		03ECB4502A12898700DE24E4 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB44F2A12898700DE24E4 /* GameState.swift */; };
-		03ECB4512A12898700DE24E4 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB44F2A12898700DE24E4 /* GameState.swift */; };
-		03ECB4532A12899A00DE24E4 /* PlayerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB4522A12899A00DE24E4 /* PlayerState.swift */; };
-		03ECB4542A12899A00DE24E4 /* PlayerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB4522A12899A00DE24E4 /* PlayerState.swift */; };
-		03ECB4562A1289AA00DE24E4 /* BoardPowerUpState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB4552A1289AA00DE24E4 /* BoardPowerUpState.swift */; };
-		03ECB4572A1289AA00DE24E4 /* BoardPowerUpState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB4552A1289AA00DE24E4 /* BoardPowerUpState.swift */; };
-		03ECB4592A128A9A00DE24E4 /* ActivePowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB4582A128A9A00DE24E4 /* ActivePowerUp.swift */; };
-		03ECB45A2A128A9A00DE24E4 /* ActivePowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB4582A128A9A00DE24E4 /* ActivePowerUp.swift */; };
-		03ECB45C2A128AD900DE24E4 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB45B2A128AD900DE24E4 /* Json.swift */; };
-		03ECB45D2A128AD900DE24E4 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB45B2A128AD900DE24E4 /* Json.swift */; };
-		03ECB45F2A1386B000DE24E4 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB45E2A1386B000DE24E4 /* Move.swift */; };
-		03ECB4602A1386B000DE24E4 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB45E2A1386B000DE24E4 /* Move.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -53,15 +39,8 @@
 /* Begin PBXFileReference section */
 		0312D4CD2A0E59C80093D122 /* secret-game-client */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "secret-game-client"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0312D4D02A0E59C80093D122 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
-		0312D4DA2A0E5B390093D122 /* SnakesOnAPlaneClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnakesOnAPlaneClient.swift; sourceTree = "<group>"; };
+		0312D4DA2A0E5B390093D122 /* client.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = client.swift; sourceTree = "<group>"; };
 		0358A8822A123E5200F043BA /* secret-game-client-2 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "secret-game-client-2"; sourceTree = BUILT_PRODUCTS_DIR; };
-		03ECB44B2A12890000DE24E4 /* ClientTactic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientTactic.swift; sourceTree = "<group>"; };
-		03ECB44F2A12898700DE24E4 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
-		03ECB4522A12899A00DE24E4 /* PlayerState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerState.swift; sourceTree = "<group>"; };
-		03ECB4552A1289AA00DE24E4 /* BoardPowerUpState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardPowerUpState.swift; sourceTree = "<group>"; };
-		03ECB4582A128A9A00DE24E4 /* ActivePowerUp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivePowerUp.swift; sourceTree = "<group>"; };
-		03ECB45B2A128AD900DE24E4 /* Json.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Json.swift; sourceTree = "<group>"; };
-		03ECB45E2A1386B000DE24E4 /* Move.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Move.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,24 +84,9 @@
 			isa = PBXGroup;
 			children = (
 				0312D4D02A0E59C80093D122 /* main.swift */,
-				03ECB44E2A12895E00DE24E4 /* Models */,
-				0312D4DA2A0E5B390093D122 /* SnakesOnAPlaneClient.swift */,
-				03ECB44B2A12890000DE24E4 /* ClientTactic.swift */,
+				0312D4DA2A0E5B390093D122 /* client.swift */,
 			);
 			path = "secret-game-client";
-			sourceTree = "<group>";
-		};
-		03ECB44E2A12895E00DE24E4 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				03ECB44F2A12898700DE24E4 /* GameState.swift */,
-				03ECB4582A128A9A00DE24E4 /* ActivePowerUp.swift */,
-				03ECB4522A12899A00DE24E4 /* PlayerState.swift */,
-				03ECB45B2A128AD900DE24E4 /* Json.swift */,
-				03ECB4552A1289AA00DE24E4 /* BoardPowerUpState.swift */,
-				03ECB45E2A1386B000DE24E4 /* Move.swift */,
-			);
-			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -210,15 +174,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				03ECB4592A128A9A00DE24E4 /* ActivePowerUp.swift in Sources */,
-				03ECB45F2A1386B000DE24E4 /* Move.swift in Sources */,
-				03ECB4532A12899A00DE24E4 /* PlayerState.swift in Sources */,
-				0312D4DB2A0E5B390093D122 /* SnakesOnAPlaneClient.swift in Sources */,
-				03ECB4502A12898700DE24E4 /* GameState.swift in Sources */,
-				03ECB44C2A12890000DE24E4 /* ClientTactic.swift in Sources */,
+				0312D4DB2A0E5B390093D122 /* client.swift in Sources */,
 				0312D4D12A0E59C80093D122 /* main.swift in Sources */,
-				03ECB4562A1289AA00DE24E4 /* BoardPowerUpState.swift in Sources */,
-				03ECB45C2A128AD900DE24E4 /* Json.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -226,15 +183,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				03ECB45A2A128A9A00DE24E4 /* ActivePowerUp.swift in Sources */,
-				03ECB4602A1386B000DE24E4 /* Move.swift in Sources */,
-				03ECB4542A12899A00DE24E4 /* PlayerState.swift in Sources */,
-				0358A87A2A123E5200F043BA /* SnakesOnAPlaneClient.swift in Sources */,
-				03ECB4512A12898700DE24E4 /* GameState.swift in Sources */,
-				03ECB44D2A12890000DE24E4 /* ClientTactic.swift in Sources */,
+				0358A87A2A123E5200F043BA /* client.swift in Sources */,
 				0358A87B2A123E5200F043BA /* main.swift in Sources */,
-				03ECB4572A1289AA00DE24E4 /* BoardPowerUpState.swift in Sources */,
-				03ECB45D2A128AD900DE24E4 /* Json.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

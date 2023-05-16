@@ -7,16 +7,10 @@
 
 import Foundation
 
-struct MyTactic: ClientTactic {
-    //TODO: Settle on a name
-    let name = "Timas"
-    
-    //Return an enum
-    func getNextMove(gameState: GameState) -> Move {
-        return .right
-    }
-}
-
-let client = SnakesOnAPlaneClient<MyTactic>(socketUrlString: "http://localhost:3000", tactic: MyTactic())
+let client = SecretClient(socketUrlString: "http://localhost:3000")
 
 RunLoop.main.run()
+
+
+
+

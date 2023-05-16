@@ -277,7 +277,7 @@
             </div>
         </div>
     </div>
-
+    
 
     <script type="module">
         import { setUpSelectPlayer, initBoard, initPlayerPositions, drawPlayers, drawMessages, clearOutput } from './src/game.js'
@@ -286,6 +286,7 @@
         const socket = io("localhost:3000");
 
         document.querySelector('#resetBtn').addEventListener('click', () => {
+            console.log("did tap reset");
             socket.emit('resetGame');
         });
 
@@ -303,9 +304,8 @@
 
         const nrOfPlayersSelector = document.getElementById("selectNrOfPlayers");
         nrOfPlayersSelector.addEventListener("change", () => {
-            socket.emit('setNumberOfPlayers', nrOfPlayersSelector.value, (gameState) => {
-                setUpSelectPlayer(gameState)
-            })
+            socket.emit('setNumberOfPlayers', nrOfPlayersSelector.value)
+            //setUpSelectPlayer(nrOfPlayersSelector.value)
         });
 
         // nrOfPlayersSelector.addEventListener("change", () => {
@@ -320,7 +320,7 @@
         });
 
         socket.addEventListener('renderInitialGameState', (gameState) => {
-            initBoard(gameState.gameBoard)
+            reinitializeGame(gameState);
         })
 
         socket.addEventListener('didChangeNumberOfPlayers', (gameState) => {
@@ -331,10 +331,6 @@
             reinitializeGame(gameState);
         })
 
-        socket.addEventListener('playerJoined', gameState => {
-            reinitializeGame(gameState);
-        })
-
         socket.addEventListener('updatedGameState', (oldGameState, newGameState) => {
             drawPlayers(oldGameState, newGameState);
             drawMessages(newGameState);
@@ -342,8 +338,8 @@
 
         function reinitializeGame(gameState) {
             initBoard(gameState.gameBoard);
-            // initPlayerPositions(gameState);
-            // setUpSelectPlayer(gameState);
+            initPlayerPositions(gameState);
+            setUpSelectPlayer(gameState);
             clearOutput();
         }
 

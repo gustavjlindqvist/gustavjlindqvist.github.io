@@ -140,29 +140,35 @@ function bullyFunc(me, otherPlayers, gameBoard, boardPowerUp) {
     return { dx: me.dx, dy: me.dy };
 }
 
-exports.bots = [
-    {
+exports.competitors = {
+    team1: {
         name: "Power hunter",
         func: powerHunterFunc,
+        color: "#d39"
     },
-    {
+    team2: {
         name: "Always right",
         func: rightFunc,
+        color: "#3d9"
     },
-    {
+    team3: {
         name: "Bully",
         func: bullyFunc,
+        color: "#d93"
     },
-    {
+    team4: {
         name: "Always left",
         func: leftFunc,
+        color: "#39d"
     },
-    {
+    team5: {
         name: "Random",
         func: randomFunc,
+        color: "#93d"
     },
-    {
+    team6: {
         name: "Random2",
         func: randomFunc,
-    }
-]
+        color: "#9d3"
+    },
+}

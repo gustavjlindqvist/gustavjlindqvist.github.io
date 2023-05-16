@@ -5,9 +5,9 @@ export function initBoard(gameBoard) {
     let board = document.getElementById("board");
     let tbl = document.createElement("table");
     tbl.setAttribute("id", "gameboard");
-    for (let y = 1; y < gameBoard[0].length - 1; y++) {
+    for (let y = 1; y < gameBoard[0].length-1; y++) {
         let row = document.createElement("tr");
-        for (let x = 1; x < gameBoard.length - 1; x++) {
+        for (let x = 1; x < gameBoard.length-1; x++) {
             let cell = document.createElement("td");
             let id = "x" + x + "y" + y;
             cell.setAttribute("id", id);
@@ -22,8 +22,8 @@ export function initBoard(gameBoard) {
 export function setUpSelectPlayer(gameState) {
     for (let i = 1; i <= 6; i++) {
         $("#player" + i).html("");
-        if (i <= gameState.numberOfPlayers) {
-            for (let c of gameState.selectablePlayers) {
+        if (i <= gameState.nrOfPlayers) {
+            for (let c of gameState.players) {
                 $(".player" + i).show();
                 let option = document.createElement("option");
                 option.setAttribute("value", c);
