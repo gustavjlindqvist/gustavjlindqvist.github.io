@@ -20,6 +20,339 @@ const allPowerups = [
     }
 ];
 
+//initialize x number of players
+
+class GameState {
+    constructor(maxX, maxY, simulationSpeed) {
+        let gameBoard = [];
+        for (let x = 0; x <= maxX + 1; x++) {
+            gameBoard[x] = [];
+            for (let y = 0; y <= maxY + 1; y++) {
+                gameBoard[x][y] = 0;
+                if (x == 0 || x == maxX + 1 || y == 0 || y == maxY + 1)
+                    gameBoard[x][y] = -1;
+            }
+        }
+
+        this.numberOfPlayers = 2
+        this.step = 0
+        this.availableColors = ["#d39", "#3d9", "#d93", "#39d", "#93d", "#9d3", "#7ff", "#f5f", "#7ff", "#ff7"]
+        this.simulationSpeed = simulationSpeed
+        this.gameBoard = gameBoard
+        this.maxX = maxX
+        this.maxY = maxY
+        this.selectablePlayers = []
+        this.activePlayers = []
+        this.gameOver = false
+        this.boardPowerUp = null
+        this.messageBuffer = []
+    }
+
+    addSelectableBots(bots) {
+        const botsWithColor = bots.map((bot) => {
+            const botColor = this.availableColors.pop()
+            bot.color = botColor
+            return bot
+        })
+
+        this.selectablePlayers = this.selectablePlayers.concat(botsWithColor)
+
+        return this
+    }
+
+    setNumberOfPlayers(number) {
+        this.numberOfPlayers = number
+        return this
+    }
+
+    addSelectablePlayer(name) {
+        const playerColor = this.availableColors.pop()
+
+        this.selectablePlayers.push({
+            name: name,
+            color: playerColor
+        })
+
+        return this
+    }
+
+    addActivePowerToPlayer(id, power) {
+        const player = this.activePlayers.find(player => player.id == id)
+
+        player.activePower = power
+
+        return this
+    }
+
+    addActivePlayer(name) {
+        const player = this.selectablePlayers.find(player => player.name == name)
+
+        if (player != null) {
+            let x = Math.floor(Math.random() * this.maxX) + 1;
+            let y = Math.floor(Math.random() * this.maxY) + 1;
+
+            const newActivePlayer = {
+                name: name,
+                func: player.func != null ? player.func : null,
+                id: this.activePlayers.length + 1,
+                x: x,
+                y: y,
+                dx: 0,
+                dy: -1,
+                activePower: null,
+                isAlive: true
+            }
+
+            this.gameBoard[x][y] = newActivePlayer.id
+            this.activePlayers.push(newActivePlayer)
+        }
+
+        return this
+    }
+
+    randomDirection() {
+        const directions = [-1, 0, 1]
+        return directions[Math.floor(Math.random() * directions.length)]
+    }
+
+    isFrozen(playerState) {
+        return playerState.activePower != null ? playerState.activePower.name == "frozen" : false
+    }
+
+    squareNotEmpty(x, y) {
+        return this.gameBoard[x][y] != 0
+    }
+
+    playersNameInColor(activePlayer) {
+        return "<span style='color: " + activePlayer.color + "'>" + activePlayer.name + "</span>";
+    }
+
+    handlePowerUpExpiry(activePlayer) {
+        if (this.isFrozen(activePlayer)) {
+            const stepsSinceActive = this.step - activePlayer.activePower.step
+            if (stepsSinceActive > 20) {
+                activePlayer.activePower = null
+            }
+        }
+    }
+
+    isValidMove(activePlayer, playerMove) {
+        const dx = playerMove.dx
+        const dy = playerMove.dy
+
+        if (dx == -1 && dy == 0 ||
+            dx == 1 && dy == 0 ||
+            dx == 0 && dy == 1 ||
+            dx == 0 && dy == -1) {
+            return true
+        }
+
+        if (activePlayer.activePower.name == "diagonal") {
+            if (dx == -1 && dy == -1 ||
+                dx == 1 && dy == -1 ||
+                dx == -1 && dy == 1 ||
+                dx == 1 && dy == 1) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    handlePlayerMove(activePlayer, playerMoves) {
+        const playerMove = playerMoves.find(move => move.name == activePlayer.name)
+
+        if (playerMove == null) {
+            activePlayer.x += activePlayer.dx
+            activePlayer.y += activePlayer.dy
+            return
+        }
+
+        activePlayer.dx = playerMove.dx
+        activePlayer.dy = playerMove.dy
+
+        if (activePlayer.isAlive && !this.isFrozen(activePlayer)) {
+            if (this.isValidMove(activePlayer, playerMove)) {
+                activePlayer.x += activePlayer.dx;
+                activePlayer.y += activePlayer.dy;
+            } else {
+                activePlayer.isAlive = false
+                this.messageBuffer.push(playersNameInColor(activePlayer) + " gave an invalid move ☠️")
+            }
+        }
+    }
+
+    checkForDeathAfterMove(activePlayer, otherPlayers) {
+        const playerX = activePlayer.x;
+        const playerY = activePlayer.y;
+
+        if (activePlayer.isAlive && !this.isFrozen(activePlayer)) {
+            // Player hits wall or snake (they die)
+            if (this.squareNotEmpty(playerX, playerY)) {
+                if (this.gameBoard[playerX][playerY] == -1) {
+                    this.messageBuffer.push(playersNameInColor(activePlayer) + " crashed into the edge ☠️");
+                } else if (this.gameBoard[playerX][playerY] == activePlayer.id) {
+                    this.messageBuffer.push(playersNameInColor(activePlayer) + " crashed into itself ☠️");
+                } else {
+                    const otherPlayerId = this.gameBoard[playerX][playerY];
+                    const otherPlayer = otherPlayers.find(player => player.id == otherPlayerId)
+                    this.messageBuffer.push(playersNameInColor(activePlayer) + " crashed into " + playersNameInColor(otherPlayer) + " ☠️");
+                }
+                activePlayer.isAlive = false;
+            }
+            else {
+                // Player hits another players head (both die)
+                for (const otherPlayer of otherPlayers) {
+                    if (playerX == otherPlayer.x && playerY == otherPlayer.y) {
+                        this.messageBuffer.push(playersNameInColor(activePlayer) + " and " + playersNameInColor(otherPlayer) + " crashed into each other ☠️");
+                        activePlayer.isAlive = false
+                        otherPlayer.isAlive = false
+                    }
+
+                }
+            }
+        }
+    }
+
+    checkForWinner(numberOfPlayersAliveBeforeMoves) {
+        const alivePlayersAfterMoves = this.activePlayers.filter(player => player.isAlive)
+
+        if (alivePlayersAfterMoves.length == 1 && numberOfPlayersAliveBeforeMoves > 1) {
+            const output = playersNameInColor(alivePlayersAfterMoves[0]) + " wins 🏁"
+            this.messageBuffer.push(output)
+        }
+
+        // Check for end of game when no players alive
+        if (nrOfPlayersAlive == 0) {
+            // If there was more than one player alive before, but now zero players alive, it's a draw.
+            if (playersAliveAtBeginningOfStep.length > 1) {
+                let output = "It's a draw between ";
+                for (let drawPlayerIndex = 0; drawPlayerIndex < playersAliveAtBeginningOfStep.length; drawPlayerIndex++) {
+                    output = output + playersNameInColor(players[drawPlayerIndex]);
+                    if (drawPlayerIndex < playersAliveAtBeginningOfStep.length - 2) {
+                        output = output + ", ";
+                    } else if (drawPlayerIndex == playersAliveAtBeginningOfStep.length - 2) {
+                        output = output + " and ";
+                    } else {
+                        output = output + " 🏁";
+                    }
+                }
+                messages.push(output);
+            }
+
+            return {
+                step: step + 1,
+                simulationSpeed: simulationSpeed,
+                gameBoard: gameBoard,
+                maxX: maxX,
+                maxY: maxY,
+                selectablePlayers: selectablePlayers,
+                activePlayers: activePlayers,
+                players: players,
+                playerState: playerState,
+                playerIsAlive: playerIsAlive,
+                nrOfPlayers: nrOfPlayers,
+                gameOver: true,
+                boardPowerUp: null,
+                messageBuffer: messages
+            }
+        }
+    }
+
+    gameStep(playerMoves) {
+        // Save copy for later
+        let messages = []
+
+        //let lastPlayerState = JSON.parse(JSON.stringify(this.playerState));
+        const numberOfPlayersAliveBeforeMoves = this.activePlayers.filter(player => player.isAlive).length
+
+        // Check for powerup expiry
+        for (const activePlayer of this.activePlayers) {
+            this.handlePowerUpExpiry(activePlayer)
+            this.handlePlayerMove(activePlayer, playerMoves)
+        }
+
+        for (const activePlayer of this.activePlayers) {
+            const otherPlayers = this.activePlayers.filter(player => player != activePlayer)
+            this.checkForDeathAfterMove(activePlayer, otherPlayers)
+        }
+
+        this.checkForWinner(numberOfPlayersAliveBeforeMoves)
+
+        // // Update game board with new player head
+        // for (let i = 0; i < nrOfPlayers; i++) {
+        //     if (playerIsAlive[i] && !isFrozen(playerState[i])) {
+        //         let x = playerState[i].x;
+        //         let y = playerState[i].y;
+        //         gameBoard[x][y] = i + 2;
+        //     }
+        // }
+
+        // // Check if any player finds a powerup
+        // for (let i = 0; i < nrOfPlayers; i++) {
+        //     const playerX = playerState[i].x;
+        //     const playerY = playerState[i].y;
+
+        //     if (boardPowerUp) {
+        //         if (boardPowerUp.x == playerX && boardPowerUp.y == playerY) {
+        //             messages.push(playersNameInColor(players[i]) + " is " + boardPowerUp.name + " 🧊");
+
+        //             playerState[i].activePower = { name: boardPowerUp.name, step: step };
+        //             boardPowerUp = null;
+        //         }
+        //     }
+        // }
+
+        // // Add powerup to board if needed
+        // const powerUpChance = Math.floor(Math.random() * 20);
+        // if (!boardPowerUp && powerUpChance == 0) {
+        //     let iteration = 10;
+        //     let powerX = -1;
+        //     let powerY = -1;
+        //     do {
+        //         powerX = Math.round(Math.random() * maxX);
+        //         powerY = Math.round(Math.random() * maxY);
+        //         iteration -= 1;
+
+        //     } while (squareNotEmpty(gameBoard, powerX, powerY) && iteration > 0);
+
+        //     if (iteration > 0) {
+        //         const chosenPower = allPowerups[0];
+        //         boardPowerUp = { name: chosenPower.name, id: chosenPower.id, x: powerX, y: powerY };
+        //     }
+        // }
+
+        // return {
+        //     step: step + 1,
+        //     simulationSpeed: simulationSpeed,
+        //     gameBoard: gameBoard,
+        //     maxX: maxX,
+        //     maxY: maxY,
+        //     selectablePlayers: selectablePlayers,
+        //     activePlayers: activePlayers,
+        //     players: players,
+        //     playerState: playerState,
+        //     playerIsAlive: playerIsAlive,
+        //     nrOfPlayers: nrOfPlayers,
+        //     gameOver: false,
+        //     boardPowerUp: boardPowerUp,
+        //     messageBuffer: messages
+        // }
+    }
+
+    clone() {
+        return Object.assign(Object.create(Object.getPrototypeOf(this)), this);
+    }
+}
+
+const gameState = new GameState(40, 40, 100).addSelectableBots(bots).addActivePlayer("Always right").addSelectablePlayer("Timas").addActivePlayer("Timas") //.addActivePowerToPlayer(1, { name: "frozen", step: 0 })
+
+console.log(gameState.activePlayers)
+
+gameState.gameStep([{ name: 'Always right', dx: 1, dy: 0 }])
+
+console.log(gameState.activePlayers)
+
 function createInitialGameState(nrOfPlayers, maxX, maxY, simulationSpeed, bots) {
     const availableColors = ["#d39", "#3d9", "#d93", "#39d", "#93d", "#9d3"];
 
@@ -33,7 +366,6 @@ function createInitialGameState(nrOfPlayers, maxX, maxY, simulationSpeed, bots) 
     }
 
     //players
-
     let players = Object.values(bots).map((value, _) => value)
 
     //gameboard
@@ -66,6 +398,8 @@ function createInitialGameState(nrOfPlayers, maxX, maxY, simulationSpeed, bots) 
         gameBoard: gameBoard,
         maxX: maxX,
         maxY: maxY,
+        selectablePlayers: players,
+        activePlayers: [],
         players: players,
         playerState: playerState,
         playerIsAlive: playerIsAlive,
@@ -76,7 +410,7 @@ function createInitialGameState(nrOfPlayers, maxX, maxY, simulationSpeed, bots) 
     }
 }
 
-function startGame() {
+function startGame(initialGameState) {
     //gameState.messages.push("And the snakes are off... ");
     console.log("started game");
     clearTimeout(timer);
@@ -114,7 +448,6 @@ async function getPlayerMoves() {
 
     try {
         const responses = await gameClientsNameSpace.timeout(1000).emitWithAck('clientMove', clientState);
-        console.log(responses)
 
         return responses
     } catch (e) {
@@ -123,14 +456,13 @@ async function getPlayerMoves() {
     }
 }
 
-async function gameLoop() {
-    const playerMoves = await getPlayerMoves()
+async function gameLoop(currentGameState) {
+    const playerMoves = []//await getPlayerMoves()
+    //const lastGameState = JSON.parse(JSON.stringify(currentGameState));
+    const nextGameState = gameStep(currentGameState, playerMoves);
 
-    const lastGameState = JSON.parse(JSON.stringify(currentGameState));
-    currentGameState = gameStep(currentGameState, playerMoves);
-
-    if (currentGameState.messageBuffer.length != 0) {
-        console.log(currentGameState.messageBuffer)
+    if (nextGameState.messageBuffer.length != 0) {
+        console.log(nextGameState.messageBuffer)
     }
 
     if (gameCanvasSocket != null) {
@@ -146,11 +478,11 @@ async function gameLoop() {
     }, currentGameState.simulationSpeed);
 }
 
-function addNewPlayerToGame(playerName) {
-    currentGameState.players.push({
+function addNewSelectablePlayerToGame(playerName) {
+    currentGameState.selectablePlayers.push({
         name: playerName,
         color: '#f60'
-    });
+    })
 
     if (gameCanvasSocket != null) {
         gameCanvasSocket.emit('playerJoined', currentGameState);
@@ -177,6 +509,8 @@ function gameStep({
     maxX,
     maxY,
     players,
+    selectablePlayers,
+    activePlayers,
     playerState,
     playerIsAlive,
     nrOfPlayers,
@@ -335,6 +669,8 @@ function gameStep({
                 gameBoard: gameBoard,
                 maxX: maxX,
                 maxY: maxY,
+                selectablePlayers: selectablePlayers,
+                activePlayers: activePlayers,
                 players: players,
                 playerState: playerState,
                 playerIsAlive: playerIsAlive,
@@ -395,6 +731,8 @@ function gameStep({
         gameBoard: gameBoard,
         maxX: maxX,
         maxY: maxY,
+        selectablePlayers: selectablePlayers,
+        activePlayers: activePlayers,
         players: players,
         playerState: playerState,
         playerIsAlive: playerIsAlive,
@@ -406,7 +744,7 @@ function gameStep({
 }
 
 function isFrozen(playerState) {
-    return playerState.activePower.name == "frozen"
+    //return playerState.activePower.name == "frozen"
 }
 
 function squareNotEmpty(gameBoard, x, y) {
@@ -417,7 +755,7 @@ function playersNameInColor(player) {
     return "<span style='color: " + player.color + "'>" + player.name + "</span>";
 }
 
-let currentGameState = createInitialGameState(2, 40, 40, 10, bots);
+let currentGameState = new GameState(40, 40, 10) //createInitialGameState(2, 40, 40, 10, bots);
 
 app.use(express.static('public'));
 
@@ -472,6 +810,6 @@ gameClientsNameSpace.on("connection", (socket) => {
 });
 
 
-server.listen(3000, () => {
-    console.log('listening on localhost:3000');
-});
+// server.listen(3000, () => {
+//     console.log('listening on localhost:3000');
+// });
