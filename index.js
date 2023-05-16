@@ -49,13 +49,7 @@ class GameState {
     }
 
     addSelectableBots(bots) {
-        const botsWithColor = bots.map((bot) => {
-            const botColor = this.availableColors.pop()
-            bot.color = botColor
-            return bot
-        })
-
-        this.selectablePlayers = this.selectablePlayers.concat(botsWithColor)
+        this.selectablePlayers = this.selectablePlayers.concat(bots)
 
         return this
     }
@@ -66,11 +60,8 @@ class GameState {
     }
 
     addSelectablePlayer(name) {
-        const playerColor = this.availableColors.pop()
-
         this.selectablePlayers.push({
-            name: name,
-            color: playerColor
+            name: name
         })
 
         return this
@@ -92,12 +83,16 @@ class GameState {
     }
 
     addActivePlayers(names) {
-        const newPlayers = names.map(name => {
+        console.log(names)
+
+        names.forEach(name => {
             const player = this.selectablePlayers.find(player => player.name == name)
 
             if (player != null) {
                 let x = Math.floor(Math.random() * this.maxX) + 1;
                 let y = Math.floor(Math.random() * this.maxY) + 1;
+
+                const color = this.availableColors.pop()
 
                 const newActivePlayer = {
                     name: name,
@@ -109,17 +104,12 @@ class GameState {
                     dy: -1,
                     activePower: null,
                     isAlive: true,
-                    color: player.color
+                    color: color
                 }
 
-                return newActivePlayer
+                this.gameBoard[x][y] = newActivePlayer.id
+                this.activePlayers.push(newActivePlayer)
             }
-        })
-
-        this.activePlayers = newPlayers
-
-        newPlayers.forEach(player => {
-            this.gameBoard[player.x][player.y] = player.id
         })
 
         return this
@@ -344,10 +334,10 @@ class GameState {
 
         for (const activePlayer of this.activePlayers) {
             this.updateGameboard(activePlayer)
-            this.checkPlayerFoundPowerup(activePlayer)
+            //this.checkPlayerFoundPowerup(activePlayer)
         }
 
-        this.addRandomPowerUpToBoardIfNeeded()
+        //this.addRandomPowerUpToBoardIfNeeded()
 
         return this
     }
@@ -422,7 +412,7 @@ function apply(bot, gameState) {
 }
 
 function initialGameState() {
-    return new GameState(40, 40, 10).addSelectableBots(bots)
+    return new GameState(40, 40, 10).addSelectableBots(bots).addActivePlayers(["Power hunter", "Power hunter"])
 }
 
 let currentGameState = initialGameState()
