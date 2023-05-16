@@ -125,6 +125,10 @@ class GameState {
         return this
     }
 
+    emptyMessageBuffer() {
+        this.messageBuffer = []
+    }
+
     randomDirection() {
         const directions = [-1, 0, 1]
         return directions[Math.floor(Math.random() * directions.length)]
@@ -388,11 +392,7 @@ async function gameLoop(currentGameState, gameCanvasSocket) {
 
 
     const lastGameState = currentGameState.clone()
-    currentGameState.gameStep(playerMoves);
-
-    if (currentGameState.messageBuffer.length != 0) {
-        console.log(currentGameState.messageBuffer)
-    }
+    currentGameState.gameStep(allActivePlayerMoves);
 
     if (gameCanvasSocket) {
         gameCanvasSocket.emit('updatedGameState', lastGameState, currentGameState);
@@ -401,6 +401,8 @@ async function gameLoop(currentGameState, gameCanvasSocket) {
     if (currentGameState.gameOver) {
         return
     }
+
+    currentGameState.emptyMessageBuffer()
 
     timer = setTimeout(function () {
         gameLoop(currentGameState, gameCanvasSocket)

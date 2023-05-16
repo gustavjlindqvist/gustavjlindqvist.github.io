@@ -63,18 +63,19 @@ export function initPlayerPositions(gameState) {
 
 export function drawPlayers(oldGameState, newGameState) {
     // Update game board with new player head
-    for (let i = 0; i < newGameState.nrOfPlayers; i++) {
-        if (newGameState.playerIsAlive[i] && !isFrozen(newGameState.playerState[i])) {
-            let x = newGameState.playerState[i].x;
-            let y = newGameState.playerState[i].y;
-            let dx = newGameState.playerState[i].dx;
-            let dy = newGameState.playerState[i].dy;
-            let color = newGameState.players[i].color;
-            let lastX = oldGameState.playerState[i].x;
-            let lastY = oldGameState.playerState[i].y;
-            let lastDx = oldGameState.playerState[i].dx;
-            let lastDy = oldGameState.playerState[i].dy;
-            //newGameState.gameBoard[x][y] = i + 2;
+    for (const player of newGameState.activePlayers) {
+        if (player.isAlive && !isFrozen(player)) {
+            let x = player.x;
+            let y = player.y;
+            let dx = player.dx;
+            let dy = player.dy;
+            let color = player.color;
+
+            const oldPlayerState = oldGameState.activePlayers.find(oldPlayer => player.id == oldPlayer.id)
+            let lastX = oldPlayerState.x;
+            let lastY = oldPlayerState.y;
+            let lastDx = oldPlayerState.dx;
+            let lastDy = oldPlayerState.dy;
 
             $("#x" + x + "y" + y).attr("style", "--color: " + color);
             $("#x" + x + "y" + y).addClass("head");
@@ -122,7 +123,7 @@ export function drawMessages(gameState) {
 }
 
 function isFrozen(playerState) {
-    return playerState.activePower.name == "frozen"
+    return playerState.activePower ? playerState.activePower.name == "frozen" : false
 }
 
 function squareNotEmpty(gameBoard, x, y) {
