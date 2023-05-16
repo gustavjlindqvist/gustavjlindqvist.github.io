@@ -303,8 +303,9 @@
 
         const nrOfPlayersSelector = document.getElementById("selectNrOfPlayers");
         nrOfPlayersSelector.addEventListener("change", () => {
-            socket.emit('setNumberOfPlayers', nrOfPlayersSelector.value)
-            //setUpSelectPlayer(nrOfPlayersSelector.value)
+            socket.emit('setNumberOfPlayers', nrOfPlayersSelector.value, (gameState) => {
+                setUpSelectPlayer(gameState)
+            })
         });
 
         // nrOfPlayersSelector.addEventListener("change", () => {
@@ -319,7 +320,7 @@
         });
 
         socket.addEventListener('renderInitialGameState', (gameState) => {
-            reinitializeGame(gameState);
+            initBoard(gameState.gameBoard)
         })
 
         socket.addEventListener('didChangeNumberOfPlayers', (gameState) => {
@@ -341,8 +342,8 @@
 
         function reinitializeGame(gameState) {
             initBoard(gameState.gameBoard);
-            initPlayerPositions(gameState);
-            setUpSelectPlayer(gameState);
+            // initPlayerPositions(gameState);
+            // setUpSelectPlayer(gameState);
             clearOutput();
         }
 
