@@ -214,48 +214,47 @@ class GameState {
         }
     }
 
-    checkForWinner(numberOfPlayersAliveBeforeMoves) {
-        const alivePlayersAfterMoves = this.activePlayers.filter(player => player.isAlive)
+    checkForWinners(playersAliveBeforeMoves) {
+        const playersAliveAfterMoves = this.activePlayers.filter(player => player.isAlive)
 
-        if (alivePlayersAfterMoves.length == 1 && numberOfPlayersAliveBeforeMoves > 1) {
-            const output = playersNameInColor(alivePlayersAfterMoves[0]) + " wins 🏁"
+        //If one player is still alive
+        if (playersAliveAfterMoves.length == 1 && playersAliveBeforeMoves.length > 1) {
+            return playersAliveAfterMoves
+        }
+
+        // If no players still alive
+        if (playersAliveAfterMoves.length == 0) {
+            // If there was more than one player alive before, but now zero players alive, it's a draw.
+            if (playersAliveBeforeMoves.length > 1) {
+                return playersAliveBeforeMoves
+                //this.messageBuffer.push(output);
+            }
+        }
+
+        return []
+    }
+
+    addWinnersToMessageBuffer(winners) {
+        if (winners.length == 1) {
+            const output = playersNameInColor(winners[0]) + " wins 🏁"
             this.messageBuffer.push(output)
         }
 
-        // Check for end of game when no players alive
-        if (nrOfPlayersAlive == 0) {
-            // If there was more than one player alive before, but now zero players alive, it's a draw.
-            if (playersAliveAtBeginningOfStep.length > 1) {
-                let output = "It's a draw between ";
-                for (let drawPlayerIndex = 0; drawPlayerIndex < playersAliveAtBeginningOfStep.length; drawPlayerIndex++) {
-                    output = output + playersNameInColor(players[drawPlayerIndex]);
-                    if (drawPlayerIndex < playersAliveAtBeginningOfStep.length - 2) {
-                        output = output + ", ";
-                    } else if (drawPlayerIndex == playersAliveAtBeginningOfStep.length - 2) {
-                        output = output + " and ";
-                    } else {
-                        output = output + " 🏁";
-                    }
-                }
-                messages.push(output);
-            }
+        if (winners.length > 1) {
+            const output = winners.reduce((output, player) => {
+                output + playersNameInColor(player)
+            }, "It's a draw between ") + " 🏁"
 
-            return {
-                step: step + 1,
-                simulationSpeed: simulationSpeed,
-                gameBoard: gameBoard,
-                maxX: maxX,
-                maxY: maxY,
-                selectablePlayers: selectablePlayers,
-                activePlayers: activePlayers,
-                players: players,
-                playerState: playerState,
-                playerIsAlive: playerIsAlive,
-                nrOfPlayers: nrOfPlayers,
-                gameOver: true,
-                boardPowerUp: null,
-                messageBuffer: messages
-            }
+            this.messageBuffer.push(output)
+        }
+    }
+
+    updateGameboard(activePlayer) {
+        // Update game board with new player head
+        if (playerIsAlive[i] && !isFrozen(playerState[i])) {
+            let x = playerState[i].x;
+            let y = playerState[i].y;
+            gameBoard[x][y] = i + 2;
         }
     }
 
@@ -264,7 +263,7 @@ class GameState {
         let messages = []
 
         //let lastPlayerState = JSON.parse(JSON.stringify(this.playerState));
-        const numberOfPlayersAliveBeforeMoves = this.activePlayers.filter(player => player.isAlive).length
+        const playersAliveBeforeMoves = this.activePlayers.filter(player => player.isAlive)
 
         // Check for powerup expiry
         for (const activePlayer of this.activePlayers) {
@@ -277,16 +276,18 @@ class GameState {
             this.checkForDeathAfterMove(activePlayer, otherPlayers)
         }
 
-        this.checkForWinner(numberOfPlayersAliveBeforeMoves)
+        const winners = this.checkForWinners(playersAliveBeforeMoves)
 
-        // // Update game board with new player head
-        // for (let i = 0; i < nrOfPlayers; i++) {
-        //     if (playerIsAlive[i] && !isFrozen(playerState[i])) {
-        //         let x = playerState[i].x;
-        //         let y = playerState[i].y;
-        //         gameBoard[x][y] = i + 2;
-        //     }
-        // }
+        if (winners.length > 0) {
+            this.addWinnersToMessageBuffer(winners)
+            this.gameOver = true
+
+            return this
+        }
+
+        for (const activePlayer of this.activePlayers) {
+            this.updateGameboard(activePlayer)
+        }
 
         // // Check if any player finds a powerup
         // for (let i = 0; i < nrOfPlayers; i++) {
