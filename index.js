@@ -84,29 +84,36 @@ class GameState {
         return this
     }
 
-    addActivePlayer(name) {
-        const player = this.selectablePlayers.find(player => player.name == name)
+    addActivePlayers(names) {
+        const newPlayers = names.map(name => {
+            const player = this.selectablePlayers.find(player => player.name == name)
 
-        if (player != null) {
-            let x = Math.floor(Math.random() * this.maxX) + 1;
-            let y = Math.floor(Math.random() * this.maxY) + 1;
+            if (player != null) {
+                let x = Math.floor(Math.random() * this.maxX) + 1;
+                let y = Math.floor(Math.random() * this.maxY) + 1;
 
-            const newActivePlayer = {
-                name: name,
-                func: player.func != null ? player.func : null,
-                id: this.activePlayers.length + 1,
-                x: x,
-                y: y,
-                dx: 0,
-                dy: -1,
-                activePower: null,
-                isAlive: true,
-                color: player.color
+                const newActivePlayer = {
+                    name: name,
+                    func: player.func != null ? player.func : null,
+                    id: this.activePlayers.length + 1,
+                    x: x,
+                    y: y,
+                    dx: 0,
+                    dy: -1,
+                    activePower: null,
+                    isAlive: true,
+                    color: player.color
+                }
+
+                return newActivePlayer
             }
+        })
 
-            this.gameBoard[x][y] = newActivePlayer.id
-            this.activePlayers.push(newActivePlayer)
-        }
+        this.activePlayers = newPlayers
+
+        newPlayers.forEach(player => {
+            this.gameBoard[player.x][player.y] = player.id
+        })
 
         return this
     }
@@ -405,7 +412,11 @@ function apply(bot, gameState) {
     }
 }
 
-let currentGameState = new GameState(40, 40, 10).addSelectableBots(bots).addActivePlayer("Always right").addSelectablePlayer("Timas").addActivePlayer("Timas")
+function initialGameState() {
+    return new GameState(40, 40, 10).addSelectableBots(bots)
+}
+
+let currentGameState = initialGameState()
 
 app.use(express.static('public'));
 
@@ -416,18 +427,24 @@ app.get('/', (req, res) => {
 gameClientServer.on('connection', (socket) => {
     console.log('game connected');
 
+    currentGameState = initialGameState()
+
     socket.emit('renderInitialGameState', currentGameState);
 
     socket.on('startGame', () => {
         startGame(currentGameState, socket)
     })
 
-    // socket.on('resetGame', () => {
-    //     clearTimeout(timer);
-    //     currentGameState = createInitialGameState(currentGameState.nrOfPlayers, currentGameState.maxX, currentGameState.maxY, currentGameState.simulationSpeed, bots);
+    socket.on('resetGame', (callback) => {
+        clearTimeout(timer);
+        currentGameState = initialGameState()
 
-    //     socket.emit('didResetGame', currentGameState);
-    // })
+        callback(currentGameState)
+    })
+
+    socket.on('addPlayers', (playerNames) => {
+        console.log(currentGameState.activePlayers)
+    })
 
     socket.on('setNumberOfPlayers', (numberOfPlayers, callback) => {
         currentGameState.setNumberOfPlayers(numberOfPlayers)

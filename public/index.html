@@ -286,12 +286,11 @@
         const socket = io("localhost:3000");
 
         document.querySelector('#resetBtn').addEventListener('click', () => {
-            socket.emit('resetGame');
+            socket.emit('resetGame', (gameState) => {
+                initBoard(gameState.gameBoard)
+                setUpSelectPlayer(gameState)
+            });
         });
-
-        // document.querySelector('#resetBtn').addEventListener('click', () => {
-        //     socket.emit('resetGame')
-        // });
 
         document.querySelector('#startBtn').addEventListener('click', () => {
             socket.emit('startGame')
@@ -305,14 +304,21 @@
         nrOfPlayersSelector.addEventListener("change", () => {
             socket.emit('setNumberOfPlayers', nrOfPlayersSelector.value, (gameState) => {
                 setUpSelectPlayer(gameState)
+
+                const playerSelectors = Array.from(document.getElementsByClassName("activePlayerSelector"))
+                const playerSelectorValues = playerSelectors.map(selector => selector.value)
+
+                socket.emit('addPlayers', playerSelectorValues)
+
+                for (let selector of playerSelectors) {
+                    selector.addEventListener("change", () => {
+                        const playerSelectorValues = playerSelectors.map(selector => selector.value)
+
+                        socket.emit('addPlayers', playerSelectorValues)
+                    })
+                }
             })
         });
-
-        // nrOfPlayersSelector.addEventListener("change", () => {
-        //     socket.emit('selectNumberOfPlayers', {
-        //         numbersOfPlayers: nrOfPlayersSelector.value
-        //     })
-        // });
 
         const gameSpeedSelector = document.getElementById("gameSpeed");
         gameSpeedSelector.addEventListener("change", () => {
@@ -321,6 +327,7 @@
 
         socket.addEventListener('renderInitialGameState', (gameState) => {
             initBoard(gameState.gameBoard)
+            setUpSelectPlayer(gameState)
         })
 
         socket.addEventListener('didChangeNumberOfPlayers', (gameState) => {
