@@ -23,7 +23,7 @@ const allPowerups = [
 //initialize x number of players
 
 class GameState {
-    constructor(maxX, maxY, simulationSpeed) {
+    constructor(numberOfPlayers, maxX, maxY, simulationSpeed) {
         let gameBoard = [];
         for (let x = 0; x <= maxX + 1; x++) {
             gameBoard[x] = [];
@@ -34,7 +34,7 @@ class GameState {
             }
         }
 
-        this.numberOfPlayers = 2
+        this.numberOfPlayers = numberOfPlayers
         this.step = 0
         this.availableColors = ["#d39", "#3d9", "#d93", "#39d", "#93d", "#9d3", "#7ff", "#f5f", "#7ff", "#ff7"]
         this.simulationSpeed = simulationSpeed
@@ -51,11 +51,6 @@ class GameState {
     addSelectableBots(bots) {
         this.selectablePlayers = this.selectablePlayers.concat(bots)
 
-        return this
-    }
-
-    setNumberOfPlayers(number) {
-        this.numberOfPlayers = number
         return this
     }
 
@@ -83,8 +78,6 @@ class GameState {
     }
 
     addActivePlayers(names) {
-        console.log(names)
-
         names.forEach(name => {
             const player = this.selectablePlayers.find(player => player.name == name)
 
@@ -411,8 +404,9 @@ function apply(bot, gameState) {
     }
 }
 
-function initialGameState() {
-    return new GameState(40, 40, 10).addSelectableBots(bots).addActivePlayers(["Power hunter", "Power hunter"])
+function initialGameState(numberOfPlayers) {
+    const playerCount = numberOfPlayers ? numberOfPlayers : 2
+    return new GameState(playerCount, 40, 40, 10).addSelectableBots(bots).addActivePlayers(Array(playerCount).fill("Power hunter"))
 }
 
 let currentGameState = initialGameState()
@@ -447,10 +441,9 @@ gameClientServer.on('connection', (socket) => {
     })
 
     socket.on('setNumberOfPlayers', (numberOfPlayers, callback) => {
-        currentGameState.setNumberOfPlayers(numberOfPlayers)
-        callback(currentGameState)
+        currentGameState = initialGameState(parseInt(numberOfPlayers))
 
-        socket.emit("playersDidChange", currentGameState)
+        callback(currentGameState)
     })
 
     socket.on('setSimulationSpeed', (speed) => {
