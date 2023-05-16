@@ -43,24 +43,21 @@ export function setUpSelectPlayer(gameState) {
 }
 
 export function initPlayerPositions(gameState) {
-    console.log(gameState);
     $(".box").attr("style", "");
     $(".box").attr("class", "box");
-    for (let i = 0; i < gameState.nrOfPlayers; i++) {
-        let y = gameState.playerState[i].y;
-        let x = gameState.playerState[i].x;
-        console.log(x, y);
-        let color = gameState.players[i].color;
+    for (const player of gameState.activePlayers) {
+        let y = player.y;
+        let x = player.x;
+        let color = player.color;
         $("#x" + x + "y" + y).attr("style", "--color:" + color);
         $("#x" + x + "y" + y).addClass("head").addClass("headUp");
     }
     $("#startBtn").show();
     $("#result").css("color", "white");
     $("#result").html("");
-    for (let i = 0; i < gameState.nrOfPlayers; i++) {
-        let vs = " vs ";
-        if (i == 0) vs = "";
-        $("#result").append(vs + playersNameInColor(gameState.players[i]));
+    for (const [index, player] of Object.values(gameState.activePlayers).entries()) {
+        let vs = index != 0 ? " vs " : "";
+        $("#result").append(vs + playersNameInColor(player));
     }
 }
 

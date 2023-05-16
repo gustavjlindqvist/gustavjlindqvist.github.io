@@ -289,16 +289,13 @@
             socket.emit('resetGame', (gameState) => {
                 initBoard(gameState.gameBoard)
                 setUpSelectPlayer(gameState)
+                initPlayerPositions(gameState)
             });
         });
 
         document.querySelector('#startBtn').addEventListener('click', () => {
             socket.emit('startGame')
         });
-
-        // document.querySelector('#startBtn').addEventListener('click', () => {
-        //     socket.emit('startGame')
-        // });
 
         const nrOfPlayersSelector = document.getElementById("selectNrOfPlayers");
         nrOfPlayersSelector.addEventListener("change", () => {
@@ -320,6 +317,10 @@
             })
         });
 
+        socket.addEventListener('playersDidChange', gameState => {
+            initPlayerPositions(gameState)
+        })
+
         const gameSpeedSelector = document.getElementById("gameSpeed");
         gameSpeedSelector.addEventListener("change", () => {
             socket.emit('setSimulationSpeed', gameSpeedSelector.value);
@@ -328,6 +329,7 @@
         socket.addEventListener('renderInitialGameState', (gameState) => {
             initBoard(gameState.gameBoard)
             setUpSelectPlayer(gameState)
+            initPlayerPositions(gameState)
         })
 
         socket.addEventListener('didChangeNumberOfPlayers', (gameState) => {

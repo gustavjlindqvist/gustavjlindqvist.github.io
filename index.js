@@ -76,6 +76,13 @@ class GameState {
         return this
     }
 
+    setSimulationSpeed(speed) {
+        this.simulationSpeed = speed
+
+        console.log(this.simulationSpeed)
+        return this
+    }
+
     addActivePowerToPlayer(id, power) {
         const player = this.activePlayers.find(player => player.id == id)
 
@@ -443,21 +450,20 @@ gameClientServer.on('connection', (socket) => {
     })
 
     socket.on('addPlayers', (playerNames) => {
-        console.log(currentGameState.activePlayers)
+        currentGameState.addActivePlayers(playerNames)
+        socket.emit("playersDidChange", currentGameState)
     })
 
     socket.on('setNumberOfPlayers', (numberOfPlayers, callback) => {
         currentGameState.setNumberOfPlayers(numberOfPlayers)
         callback(currentGameState)
+
+        socket.emit("playersDidChange", currentGameState)
     })
 
-    // socket.on('setSimulationSpeed', (speed) => {
-    //     currentGameState.simulationSpeed = 1000 / speed;
-    // })
-
-    // socket.on('gameSpeedSelector', (data) => {
-    //     console.log('select game speed')
-    // })
+    socket.on('setSimulationSpeed', (speed) => {
+        currentGameState.setSimulationSpeed(1000 / speed)
+    })
 
     // socket.on('disconnect', () => {
     //     console.log('game disconnected');
