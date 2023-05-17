@@ -23,7 +23,7 @@ const allPowerups = [
 //initialize x number of players
 
 class GameState {
-    constructor(numberOfPlayers, maxX, maxY, simulationSpeed) {
+    constructor(maxX, maxY, simulationSpeed) {
         let gameBoard = [];
         for (let x = 0; x <= maxX + 1; x++) {
             gameBoard[x] = [];
@@ -34,7 +34,6 @@ class GameState {
             }
         }
 
-        this.numberOfPlayers = numberOfPlayers
         this.step = 0
         this.availableColors = ["#d39", "#3d9", "#d93", "#39d", "#93d", "#9d3", "#7ff", "#f5f", "#7ff", "#ff7"]
         this.simulationSpeed = simulationSpeed
@@ -62,10 +61,29 @@ class GameState {
         return this
     }
 
+    setNumberOfPlayers(number) {
+        const numberOfPlayersDiff = Math.abs(this.activePlayers.length - number)
+
+        if (this.activePlayers.length > number) {
+            this.removeNumberOfPlayers(numberOfPlayersDiff)
+        } else if (this.activePlayers.length < number) {
+            this.addNumberOfPlayers(numberOfPlayersDiff)
+        }
+
+        return this
+    }
+
+    addNumberOfPlayers(number) {
+        this.addActivePlayers(Array(number).fill(this.selectablePlayers[0].name))
+    }
+
+    removeNumberOfPlayers(number) {
+        this.activePlayers = this.activePlayers.slice(0, -number)
+    }
+
     setSimulationSpeed(speed) {
         this.simulationSpeed = speed
 
-        console.log(this.simulationSpeed)
         return this
     }
 
@@ -77,32 +95,45 @@ class GameState {
         return this
     }
 
+    replaceActivePlayer(playerIndex, name) {
+        const playerAtIndex = this.activePlayers[playerIndex]
+        const newActivePlayer = this.createActivePlayer(name)
+        newActivePlayer.id = playerAtIndex.id
+
+        this.gameBoard[playerAtIndex.x][playerAtIndex.y] = 0
+        this.activePlayers[playerIndex] = newActivePlayer
+
+        return this
+    }
+
+    createActivePlayer(name) {
+        const player = this.selectablePlayers.find(player => player.name == name)
+
+        let x = Math.floor(Math.random() * this.maxX) + 1;
+        let y = Math.floor(Math.random() * this.maxY) + 1;
+
+        const color = this.availableColors.pop()
+
+        return {
+            name: player.name,
+            func: player.func != null ? player.func : null,
+            id: this.activePlayers.length + 1,
+            x: x,
+            y: y,
+            dx: 0,
+            dy: -1,
+            activePower: null,
+            isAlive: true,
+            color: color
+        }
+    }
+
     addActivePlayers(names) {
         names.forEach(name => {
-            const player = this.selectablePlayers.find(player => player.name == name)
+            const newActivePlayer = this.createActivePlayer(name)
 
-            if (player != null) {
-                let x = Math.floor(Math.random() * this.maxX) + 1;
-                let y = Math.floor(Math.random() * this.maxY) + 1;
-
-                const color = this.availableColors.pop()
-
-                const newActivePlayer = {
-                    name: name,
-                    func: player.func != null ? player.func : null,
-                    id: this.activePlayers.length + 1,
-                    x: x,
-                    y: y,
-                    dx: 0,
-                    dy: -1,
-                    activePower: null,
-                    isAlive: true,
-                    color: color
-                }
-
-                this.gameBoard[x][y] = newActivePlayer.id
-                this.activePlayers.push(newActivePlayer)
-            }
+            this.gameBoard[newActivePlayer.x][newActivePlayer.y] = newActivePlayer.id
+            this.activePlayers.push(newActivePlayer)
         })
 
         return this
@@ -404,12 +435,13 @@ function apply(bot, gameState) {
     }
 }
 
-function initialGameState(numberOfPlayers) {
-    const playerCount = numberOfPlayers ? numberOfPlayers : 2
-    return new GameState(playerCount, 40, 40, 10).addSelectableBots(bots).addActivePlayers(Array(playerCount).fill("Power hunter"))
+function initialGameState() {
+    return new GameState(40, 40, 10).addSelectableBots(bots).setNumberOfPlayers(2)
 }
 
-let currentGameState = initialGameState()
+//console.log(currentGameState)
+
+//currentGameState.addNumberOfPlayers(2)
 
 app.use(express.static('public'));
 
@@ -420,13 +452,13 @@ app.get('/', (req, res) => {
 gameClientServer.on('connection', (socket) => {
     console.log('game connected');
 
-    currentGameState = initialGameState()
+    let currentGameState = initialGameState()
 
     socket.emit('renderInitialGameState', currentGameState);
 
-    socket.on('startGame', () => {
-        startGame(currentGameState, socket)
-    })
+    // socket.on('startGame', () => {
+    //     startGame(currentGameState, socket)
+    // })
 
     socket.on('resetGame', (callback) => {
         clearTimeout(timer);
@@ -435,20 +467,25 @@ gameClientServer.on('connection', (socket) => {
         callback(currentGameState)
     })
 
-    socket.on('addPlayers', (playerNames) => {
-        currentGameState.addActivePlayers(playerNames)
-        socket.emit("playersDidChange", currentGameState)
+    socket.on('replacePlayer', (index, name) => {
+        currentGameState.replaceActivePlayer(index, name)
     })
 
+    // socket.on('addPlayers', (playerNames) => {
+    //     //currentGameState.addActivePlayers(playerNames)
+
+    //     //socket.emit("playersDidChange", currentGameState)
+    // })
+
     socket.on('setNumberOfPlayers', (numberOfPlayers, callback) => {
-        currentGameState = initialGameState(parseInt(numberOfPlayers))
+        currentGameState.setNumberOfPlayers(numberOfPlayers)
 
         callback(currentGameState)
     })
 
-    socket.on('setSimulationSpeed', (speed) => {
-        currentGameState.setSimulationSpeed(1000 / speed)
-    })
+    // socket.on('setSimulationSpeed', (speed) => {
+    //     currentGameState.setSimulationSpeed(1000 / speed)
+    // })
 
     // socket.on('disconnect', () => {
     //     console.log('game disconnected');

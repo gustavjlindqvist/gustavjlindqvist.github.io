@@ -20,24 +20,27 @@ export function initBoard(gameBoard) {
 }
 
 export function setUpSelectPlayer(gameState) {
-    document.getElementById("selectNrOfPlayers").value = gameState.numberOfPlayers
+    document.getElementById("selectNrOfPlayers").value = gameState.activePlayers.length
 
     for (let i = 1; i <= 6; i++) {
         $("#player" + i).html("");
         let playerId = "player" + i
-        if (i <= gameState.numberOfPlayers) {
-            for (let c of gameState.selectablePlayers) {
-                $(".player" + i).show();
+        const selector = document.getElementById(playerId)
+        selector.classList.add("activePlayerSelector");
+        const playerAtIndex = gameState.activePlayers[i - 1]
+        if (playerAtIndex) {
+            $(".player" + i).show();
+            for (const selectablePlayer of gameState.selectablePlayers) {
                 let option = document.createElement("option");
-                option.setAttribute("value", c.name);
-                option.innerHTML = c.name;
-                document.getElementById(playerId).appendChild(option);
-                document.getElementById(playerId).classList.add("activePlayerSelector");
+                if (selectablePlayer.name == playerAtIndex.name) {
+                    option.selected = true
+                }
+                option.setAttribute("value", selectablePlayer.name);
+                option.innerHTML = selectablePlayer.name;
+                selector.appendChild(option);
             }
-        }
-        else {
+        } else {
             $(".player" + i).hide();
-            document.getElementById(playerId).classList.remove("activePlayerSelector");
         }
     }
 }

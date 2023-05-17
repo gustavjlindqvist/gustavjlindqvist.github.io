@@ -287,73 +287,61 @@
 
         document.querySelector('#resetBtn').addEventListener('click', () => {
             socket.emit('resetGame', (gameState) => {
-                initBoard(gameState.gameBoard)
-                setUpSelectPlayer(gameState)
-                initPlayerPositions(gameState)
+                reinitializeGame(gameState)
             });
         });
 
-        document.querySelector('#startBtn').addEventListener('click', () => {
-            socket.emit('startGame')
-        });
+        // document.querySelector('#startBtn').addEventListener('click', () => {
+        //     socket.emit('startGame')
+        // });
 
         const nrOfPlayersSelector = document.getElementById("selectNrOfPlayers");
         nrOfPlayersSelector.addEventListener("change", () => {
             socket.emit('setNumberOfPlayers', nrOfPlayersSelector.value, (gameState) => {
                 setUpSelectPlayer(gameState)
-
-                const playerSelectors = Array.from(document.getElementsByClassName("activePlayerSelector"))
-                const playerSelectorValues = playerSelectors.map(selector => selector.value)
-
-                socket.emit('addPlayers', playerSelectorValues)
-
-                for (let selector of playerSelectors) {
-                    selector.addEventListener("change", () => {
-                        const playerSelectorValues = playerSelectors.map(selector => selector.value)
-
-                        socket.emit('addPlayers', playerSelectorValues)
-                    })
-                }
+                initPlayerPositions(gameState)
             })
-        });
-
-        socket.addEventListener('playersDidChange', gameState => {
-            initPlayerPositions(gameState)
         })
 
-        const gameSpeedSelector = document.getElementById("gameSpeed");
-        gameSpeedSelector.addEventListener("change", () => {
-            socket.emit('setSimulationSpeed', gameSpeedSelector.value);
-        });
+        function setupPlayerSelectorListeners() {
+            const playerSelectors = Array.from(document.getElementsByClassName("activePlayerSelector"))
+            for (let index in playerSelectors) {
+                //console.log(playerSelectors[index])
+                const playerSelector = playerSelectors[index]
+                playerSelector.addEventListener("change", () => {
+                    socket.emit('replacePlayer', index, playerSelector.value)
+                })
+            }
+        }
+
+        // socket.addEventListener('playersDidChange', gameState => {
+        //     initPlayerPositions(gameState)
+        // })
+
+        // const gameSpeedSelector = document.getElementById("gameSpeed");
+        // gameSpeedSelector.addEventListener("change", () => {
+        //     socket.emit('setSimulationSpeed', gameSpeedSelector.value);
+        // });
 
         socket.addEventListener('renderInitialGameState', (gameState) => {
-            initBoard(gameState.gameBoard)
-            setUpSelectPlayer(gameState)
-            initPlayerPositions(gameState)
+            reinitializeGame(gameState)
         })
 
-        socket.addEventListener('didChangeNumberOfPlayers', (gameState) => {
-            reinitializeGame(gameState);
-        })
+        // socket.addEventListener('playerJoined', gameState => {
+        //     reinitializeGame(gameState);
+        // })
 
-        socket.addEventListener('didResetGame', (gameState) => {
-            reinitializeGame(gameState);
-        })
-
-        socket.addEventListener('playerJoined', gameState => {
-            reinitializeGame(gameState);
-        })
-
-        socket.addEventListener('updatedGameState', (oldGameState, newGameState) => {
-            drawPlayers(oldGameState, newGameState);
-            drawMessages(newGameState);
-        })
+        // socket.addEventListener('updatedGameState', (oldGameState, newGameState) => {
+        //     drawPlayers(oldGameState, newGameState);
+        //     drawMessages(newGameState);
+        // })
 
         function reinitializeGame(gameState) {
             initBoard(gameState.gameBoard);
-            // initPlayerPositions(gameState);
-            // setUpSelectPlayer(gameState);
+            initPlayerPositions(gameState);
+            setUpSelectPlayer(gameState);
             clearOutput();
+            setupPlayerSelectorListeners();
         }
 
         // gameSpeedSelector.addEventListener("change", () => {
