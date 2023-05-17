@@ -309,7 +309,9 @@
                 //console.log(playerSelectors[index])
                 const playerSelector = playerSelectors[index]
                 playerSelector.addEventListener("change", () => {
-                    socket.emit('replacePlayer', index, playerSelector.value)
+                    socket.emit('replacePlayer', index, playerSelector.value, (gameState) => {
+                        initPlayerPositions(gameState)
+                    })
                 })
             }
         }

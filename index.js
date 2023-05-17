@@ -24,6 +24,21 @@ const allPowerups = [
 
 class GameState {
     constructor(maxX, maxY, simulationSpeed) {
+        this.gameBoard
+        this.step = 0
+        this.availableColors = ["#d39", "#3d9", "#d93", "#39d", "#93d", "#9d3", "#7ff", "#f5f", "#7ff", "#ff7"]
+        this.simulationSpeed = simulationSpeed
+        this.gameBoard = this.initialGameBoard(maxX, maxY)
+        this.maxX = maxX
+        this.maxY = maxY
+        this.selectablePlayers = []
+        this.activePlayers = []
+        this.gameOver = false
+        this.boardPowerUp = null
+        this.messageBuffer = []
+    }
+
+    initialGameBoard(maxX, maxY) {
         let gameBoard = [];
         for (let x = 0; x <= maxX + 1; x++) {
             gameBoard[x] = [];
@@ -34,17 +49,26 @@ class GameState {
             }
         }
 
+        return gameBoard
+    }
+
+    reset() {
         this.step = 0
-        this.availableColors = ["#d39", "#3d9", "#d93", "#39d", "#93d", "#9d3", "#7ff", "#f5f", "#7ff", "#ff7"]
-        this.simulationSpeed = simulationSpeed
-        this.gameBoard = gameBoard
-        this.maxX = maxX
-        this.maxY = maxY
-        this.selectablePlayers = []
-        this.activePlayers = []
+        this.gameBoard = this.initialGameBoard(this.maxX, this.maxY)
         this.gameOver = false
         this.boardPowerUp = null
         this.messageBuffer = []
+
+        this.activePlayers.forEach(player => {
+            const [x, y] = this.randomCoordinates()
+
+            player.x = x
+            player.y = y
+            player.isAlive = true
+            player.dx = 0
+            player.dy = -1
+            player.activePower = null
+        })
     }
 
     addSelectableBots(bots) {
@@ -106,11 +130,17 @@ class GameState {
         return this
     }
 
+    randomCoordinates() {
+        let x = Math.floor(Math.random() * this.maxX) + 1;
+        let y = Math.floor(Math.random() * this.maxY) + 1;
+
+        return [x, y]
+    }
+
     createActivePlayer(name) {
         const player = this.selectablePlayers.find(player => player.name == name)
 
-        let x = Math.floor(Math.random() * this.maxX) + 1;
-        let y = Math.floor(Math.random() * this.maxY) + 1;
+        const [x, y] = this.randomCoordinates()
 
         const color = this.availableColors.pop()
 
@@ -260,7 +290,6 @@ class GameState {
             // If there was more than one player alive before, but now zero players alive, it's a draw.
             if (playersAliveBeforeMoves.length > 1) {
                 return playersAliveBeforeMoves
-                //this.messageBuffer.push(output);
             }
         }
 
@@ -269,7 +298,6 @@ class GameState {
 
     addWinnersToMessageBuffer(winners) {
         if (winners.length == 1) {
-            console.log(winners)
             const output = this.playersNameInColor(winners[0]) + " wins 🏁"
             this.messageBuffer.push(output)
         }
@@ -404,7 +432,7 @@ async function gameLoop(currentGameState, gameCanvasSocket) {
 
     const allActivePlayerMoves = playerMoves.concat(botsMoves)
 
-    console.log(allActivePlayerMoves)
+    //console.log(allActivePlayerMoves)
 
     const lastGameState = currentGameState.clone()
     currentGameState.gameStep(allActivePlayerMoves);
@@ -460,13 +488,15 @@ gameClientServer.on('connection', (socket) => {
 
     socket.on('resetGame', (callback) => {
         clearTimeout(timer);
-        currentGameState = initialGameState()
+        currentGameState.reset()
 
         callback(currentGameState)
     })
 
-    socket.on('replacePlayer', (index, name) => {
+    socket.on('replacePlayer', (index, name, callback) => {
         currentGameState.replaceActivePlayer(index, name)
+
+        callback(currentGameState)
     })
 
     socket.on('setNumberOfPlayers', (numberOfPlayers, callback) => {
