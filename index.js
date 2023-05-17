@@ -36,6 +36,7 @@ class GameState {
         this.gameOver = false
         this.boardPowerUp = null
         this.messageBuffer = []
+        this.stopGameLoop = false
     }
 
     initialGameBoard(maxX, maxY) {
@@ -58,6 +59,7 @@ class GameState {
         this.gameOver = false
         this.boardPowerUp = null
         this.messageBuffer = []
+        this.stopGameLoop = false
 
         this.activePlayers.forEach(player => {
             const [x, y] = this.randomCoordinates()
@@ -242,7 +244,7 @@ class GameState {
                 activePlayer.y += activePlayer.dy;
             } else {
                 activePlayer.isAlive = false
-                this.messageBuffer.push(this.playersNameInColor(activePlayer) + " gave an invalid move ☠️")
+                this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " gave an invalid move ☠️")
             }
         }
     }
@@ -255,13 +257,13 @@ class GameState {
             // Player hits wall or snake (they die)
             if (this.squareNotEmpty(playerX, playerY)) {
                 if (this.gameBoard[playerX][playerY] == -1) {
-                    this.messageBuffer.push(this.playersNameInColor(activePlayer) + " crashed into the edge ☠️");
+                    this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " crashed into the edge ☠️");
                 } else if (this.gameBoard[playerX][playerY] == activePlayer.id) {
-                    this.messageBuffer.push(this.playersNameInColor(activePlayer) + " crashed into itself ☠️");
+                    this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " crashed into itself ☠️");
                 } else {
                     const otherPlayerId = this.gameBoard[playerX][playerY];
                     const otherPlayer = otherPlayers.find(player => player.id == otherPlayerId)
-                    this.messageBuffer.push(this.playersNameInColor(activePlayer) + " crashed into " + this.playersNameInColor(otherPlayer) + " ☠️");
+                    this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " crashed into " + this.playersNameInColor(otherPlayer) + " ☠️");
                 }
                 activePlayer.isAlive = false;
             }
@@ -269,7 +271,7 @@ class GameState {
                 // Player hits another players head (both die)
                 for (const otherPlayer of otherPlayers) {
                     if (playerX == otherPlayer.x && playerY == otherPlayer.y) {
-                        this.messageBuffer.push(this.playersNameInColor(activePlayer) + " and " + this.playersNameInColor(otherPlayer) + " crashed into each other ☠️");
+                        this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " and " + this.playersNameInColor(otherPlayer) + " crashed into each other ☠️");
                         activePlayer.isAlive = false
                         otherPlayer.isAlive = false
                     }
@@ -301,13 +303,13 @@ class GameState {
     addWinnersToMessageBuffer(winners) {
         if (winners.length == 1) {
             const output = this.playersNameInColor(winners[0]) + " wins 🏁"
-            this.messageBuffer.push(output)
+            this.pushToMessageBuffer(output)
         }
 
         if (winners.length > 1) {
             const winnerNames = winners.map(winner => this.playersNameInColor(winner)).join(" and ")
 
-            this.messageBuffer.push(`It's a draw between ${winnerNames} 🏁`)
+            this.pushToMessageBuffer(`It's a draw between ${winnerNames} 🏁`)
         }
     }
 
@@ -325,7 +327,7 @@ class GameState {
 
         if (this.boardPowerUp) {
             if (this.boardPowerUp.x == playerX && this.boardPowerUp.y == playerY) {
-                this.messageBuffer.push(activePlayer) + " is " + this.boardPowerUp.name + " 🧊";
+                this.pushToMessageBuffer(activePlayer) + " is " + this.boardPowerUp.name + " 🧊";
 
                 activePlayer.activePower = {
                     step: 0,
@@ -365,6 +367,11 @@ class GameState {
         //let lastPlayerState = JSON.parse(JSON.stringify(this.playerState));
         const playersAliveBeforeMoves = this.activePlayers.filter(player => player.isAlive)
 
+        if (playersAliveBeforeMoves.length < 1) {
+            this.stopGameLoop = true
+            return
+        }
+
         // Check for powerup expiry
         for (const activePlayer of this.activePlayers) {
             this.handlePowerUpExpiry(activePlayer)
@@ -380,9 +387,8 @@ class GameState {
 
         if (winners.length > 0) {
             this.addWinnersToMessageBuffer(winners)
-            this.gameOver = true
 
-            return this
+            this.gameOver = true
         }
 
         for (const activePlayer of this.activePlayers) {
@@ -390,7 +396,7 @@ class GameState {
             //this.checkPlayerFoundPowerup(activePlayer)
         }
 
-        //this.addRandomPowerUpToBoardIfNeeded()
+        this.addRandomPowerUpToBoardIfNeeded()
 
         return this
     }
@@ -403,13 +409,19 @@ class GameState {
         }
     }
 
+    pushToMessageBuffer(message) {
+        if (!this.gameOver) {
+            this.messageBuffer.push(message)
+        }
+    }
+
     clone() {
         return JSON.parse(JSON.stringify(this))
     }
 }
 
 function startGame(initialGameState, gameCanvasSocket) {
-    initialGameState.messageBuffer.push("And the snakes are off... ");
+    initialGameState.pushToMessageBuffer("And the snakes are off... ");
     clearTimeout(timer);
     gameLoop(initialGameState, gameCanvasSocket)
 }
@@ -443,7 +455,8 @@ async function gameLoop(currentGameState, gameCanvasSocket) {
         gameCanvasSocket.emit('updatedGameState', lastGameState, currentGameState);
     }
 
-    if (currentGameState.gameOver) {
+    if (currentGameState.stopGameLoop) {
+        clearTimeout(timer)
         return
     }
 
