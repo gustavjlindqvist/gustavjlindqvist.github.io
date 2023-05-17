@@ -142,7 +142,9 @@ class GameState {
 
         const [x, y] = this.randomCoordinates()
 
-        const color = this.availableColors.pop()
+        const activePlayerColors = this.activePlayers.map(player => player.color)
+        const nonUsedColors = this.availableColors.filter(color => !activePlayerColors.includes(color))
+        const color = nonUsedColors[Math.floor(Math.random() * nonUsedColors.length)];
 
         return {
             name: player.name,
