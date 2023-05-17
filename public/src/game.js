@@ -19,6 +19,11 @@ export function initBoard(gameBoard) {
     board.appendChild(tbl);
 }
 
+export function initSimulationSpeedSider(speed) {
+    console.log(speed)
+    document.getElementById("gameSpeed").value = speed
+}
+
 export function setUpSelectPlayer(gameState) {
     document.getElementById("selectNrOfPlayers").value = gameState.activePlayers.length
 

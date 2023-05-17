@@ -268,7 +268,7 @@
                 <br>
                 <br>
                 Simulation speed:
-                <input type="range" min="1" max="50" value="10" class="slider" id="gameSpeed">
+                <input type="range" min="1" max="1000" value="10" class="slider" id="gameSpeed">
             </div>
         </div>
         <div class="wrapper">
@@ -280,7 +280,7 @@
 
 
     <script type="module">
-        import { setUpSelectPlayer, initBoard, initPlayerPositions, drawPlayers, drawMessages, clearOutput } from './src/game.js'
+        import { setUpSelectPlayer, initBoard, initPlayerPositions, drawPlayers, drawMessages, clearOutput, initSimulationSpeedSider } from './src/game.js'
         import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 
         const socket = io("localhost:3000");
@@ -335,6 +335,7 @@
         })
 
         function reinitializeGame(gameState) {
+            initSimulationSpeedSider(gameState.simulationSpeed)
             initBoard(gameState.gameBoard);
             initPlayerPositions(gameState);
             setUpSelectPlayer(gameState);

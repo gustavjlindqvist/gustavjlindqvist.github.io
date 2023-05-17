@@ -466,7 +466,7 @@ function apply(bot, gameState) {
 }
 
 function initialGameState() {
-    return new GameState(40, 40, 5000).addSelectableBots(bots).setNumberOfPlayers(2)
+    return new GameState(40, 40, 100).addSelectableBots(bots).setNumberOfPlayers(2)
 }
 
 app.use(express.static('public'));
@@ -506,7 +506,7 @@ gameClientServer.on('connection', (socket) => {
     })
 
     socket.on('setSimulationSpeed', (speed) => {
-        currentGameState.setSimulationSpeed(1000 / speed)
+        currentGameState.setSimulationSpeed(speed)
     })
 });
 
