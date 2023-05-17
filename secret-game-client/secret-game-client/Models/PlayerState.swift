@@ -10,22 +10,26 @@ struct PlayerState {
     let y: Int
     let dx: Int
     let dy: Int
+    let name: String
     let activePower: ActivePower?
     
     init?(_ json: Json) {
         guard let x = json["x"] as? Int,
-        let y = json["y"] as? Int,
-            let dx = json["dx"] as? Int,
-            let dy = json["dx"] as? Int,
-            let activePower = json["activePower"] as? Json else {
-                return nil
-            }
+              let y = json["y"] as? Int,
+              let dx = json["dx"] as? Int,
+              let dy = json["dx"] as? Int,
+              let name = json["name"] as? String else {
+            return nil
+        }
+        
+        //let activePower = json["activePower"] as? Json
         
         self.x = x
         self.y = y
         self.dx = dx
         self.dy = dy
-        self.activePower = ActivePower(activePower)
+        self.name = name
+        self.activePower = nil //ActivePower(activePower)
     }
 }
 

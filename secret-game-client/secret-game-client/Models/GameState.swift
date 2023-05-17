@@ -11,18 +11,17 @@ struct GameState {
     let otherPlayers: [PlayerState]
     let boardPowerUp: BoardPowerUpState?
     
-    init?(_ json: Json) {
+    init?(_ json: Json, name: String) {
         guard let gameBoard = json["gameBoard"] as? [[Int]],
-              let myPlayerJson = json["myState"] as? Json,
-              let otherPlayersJson = json["otherPlayersState"] as? [Json],
-              let myPlayer = PlayerState(myPlayerJson),
-              let otherPlayers = [PlayerState].init(otherPlayersJson) else {
+              let playerStatesJson = json["playerStates"] as? [Json],
+              let playerStates = [PlayerState].init(playerStatesJson),
+              let myState = playerStates.first(where: { $0.name == name }) else {
             return nil
         }
         
         self.gameBoard = gameBoard
-        self.myPlayer = myPlayer
-        self.otherPlayers = otherPlayers
+        self.myPlayer = myState
+        self.otherPlayers = playerStates.filter { $0.name != name }
         self.boardPowerUp = nil
 //        self.boardPowerUp = (json["boardPowerUp"] as? Json).map { (powerUp: Json) -> BoardPowerUp? inreturn BoardPowerUp(powerUp)
 //        }

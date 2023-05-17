@@ -53,7 +53,7 @@ final class SnakesOnAPlaneClient<T: ClientTactic> {
         socket.onServerEvent(.clientMove) { [weak self] data, ack in
             guard let self,
                   let gameStateDict = data[0] as? Json,
-                  let parsedGameState = GameState(gameStateDict) else {
+                  let parsedGameState = GameState(gameStateDict, name: self.tactic.name) else {
                 return
             }
             

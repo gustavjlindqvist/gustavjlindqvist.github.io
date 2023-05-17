@@ -180,5 +180,197 @@
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "3F9FFB9A-3642-45DD-8CFE-FF1384E9D615"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "secret-game-client/SnakesOnAPlaneClient.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "35"
+            endingLineNumber = "35"
+            landmarkName = "init(socketUrlString:tactic:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7A8FF06D-99D3-486D-B40D-0AB5CD8D5A4F"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "secret-game-client/SnakesOnAPlaneClient.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "54"
+            endingLineNumber = "54"
+            landmarkName = "setupHandlers()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "7A8FF06D-99D3-486D-B40D-0AB5CD8D5A4F - a4fcee453bf977a4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (Swift.Array&lt;Any&gt;, SocketIO.SocketAckEmitter) -&gt; () in secret_game_client.SnakesOnAPlaneClient.setupHandlers() -&gt; ()"
+                  moduleName = "secret-game-client"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/timas/Documents/gustavjlindqvist.github.io/secret-game-client/secret-game-client/SnakesOnAPlaneClient.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "54"
+                  endingLineNumber = "54"
+                  offsetFromSymbolStart = "238">
+               </Location>
+               <Location
+                  uuid = "7A8FF06D-99D3-486D-B40D-0AB5CD8D5A4F - a4fcee453bf977a4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (Swift.Array&lt;Any&gt;, SocketIO.SocketAckEmitter) -&gt; () in secret_game_client.SnakesOnAPlaneClient.setupHandlers() -&gt; ()"
+                  moduleName = "secret-game-client"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/timas/Documents/gustavjlindqvist.github.io/secret-game-client/secret-game-client/SnakesOnAPlaneClient.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "54"
+                  endingLineNumber = "54"
+                  offsetFromSymbolStart = "319">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DAE56851-18A5-443F-96C5-94DE26282DD8"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "secret-game-client/Models/GameState.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "15"
+            endingLineNumber = "15"
+            landmarkName = "init?(_:name:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "DAE56851-18A5-443F-96C5-94DE26282DD8 - 4bc6c4e9f196ace2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "secret_game_client.GameState.init(_: Swift.Dictionary&lt;Swift.String, Any&gt;, name: Swift.String) -&gt; Swift.Optional&lt;secret_game_client.GameState&gt;"
+                  moduleName = "secret-game-client"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/timas/Documents/gustavjlindqvist.github.io/secret-game-client/secret-game-client/Models/GameState.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "15"
+                  endingLineNumber = "15"
+                  offsetFromSymbolStart = "221">
+               </Location>
+               <Location
+                  uuid = "DAE56851-18A5-443F-96C5-94DE26282DD8 - 4bc6c4e9f196ace2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "secret_game_client.GameState.init(_: Swift.Dictionary&lt;Swift.String, Any&gt;, name: Swift.String) -&gt; Swift.Optional&lt;secret_game_client.GameState&gt;"
+                  moduleName = "secret-game-client"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/timas/Documents/gustavjlindqvist.github.io/secret-game-client/secret-game-client/Models/GameState.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "15"
+                  endingLineNumber = "15"
+                  offsetFromSymbolStart = "527">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6E911640-C375-4C32-9580-FFF43FC3F464"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "secret-game-client/Models/PlayerState.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "17"
+            endingLineNumber = "17"
+            landmarkName = "init?(_:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "6E911640-C375-4C32-9580-FFF43FC3F464 - 4a6ad3c6064118c1"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "secret_game_client.PlayerState.init(Swift.Dictionary&lt;Swift.String, Any&gt;) -&gt; Swift.Optional&lt;secret_game_client.PlayerState&gt;"
+                  moduleName = "secret-game-client"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/timas/Documents/gustavjlindqvist.github.io/secret-game-client/secret-game-client/Models/PlayerState.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "17"
+                  endingLineNumber = "17"
+                  offsetFromSymbolStart = "164">
+               </Location>
+               <Location
+                  uuid = "6E911640-C375-4C32-9580-FFF43FC3F464 - 4a6ad3c6064118c1"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "secret_game_client.PlayerState.init(Swift.Dictionary&lt;Swift.String, Any&gt;) -&gt; Swift.Optional&lt;secret_game_client.PlayerState&gt;"
+                  moduleName = "secret-game-client"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/timas/Documents/gustavjlindqvist.github.io/secret-game-client/secret-game-client/Models/PlayerState.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "17"
+                  endingLineNumber = "17"
+                  offsetFromSymbolStart = "449">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "9968DED0-81F3-4564-9F9B-682F27CD4FDA"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "secret-game-client/main.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "16"
+            endingLineNumber = "16"
+            landmarkName = "getNextMove(gameState:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "BB8E2940-5E0D-47DB-955D-39D25B88979D"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "secret-game-client/SnakesOnAPlaneClient.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "60"
+            endingLineNumber = "60"
+            landmarkName = "setupHandlers()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

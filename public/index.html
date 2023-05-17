@@ -306,7 +306,6 @@
         function setupPlayerSelectorListeners() {
             const playerSelectors = Array.from(document.getElementsByClassName("activePlayerSelector"))
             for (let index in playerSelectors) {
-                //console.log(playerSelectors[index])
                 const playerSelector = playerSelectors[index]
                 playerSelector.addEventListener("change", () => {
                     socket.emit('replacePlayer', index, playerSelector.value, (gameState) => {
@@ -325,9 +324,9 @@
             reinitializeGame(gameState)
         })
 
-        // socket.addEventListener('playerJoined', gameState => {
-        //     reinitializeGame(gameState);
-        // })
+        socket.addEventListener('playerJoined', gameState => {
+            setUpSelectPlayer(gameState)
+        })
 
         socket.addEventListener('updatedGameState', (oldGameState, newGameState) => {
             drawPlayers(oldGameState, newGameState);

@@ -80,9 +80,11 @@ class GameState {
     }
 
     addSelectablePlayer(name) {
-        this.selectablePlayers.push({
-            name: name
-        })
+        if (!this.selectablePlayers.map(player => player.name).includes(name)) {
+            this.selectablePlayers.push({
+                name: name
+            })
+        }
 
         return this
     }
@@ -227,7 +229,13 @@ class GameState {
     }
 
     handlePlayerMove(activePlayer, playerMoves) {
-        const playerMove = playerMoves.find(move => move.id == activePlayer.id)
+        let playerMove = playerMoves.find(move => {
+            if (move.id) {
+                return move.id == activePlayer.id
+            } else {
+                return move.name == activePlayer.name
+            }
+        })
 
         if (playerMove == null) {
             activePlayer.x += activePlayer.dx
@@ -435,6 +443,7 @@ async function getPlayerMoves(currentGameState) {
         return responses
     } catch (e) {
         // some clients did not acknowledge the event in the given delay, try again
+        console.log("error")
         return []
     }
 }
@@ -445,8 +454,6 @@ async function gameLoop(currentGameState, gameCanvasSocket) {
     const botsMoves = bots.map(bot => apply(bot, currentGameState))
 
     const allActivePlayerMoves = playerMoves.concat(botsMoves)
-
-    //console.log(allActivePlayerMoves)
 
     const lastGameState = currentGameState.clone()
     currentGameState.gameStep(allActivePlayerMoves);
@@ -484,6 +491,8 @@ function initialGameState() {
     return new GameState(40, 40, 100).addSelectableBots(bots).setNumberOfPlayers(2)
 }
 
+let currentGameState = initialGameState()
+
 app.use(express.static('public'));
 
 app.get('/', (req, res) => {
@@ -491,9 +500,9 @@ app.get('/', (req, res) => {
 });
 
 gameClientServer.on('connection', (socket) => {
-    console.log('game connected');
+    gameCanvasSocket = socket
 
-    let currentGameState = initialGameState()
+    console.log('game canvas connected');
 
     socket.emit('renderInitialGameState', currentGameState);
 
@@ -526,11 +535,17 @@ gameClientServer.on('connection', (socket) => {
 });
 
 gameClientsNameSpace.on("connection", (socket) => {
+    console.log("game client connected")
+
     socket.on('playerJoined', input => {
         if (input[0].name !== null) {
             const playerName = input[0].name
 
-            //addNewPlayerToGame(playerName)
+            currentGameState.addSelectablePlayer(playerName)
+
+            if (gameCanvasSocket) {
+                gameCanvasSocket.emit('playerJoined', currentGameState)
+            }
         }
     })
 });

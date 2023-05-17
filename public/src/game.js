@@ -20,7 +20,6 @@ export function initBoard(gameBoard) {
 }
 
 export function initSimulationSpeedSider(speed) {
-    console.log(speed)
     document.getElementById("gameSpeed").value = speed
 }
 
