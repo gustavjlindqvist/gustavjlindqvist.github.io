@@ -291,9 +291,9 @@
             });
         });
 
-        // document.querySelector('#startBtn').addEventListener('click', () => {
-        //     socket.emit('startGame')
-        // });
+        document.querySelector('#startBtn').addEventListener('click', () => {
+            socket.emit('startGame')
+        });
 
         const nrOfPlayersSelector = document.getElementById("selectNrOfPlayers");
         nrOfPlayersSelector.addEventListener("change", () => {
@@ -314,14 +314,10 @@
             }
         }
 
-        // socket.addEventListener('playersDidChange', gameState => {
-        //     initPlayerPositions(gameState)
-        // })
-
-        // const gameSpeedSelector = document.getElementById("gameSpeed");
-        // gameSpeedSelector.addEventListener("change", () => {
-        //     socket.emit('setSimulationSpeed', gameSpeedSelector.value);
-        // });
+        const gameSpeedSelector = document.getElementById("gameSpeed");
+        gameSpeedSelector.addEventListener("change", () => {
+            socket.emit('setSimulationSpeed', gameSpeedSelector.value);
+        });
 
         socket.addEventListener('renderInitialGameState', (gameState) => {
             reinitializeGame(gameState)
@@ -331,10 +327,10 @@
         //     reinitializeGame(gameState);
         // })
 
-        // socket.addEventListener('updatedGameState', (oldGameState, newGameState) => {
-        //     drawPlayers(oldGameState, newGameState);
-        //     drawMessages(newGameState);
-        // })
+        socket.addEventListener('updatedGameState', (oldGameState, newGameState) => {
+            drawPlayers(oldGameState, newGameState);
+            drawMessages(newGameState);
+        })
 
         function reinitializeGame(gameState) {
             initBoard(gameState.gameBoard);
@@ -343,12 +339,6 @@
             clearOutput();
             setupPlayerSelectorListeners();
         }
-
-        // gameSpeedSelector.addEventListener("change", () => {
-        //     socket.emit('selectGameSpeed', {
-        //         gameSpeed: gameSpeedSelector.value
-        //     })
-        // });
     </script>
 </body>
 

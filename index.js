@@ -193,7 +193,7 @@ class GameState {
     }
 
     handlePlayerMove(activePlayer, playerMoves) {
-        const playerMove = playerMoves.find(move => move.name == activePlayer.name)
+        const playerMove = playerMoves.find(move => move.id == activePlayer.id)
 
         if (playerMove == null) {
             activePlayer.x += activePlayer.dx
@@ -269,16 +269,15 @@ class GameState {
 
     addWinnersToMessageBuffer(winners) {
         if (winners.length == 1) {
+            console.log(winners)
             const output = this.playersNameInColor(winners[0]) + " wins 🏁"
             this.messageBuffer.push(output)
         }
 
         if (winners.length > 1) {
-            const output = winners.reduce((output, player) => {
-                output + this.playersNameInColor(player)
-            }, "It's a draw between ") + " 🏁"
+            const winnerNames = winners.map(winner => this.playersNameInColor(winner)).join(" and ")
 
-            this.messageBuffer.push(output)
+            this.messageBuffer.push(`It's a draw between ${winnerNames} 🏁`)
         }
     }
 
@@ -399,11 +398,13 @@ async function getPlayerMoves(currentGameState) {
 }
 
 async function gameLoop(currentGameState, gameCanvasSocket) {
-    const playerMoves = await getPlayerMoves(currentGameState) //{ "Timas", dx: 1, dy: 0 }
+    const playerMoves = await getPlayerMoves(currentGameState)
     const bots = currentGameState.activePlayers.filter(player => player.func)
     const botsMoves = bots.map(bot => apply(bot, currentGameState))
+
     const allActivePlayerMoves = playerMoves.concat(botsMoves)
 
+    console.log(allActivePlayerMoves)
 
     const lastGameState = currentGameState.clone()
     currentGameState.gameStep(allActivePlayerMoves);
@@ -425,23 +426,20 @@ async function gameLoop(currentGameState, gameCanvasSocket) {
 
 function apply(bot, gameState) {
     const me = bot
-    const otherPlayers = gameState.activePlayers.filter(player => player != bot)
+    const otherPlayers = gameState.activePlayers.filter(player => player.id != bot.id)
 
     const botMove = bot.func(me, otherPlayers, gameState.gameBoard, gameState.boardPowerUp)
     return {
         name: bot.name,
+        id: bot.id,
         dx: botMove.dx,
         dy: botMove.dy
     }
 }
 
 function initialGameState() {
-    return new GameState(40, 40, 10).addSelectableBots(bots).setNumberOfPlayers(2)
+    return new GameState(40, 40, 5000).addSelectableBots(bots).setNumberOfPlayers(2)
 }
-
-//console.log(currentGameState)
-
-//currentGameState.addNumberOfPlayers(2)
 
 app.use(express.static('public'));
 
@@ -456,9 +454,9 @@ gameClientServer.on('connection', (socket) => {
 
     socket.emit('renderInitialGameState', currentGameState);
 
-    // socket.on('startGame', () => {
-    //     startGame(currentGameState, socket)
-    // })
+    socket.on('startGame', () => {
+        startGame(currentGameState, socket)
+    })
 
     socket.on('resetGame', (callback) => {
         clearTimeout(timer);
@@ -471,25 +469,15 @@ gameClientServer.on('connection', (socket) => {
         currentGameState.replaceActivePlayer(index, name)
     })
 
-    // socket.on('addPlayers', (playerNames) => {
-    //     //currentGameState.addActivePlayers(playerNames)
-
-    //     //socket.emit("playersDidChange", currentGameState)
-    // })
-
     socket.on('setNumberOfPlayers', (numberOfPlayers, callback) => {
         currentGameState.setNumberOfPlayers(numberOfPlayers)
 
         callback(currentGameState)
     })
 
-    // socket.on('setSimulationSpeed', (speed) => {
-    //     currentGameState.setSimulationSpeed(1000 / speed)
-    // })
-
-    // socket.on('disconnect', () => {
-    //     console.log('game disconnected');
-    // })
+    socket.on('setSimulationSpeed', (speed) => {
+        currentGameState.setSimulationSpeed(1000 / speed)
+    })
 });
 
 gameClientsNameSpace.on("connection", (socket) => {
