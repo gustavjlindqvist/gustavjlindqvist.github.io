@@ -17,6 +17,18 @@ struct MyTactic: ClientTactic {
     }
 }
 
-let client = SnakesOnAPlaneClient<MyTactic>(socketUrlString: "http://localhost:3000", tactic: MyTactic())
+var client: SnakesOnAPlaneClient<MyTactic>?
+
+// Usage
+let browser = Browser()
+browser.start()
+
+let cancellable = browser.$hostPort.sink { hostPort in
+    guard let hostPort else {
+        return
+    }
+    
+    client = SnakesOnAPlaneClient<MyTactic>(socketUrlString: "http://\(String(hostPort.host.dropLast(4))):\(hostPort.port)", tactic: MyTactic())
+}
 
 RunLoop.main.run()
