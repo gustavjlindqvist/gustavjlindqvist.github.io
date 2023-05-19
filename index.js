@@ -535,11 +535,11 @@ gameClientServer.on('connection', (socket) => {
 });
 
 gameClientsNameSpace.on("connection", (socket) => {
-    console.log("game client connected")
-
     socket.on('playerJoined', input => {
         if (input[0].name !== null) {
             const playerName = input[0].name
+
+            console.log(`${playerName} connected`)
 
             currentGameState.addSelectablePlayer(playerName)
 
