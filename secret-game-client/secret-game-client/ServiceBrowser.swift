@@ -1,9 +1,9 @@
 import Foundation
 import Network
 
-final class Browser {
+final class ServiceBrowser {
 
-    let browser: NWBrowser
+    private let browser: NWBrowser
     @Published var hostPort: (host: String, port: String)?
 
     init() {
@@ -11,9 +11,11 @@ final class Browser {
         parameters.includePeerToPeer = true
 
         browser = NWBrowser(for: .bonjour(type: "_snakesOnAPlane._tcp", domain: nil), using: parameters)
+        
+        start()
     }
 
-    func start() {
+    private func start() {
         browser.browseResultsChangedHandler = { results, changes in
             for result in results {
                 guard case NWEndpoint.service = result.endpoint else {
@@ -36,6 +38,7 @@ final class Browser {
                 connection.start(queue: .global())
             }
         }
+        
         browser.start(queue: .main)
     }
 }

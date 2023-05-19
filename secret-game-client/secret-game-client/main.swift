@@ -18,17 +18,16 @@ struct MyTactic: ClientTactic {
 }
 
 var client: SnakesOnAPlaneClient<MyTactic>?
-
-// Usage
-let browser = Browser()
-browser.start()
+let browser = ServiceBrowser()
 
 let cancellable = browser.$hostPort.sink { hostPort in
     guard let hostPort else {
         return
     }
     
-    client = SnakesOnAPlaneClient<MyTactic>(socketUrlString: "http://\(String(hostPort.host.dropLast(4))):\(hostPort.port)", tactic: MyTactic())
+    let hostPortString = "http://\(String(hostPort.host.dropLast(4))):\(hostPort.port)"
+    
+    client = SnakesOnAPlaneClient<MyTactic>(socketUrlString: hostPortString, tactic: MyTactic())
 }
 
 RunLoop.main.run()
