@@ -74,6 +74,19 @@ class GameState {
         })
     }
 
+    eraseTails() {
+        this.gameBoard = this.initialGameBoard(this.maxX, this.maxY)
+
+        for (const activePlayer of this.activePlayers) {
+            const x = activePlayer.x
+            const y = activePlayer.y
+
+            this.gameBoard[x][y] = activePlayer.id
+        }
+
+        return this
+    }
+
     addSelectableBots(bots) {
         this.selectablePlayers = this.selectablePlayers.concat(bots)
 
@@ -406,6 +419,7 @@ class GameState {
         }
 
         this.addRandomPowerUpToBoardIfNeeded()
+        this.step += 1
 
         return this
     }
@@ -459,6 +473,10 @@ async function gameLoop(currentGameState, gameCanvasSocket) {
     const lastGameState = currentGameState.clone()
     currentGameState.gameStep(allActivePlayerMoves);
 
+    // const lastGameState = currentGameState.clone()
+    // currentGameState.eraseTails()
+    // socket.emit('removeTails', lastGameState, currentGameState)
+
     if (gameCanvasSocket) {
         gameCanvasSocket.emit('updatedGameState', lastGameState, currentGameState);
     }
@@ -508,7 +526,9 @@ gameClientServer.on('connection', (socket) => {
     socket.emit('renderInitialGameState', currentGameState);
 
     socket.on('startGame', () => {
-        startGame(currentGameState, socket)
+        if (currentGameState.step == 0) {
+            startGame(currentGameState, socket)
+        }
     })
 
     socket.on('resetGame', (callback) => {
