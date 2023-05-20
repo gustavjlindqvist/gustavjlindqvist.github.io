@@ -11,9 +11,9 @@ struct MyTactic: ClientTactic {
     //TODO: Settle on a name
     let name = "Timas"
     
-    //Return an enum
-    func getNextMove(gameState: GameState) -> Move {
-        return .right
+    //TODO: Implement next move tactic
+    func getNextMove(gameState: GameState) -> Move? {
+        return nil
     }
 }
 

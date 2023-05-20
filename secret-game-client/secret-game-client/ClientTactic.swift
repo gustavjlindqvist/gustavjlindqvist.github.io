@@ -7,5 +7,5 @@
 
 protocol ClientTactic {
     var name: String { get }
-    func getNextMove(gameState: GameState) -> Move
+    func getNextMove(gameState: GameState) -> Move?
 }

@@ -457,7 +457,7 @@ async function getPlayerMoves(currentGameState) {
     try {
         const responses = await gameClientsNameSpace.timeout(1000).emitWithAck('clientMove', clientState);
 
-        return responses
+        return responses.filter(response => response != null)
     } catch (e) {
         // some clients did not acknowledge the event in the given delay, try again
         console.log("error")
@@ -511,8 +511,6 @@ function apply(bot, gameState) {
 function initialGameState() {
     return new GameState(40, 40, 100).addSelectableBots(bots).setNumberOfPlayers(2)
 }
-
-
 
 let currentGameState = initialGameState()
 
