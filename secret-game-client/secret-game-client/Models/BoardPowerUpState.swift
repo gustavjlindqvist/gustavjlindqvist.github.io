@@ -12,9 +12,8 @@ struct BoardPowerUpState {
     
     init?(_ json: Json) {
         guard let name = json["name"] as? String,
-        let x = json["x"] as? Int,
-        let y = json["y"] as? Int
-        else {
+              let x = json["x"] as? Int,
+              let y = json["y"] as? Int else {
             return nil
         }
         

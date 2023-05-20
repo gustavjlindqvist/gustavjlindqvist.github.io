@@ -380,6 +380,8 @@ class GameState {
                 this.boardPowerUp = { name: chosenPower.name, id: chosenPower.id, x: powerX, y: powerY };
             }
         }
+
+        return this
     }
 
     gameStep(playerMoves) {
@@ -509,6 +511,8 @@ function apply(bot, gameState) {
 function initialGameState() {
     return new GameState(40, 40, 100).addSelectableBots(bots).setNumberOfPlayers(2)
 }
+
+
 
 let currentGameState = initialGameState()
 

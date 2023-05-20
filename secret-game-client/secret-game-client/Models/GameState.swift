@@ -22,8 +22,13 @@ struct GameState {
         self.gameBoard = gameBoard
         self.myPlayer = myState
         self.otherPlayers = playerStates.filter { $0.name != name }
-        self.boardPowerUp = nil
-//        self.boardPowerUp = (json["boardPowerUp"] as? Json).map { (powerUp: Json) -> BoardPowerUp? inreturn BoardPowerUp(powerUp)
-//        }
+        
+        guard let boardPowerUpJson = json["boardPowerUp"] as? Json,
+              let boardPowerUp = BoardPowerUpState(boardPowerUpJson) else {
+            self.boardPowerUp = nil
+            return
+        }
+        
+        self.boardPowerUp = boardPowerUp
     }
 }
