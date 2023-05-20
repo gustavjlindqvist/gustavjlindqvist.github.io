@@ -29,7 +29,14 @@ struct PlayerState {
         self.dx = dx
         self.dy = dy
         self.name = name
-        self.activePower = nil //ActivePower(activePower)
+        
+        guard let activePowerJson = json["activePower"] as? Json,
+              let activePower = ActivePower(activePowerJson) else {
+            self.activePower = nil
+            return
+        }
+        
+        self.activePower = activePower
     }
 }
 
