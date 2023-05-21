@@ -143,7 +143,6 @@ class GameState {
 
     setSimulationSpeed(speed) {
         this.simulationSpeed = speed
-
         return this
     }
 
@@ -547,9 +546,20 @@ async function gameLoop(currentGameState, gameCanvasSocket) {
 
     currentGameState.emptyMessageBuffer()
 
+    
+    // Eased simulation speed
+    const lowestSliderValue = 1
+    const highestSliderValue = 1000
+    const normalizedValue = (currentGameState.simulationSpeed - lowestSliderValue) / (highestSliderValue - lowestSliderValue)
+    const easedValue = 1 - (1 - normalizedValue) ** 2
+    const lowestLoopInterval = 1000
+    const highestLoopInterval = 3
+    const mapped_value = lowestLoopInterval + easedValue * (highestLoopInterval - lowestLoopInterval)
+
+    // Set loop timer
     timer = setTimeout(function () {
         gameLoop(currentGameState, gameCanvasSocket)
-    }, currentGameState.simulationSpeed);
+    }, mapped_value);
 }
 
 function apply(bot, gameState) {
@@ -566,7 +576,7 @@ function apply(bot, gameState) {
 }
 
 function initialGameState() {
-    return new GameState(40, 40, 100).addSelectableBots(bots).setNumberOfPlayers(2)
+    return new GameState(40, 40, 600).addSelectableBots(bots).setNumberOfPlayers(2)
 }
 
 let currentGameState = initialGameState()

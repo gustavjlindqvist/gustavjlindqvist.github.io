@@ -17,11 +17,13 @@ export function initBoard(gameBoard) {
     board.appendChild(tbl);
 }
 
-export function initSimulationSpeedSider(speed) {
-    document.getElementById("gameSpeed").value = speed
+export function initSimulationSpeedSlider(speed) {
+    // @ts-ignore
+    document.getElementById("simulationSpeedSlider").value = speed
 }
 
 export function setUpSelectPlayer(gameState) {
+    // @ts-ignore
     document.getElementById("selectNrOfPlayers").value = gameState.activePlayers.length
 
     for (let i = 1; i <= 6; i++) {

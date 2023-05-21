@@ -267,8 +267,8 @@
                 </div>
                 <br>
                 <br>
-                Simulation speed:
-                <input type="range" min="1" max="1000" value="10" class="slider" id="gameSpeed">
+                Snake speed:
+                <input type="range" min="1" max="1000" value="600" class="slider" id="simulationSpeedSlider">
             </div>
         </div>
         <div class="wrapper">
@@ -280,7 +280,7 @@
 
 
     <script type="module">
-        import { setUpSelectPlayer, initBoard, initPlayerPositions, drawPlayers, drawMessages, drawPowerUp, clearOutput, initSimulationSpeedSider } from './src/game.js'
+        import { setUpSelectPlayer, initBoard, initPlayerPositions, drawPlayers, drawMessages, drawPowerUp, clearOutput, initSimulationSpeedSlider } from './src/game.js'
         import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 
         const socket = io("localhost:3000");
@@ -327,9 +327,9 @@
             }
         }
 
-        const gameSpeedSelector = document.getElementById("gameSpeed");
-        gameSpeedSelector.addEventListener("change", () => {
-            socket.emit('setSimulationSpeed', gameSpeedSelector.value);
+        const simulationSpeedSlider = document.getElementById("simulationSpeedSlider");
+        simulationSpeedSlider.addEventListener("change", () => {
+            socket.emit('setSimulationSpeed', simulationSpeedSlider.value);
         });
 
         socket.addEventListener('renderInitialGameState', (gameState) => {
@@ -347,7 +347,7 @@
         })
 
         function reinitializeGame(gameState) {
-            initSimulationSpeedSider(gameState.simulationSpeed)
+            initSimulationSpeedSlider(gameState.simulationSpeed)
             initBoard(gameState.gameBoard);
             initPlayerPositions(gameState);
             setUpSelectPlayer(gameState);
