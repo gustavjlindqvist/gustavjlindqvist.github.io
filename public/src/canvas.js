@@ -128,11 +128,16 @@ export function drawPlayers(oldGameState, newGameState) {
 
 export function drawMessages(gameState) {
     for (let message of gameState.messageBuffer) {
-        const output = document.getElementById("output");
-        output.innerHTML += "＞ " + message;
-        output.innerHTML += "<br>";
-        output.scrollTop = output.scrollHeight;
+        const messageBox = document.getElementById("messageBox");
+        messageBox.innerHTML += "＞ " + message;
+        messageBox.innerHTML += "<br>";
+        messageBox.scrollTop = messageBox.scrollHeight;
     }
+}
+
+export function drawClearMessages() {
+    const messageBox = document.getElementById("messageBox");
+    messageBox.innerHTML = "";
 }
 
 export function drawPowerUp(oldGameState, newGameState) {
@@ -150,11 +155,6 @@ export function drawPowerUp(oldGameState, newGameState) {
             $("#x" + oldPowerUp.x + "y" + oldPowerUp.y).removeClass("powerup_frozen");
         }
     }
-}
-
-export function drawClearOutput() {
-    const output = document.getElementById("output");
-    output.innerHTML = "";
 }
 
 export function drawGameUIEnabled(isDisabled) {

@@ -45,7 +45,7 @@
             color: white;
         }
 
-        .output {
+        .messageBox {
             height: 300px;
             width: 100%;
             background: #223;
@@ -251,7 +251,7 @@
     <div style="position: relative; color: white">
         <div style="width: calc(50% - 350px); position: absolute; top: 0; left: 0">
             <div class="padding">
-                <div id="output" class="output"></div>
+                <div id="messageBox" class="messageBox"></div>
                 <br>
                 <br>
                 Number of players:
@@ -294,7 +294,7 @@
 
 
     <script type="module">
-        import { drawPlayerSelectors, drawInitialBoard, drawInitialPlayers, drawPlayers, drawMessages, drawPowerUp, drawClearOutput, drawSimulationSpeedValue, drawGameUIEnabled } from './src/canvas.js'
+        import { drawPlayerSelectors, drawInitialBoard, drawInitialPlayers, drawPlayers, drawMessages, drawClearMessages, drawPowerUp, drawSimulationSpeedValue, drawGameUIEnabled } from './src/canvas.js'
         import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 
         const socket = io("localhost:3000");
@@ -375,7 +375,7 @@
             drawInitialBoard(gameState.gameBoard);
             drawInitialPlayers(gameState);
             drawPlayerSelectors(gameState);
-            drawClearOutput();
+            drawClearMessages();
             setupPlayerSelectorListeners();
         }
     </script>
