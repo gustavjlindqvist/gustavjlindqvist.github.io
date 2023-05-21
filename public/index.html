@@ -280,7 +280,7 @@
 
 
     <script type="module">
-        import { setUpSelectPlayer, initBoard, initPlayerPositions, drawPlayers, drawMessages, drawPowerUp, clearOutput, initSimulationSpeedSlider } from './src/game.js'
+        import { drawPlayerSelectors, drawInitialBoard, drawInitialPlayers, drawPlayers, drawMessages, drawPowerUp, drawClearOutput, drawSimulationSpeedValue } from './src/canvas.js'
         import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 
         const socket = io("localhost:3000");
@@ -292,13 +292,13 @@
         });
 
         // socket.on('removeTails', (oldGameState, newGameState) => {
-        //     initBoard(newGameState.gameBoard)
+        //     drawInitialBoard(newGameState.gameBoard)
         //     drawPlayers(oldGameState, newGameState)
         //     drawMessages(newGameState)
         // })
 
         // socket.on('redrawPlayers', (oldGameState, newGameState) => {
-        //     initBoard(newGameState.gameBoard)
+        //     drawInitialBoard(newGameState.gameBoard)
         //     drawPlayers(oldGameState, newGameState)
         //     drawMessages(newGameState)
         // })
@@ -310,22 +310,10 @@
         const nrOfPlayersSelector = document.getElementById("selectNrOfPlayers");
         nrOfPlayersSelector.addEventListener("change", () => {
             socket.emit('setNumberOfPlayers', nrOfPlayersSelector.value, (gameState) => {
-                setUpSelectPlayer(gameState)
-                initPlayerPositions(gameState)
+                drawPlayerSelectors(gameState)
+                drawInitialPlayers(gameState)
             })
         })
-
-        function setupPlayerSelectorListeners() {
-            const playerSelectors = Array.from(document.getElementsByClassName("activePlayerSelector"))
-            for (let index in playerSelectors) {
-                const playerSelector = playerSelectors[index]
-                playerSelector.addEventListener("change", () => {
-                    socket.emit('replacePlayer', index, playerSelector.value, (gameState) => {
-                        initPlayerPositions(gameState)
-                    })
-                })
-            }
-        }
 
         const simulationSpeedSlider = document.getElementById("simulationSpeedSlider");
         simulationSpeedSlider.addEventListener("change", () => {
@@ -337,7 +325,7 @@
         })
 
         socket.addEventListener('playerJoined', gameState => {
-            setUpSelectPlayer(gameState)
+            drawPlayerSelectors(gameState)
         })
 
         socket.addEventListener('updatedGameState', (oldGameState, newGameState) => {
@@ -346,12 +334,24 @@
             drawMessages(newGameState);
         })
 
+        function setupPlayerSelectorListeners() {
+            const playerSelectors = Array.from(document.getElementsByClassName("activePlayerSelector"))
+            for (let index in playerSelectors) {
+                const playerSelector = playerSelectors[index]
+                playerSelector.addEventListener("change", () => {
+                    socket.emit('replacePlayer', index, playerSelector.value, (gameState) => {
+                        drawInitialPlayers(gameState)
+                    })
+                })
+            }
+        }
+
         function reinitializeGame(gameState) {
-            initSimulationSpeedSlider(gameState.simulationSpeed)
-            initBoard(gameState.gameBoard);
-            initPlayerPositions(gameState);
-            setUpSelectPlayer(gameState);
-            clearOutput();
+            drawSimulationSpeedValue(gameState.simulationSpeed)
+            drawInitialBoard(gameState.gameBoard);
+            drawInitialPlayers(gameState);
+            drawPlayerSelectors(gameState);
+            drawClearOutput();
             setupPlayerSelectorListeners();
         }
     </script>

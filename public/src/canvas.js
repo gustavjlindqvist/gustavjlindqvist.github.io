@@ -1,4 +1,4 @@
-export function initBoard(gameBoard) {
+export function drawInitialBoard(gameBoard) {
     $("#board").html("");
     let board = document.getElementById("board");
     let tbl = document.createElement("table");
@@ -17,12 +17,12 @@ export function initBoard(gameBoard) {
     board.appendChild(tbl);
 }
 
-export function initSimulationSpeedSlider(speed) {
+export function drawSimulationSpeedValue(speed) {
     // @ts-ignore
     document.getElementById("simulationSpeedSlider").value = speed
 }
 
-export function setUpSelectPlayer(gameState) {
+export function drawPlayerSelectors(gameState) {
     // @ts-ignore
     document.getElementById("selectNrOfPlayers").value = gameState.activePlayers.length
 
@@ -49,7 +49,7 @@ export function setUpSelectPlayer(gameState) {
     }
 }
 
-export function initPlayerPositions(gameState) {
+export function drawInitialPlayers(gameState) {
     $(".box").attr("style", "");
     $(".box").attr("class", "box");
     for (const player of gameState.activePlayers) {
@@ -128,7 +128,10 @@ export function drawPlayers(oldGameState, newGameState) {
 
 export function drawMessages(gameState) {
     for (let message of gameState.messageBuffer) {
-        writeOutput(message)
+        const output = document.getElementById("output");
+        output.innerHTML += "＞ " + message;
+        output.innerHTML += "<br>";
+        output.scrollTop = output.scrollHeight;
     }
 }
 
@@ -149,19 +152,11 @@ export function drawPowerUp(oldGameState, newGameState) {
     }
 }
 
-export function clearOutput() {
+export function drawClearOutput() {
     const output = document.getElementById("output");
     output.innerHTML = "";
 }
 
 function playersNameInColor(player) {
     return "<span style='color: " + player.color + "'>" + player.name + "</span>";
-}
-
-function writeOutput(html) {
-    const output = document.getElementById("output");
-    output.innerHTML += "＞ " + html;
-    output.innerHTML += "<br>";
-    output.scrollTop = output.scrollHeight;
-
 }
