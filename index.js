@@ -10,22 +10,13 @@ const gameClientServer = new Server(server, {
 });
 
 const { bots } = require('./bots');
+const { allPowerups } = require('./powerups');
 
 var timer;
 var gameCanvasSocket;
 
 const gameClientsNameSpace = gameClientServer.of("/gameClient");
 const playingRoom = "playingRoom"
-
-const allPowerups = [
-    {
-        name: "frozen",
-        id: 100,
-        color: "#FFFFFF"
-    }
-];
-
-//initialize x number of players
 
 class GameState {
     constructor(maxX, maxY, simulationSpeed) {
@@ -151,14 +142,6 @@ class GameState {
         return this
     }
 
-    addActivePowerToPlayer(id, power) {
-        const player = this.activePlayers.find(player => player.id == id)
-
-        player.activePower = power
-
-        return this
-    }
-
     replaceActivePlayer(playerIndex, name) {
         const playerAtIndex = this.activePlayers[playerIndex]
         const newActivePlayer = this.createActivePlayer(name)
@@ -266,6 +249,13 @@ class GameState {
     }
 
     handlePlayerMove(activePlayer, playerMoves) {
+        if (this.isFrozen(activePlayer)) {
+            return
+        }
+        if (!activePlayer.isAlive) {
+            return
+        }
+
         let playerMove = playerMoves.find(move => {
             if (move.id) {
                 return move.id == activePlayer.id
@@ -283,45 +273,48 @@ class GameState {
         activePlayer.dx = playerMove.dx
         activePlayer.dy = playerMove.dy
 
-        if (activePlayer.isAlive && !this.isFrozen(activePlayer)) {
-            if (this.isValidMove(activePlayer, playerMove)) {
-                activePlayer.x += activePlayer.dx;
-                activePlayer.y += activePlayer.dy;
-            } else {
-                activePlayer.isAlive = false
-                this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " gave an invalid move ☠️")
-            }
+        if (this.isValidMove(activePlayer, playerMove)) {
+            activePlayer.x += activePlayer.dx;
+            activePlayer.y += activePlayer.dy;
+        } else {
+            activePlayer.isAlive = false
+            this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " gave an invalid move ☠️")
         }
     }
 
     checkForDeathAfterMove(activePlayer, otherPlayers) {
+        if (this.isFrozen(activePlayer)) {
+            return;
+        }
+        if (!activePlayer.isAlive) {
+            return
+        }
+
         const playerX = activePlayer.x;
         const playerY = activePlayer.y;
 
-        if (activePlayer.isAlive && !this.isFrozen(activePlayer)) {
-            // Player hits wall or snake (they die)
-            if (this.squareNotEmpty(playerX, playerY)) {
-                if (this.gameBoard[playerX][playerY] == -1) {
-                    this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " crashed into the edge ☠️");
-                } else if (this.gameBoard[playerX][playerY] == activePlayer.id) {
-                    this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " crashed into itself ☠️");
-                } else {
-                    const otherPlayerId = this.gameBoard[playerX][playerY];
-                    const otherPlayer = otherPlayers.find(player => player.id == otherPlayerId)
-                    this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " crashed into " + this.playersNameInColor(otherPlayer) + " ☠️");
-                }
-                activePlayer.isAlive = false;
+        // Player hits wall or another player (they die)
+        if (this.squareNotEmpty(playerX, playerY)) {
+            if (this.gameBoard[playerX][playerY] == -1) {
+                this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " crashed into the edge ☠️");
+            } else if (this.gameBoard[playerX][playerY] == activePlayer.id) {
+                this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " crashed into itself ☠️");
+            } else {
+                const otherPlayerId = this.gameBoard[playerX][playerY];
+                const otherPlayer = otherPlayers.find(player => player.id == otherPlayerId)
+                this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " crashed into " + this.playersNameInColor(otherPlayer) + " ☠️");
             }
-            else {
-                // Player hits another players head (both die)
-                for (const otherPlayer of otherPlayers) {
-                    if (playerX == otherPlayer.x && playerY == otherPlayer.y) {
-                        this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " and " + this.playersNameInColor(otherPlayer) + " crashed into each other ☠️");
-                        activePlayer.isAlive = false
-                        otherPlayer.isAlive = false
-                    }
-
+            activePlayer.isAlive = false;
+        }
+        else {
+            // Player hits another players head (both die)
+            for (const otherPlayer of otherPlayers) {
+                if (playerX == otherPlayer.x && playerY == otherPlayer.y) {
+                    this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " and " + this.playersNameInColor(otherPlayer) + " crashed into each other ☠️");
+                    activePlayer.isAlive = false
+                    otherPlayer.isAlive = false
                 }
+
             }
         }
     }
@@ -359,24 +352,24 @@ class GameState {
     }
 
     updateGameboard(activePlayer) {
-        // Update game board with new player head
-        if (activePlayer.isAlive && !this.isFrozen(activePlayer)) {
-            this.gameBoard[activePlayer.x][activePlayer.y] = activePlayer.id
+        if (this.isFrozen(activePlayer)) {
+            return;
         }
+        if (!activePlayer.isAlive) {
+            return;
+        }
+        
+        this.gameBoard[activePlayer.x][activePlayer.y] = activePlayer.id
     }
 
     checkPlayerFoundPowerup(activePlayer) {
-        // Check if any player finds a powerup
-        const playerX = activePlayer.x;
-        const playerY = activePlayer.y;
-
         if (this.boardPowerUp) {
-            if (this.boardPowerUp.x == playerX && this.boardPowerUp.y == playerY) {
-                this.pushToMessageBuffer(activePlayer) + " is " + this.boardPowerUp.name + " 🧊";
+            if (this.boardPowerUp.x == activePlayer.x && this.boardPowerUp.y == activePlayer.y) {
+                this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " is " + this.boardPowerUp.name + " 🧊");
 
                 activePlayer.activePower = {
-                    step: 0,
-                    ...this.boardPowerUp
+                    step: this.step,
+                    name: this.boardPowerUp.name
                 }
 
                 this.boardPowerUp = null;
@@ -385,7 +378,6 @@ class GameState {
     }
 
     addRandomPowerUpToBoardIfNeeded() {
-        // Add powerup to board if needed
         const powerUpChance = Math.floor(Math.random() * 20);
         if (!this.boardPowerUp && powerUpChance == 0) {
             let iteration = 10;
@@ -400,7 +392,7 @@ class GameState {
 
             if (iteration > 0) {
                 const chosenPower = allPowerups[0];
-                this.boardPowerUp = { name: chosenPower.name, id: chosenPower.id, x: powerX, y: powerY };
+                this.boardPowerUp = { name: chosenPower.name, x: powerX, y: powerY };
             }
         }
 
@@ -420,38 +412,48 @@ class GameState {
 
         //let lastPlayerState = JSON.parse(JSON.stringify(this.playerState));
         const playersAliveBeforeMoves = this.activePlayers.filter(player => player.isAlive)
+      
+        // Check powerups found or expired
+        for (const activePlayer of this.activePlayers) {
+            this.checkPlayerFoundPowerup(activePlayer)
+            this.handlePowerUpExpiry(activePlayer)
+        }
 
+        // Check for game end
         if (playersAliveBeforeMoves.length < 1) {
             this.stopGameLoop = true
             return
         }
 
-        // Check for powerup expiry
+        // Make the move for each player
         for (const activePlayer of this.activePlayers) {
-            this.handlePowerUpExpiry(activePlayer)
             this.handlePlayerMove(activePlayer, playerMoves)
         }
 
+        // Check for player deaths
         for (const activePlayer of this.activePlayers) {
             const otherPlayers = this.activePlayers.filter(player => player != activePlayer)
             this.checkForDeathAfterMove(activePlayer, otherPlayers)
         }
 
+        // Check for winners
         const winners = this.checkForWinners(playersAliveBeforeMoves)
-
         if (winners.length > 0) {
             this.addWinnersToMessageBuffer(winners)
-
             this.gameOver = true
         }
 
+        // Update game board
         for (const activePlayer of this.activePlayers) {
             this.updateGameboard(activePlayer)
-            //this.checkPlayerFoundPowerup(activePlayer)
         }
-
+        
+        // Add powerUps to board
         this.addRandomPowerUpToBoardIfNeeded()
         this.step += 1
+
+        // Increment step
+        this.step += 1;
 
         return this
     }

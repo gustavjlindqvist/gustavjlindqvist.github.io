@@ -280,7 +280,7 @@
 
 
     <script type="module">
-        import { setUpSelectPlayer, initBoard, initPlayerPositions, drawPlayers, drawMessages, clearOutput, initSimulationSpeedSider } from './src/game.js'
+        import { setUpSelectPlayer, initBoard, initPlayerPositions, drawPlayers, drawMessages, drawPowerUp, clearOutput, initSimulationSpeedSider } from './src/game.js'
         import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 
         const socket = io("localhost:3000");
@@ -342,6 +342,7 @@
 
         socket.addEventListener('updatedGameState', (oldGameState, newGameState) => {
             drawPlayers(oldGameState, newGameState);
+            drawPowerUp(oldGameState, newGameState);
             drawMessages(newGameState);
         })
 

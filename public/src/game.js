@@ -1,5 +1,3 @@
-import { allPowerups } from "./powerups.js";
-
 export function initBoard(gameBoard) {
     $("#board").html("");
     let board = document.getElementById("board");
@@ -69,56 +67,59 @@ export function initPlayerPositions(gameState) {
 }
 
 export function drawPlayers(oldGameState, newGameState) {
-    // Update game board with new player head
     for (const player of newGameState.activePlayers) {
-        if (player.isAlive && !isFrozen(player)) {
-            let x = player.x;
-            let y = player.y;
-            let dx = player.dx;
-            let dy = player.dy;
-            let color = player.color;
 
-            const oldPlayerState = oldGameState.activePlayers.find(oldPlayer => player.id == oldPlayer.id)
-            let lastX = oldPlayerState.x;
-            let lastY = oldPlayerState.y;
-            let lastDx = oldPlayerState.dx;
-            let lastDy = oldPlayerState.dy;
+        const isFrozen = player.activePower ? player.activePower.name == "frozen" : false
+        if (isFrozen || !player.isAlive) {
+            continue;
+        }
+        
+        let x = player.x;
+        let y = player.y;
+        let dx = player.dx;
+        let dy = player.dy;
+        let color = player.color;
 
-            $("#x" + x + "y" + y).attr("style", "--color: " + color);
-            $("#x" + x + "y" + y).addClass("head");
-            if (dx == 1 && dy == 0) {
-                $("#x" + x + "y" + y).addClass("headRight");
-            } else if (dx == -1 && dy == 0) {
-                $("#x" + x + "y" + y).addClass("headLeft");
-            } else if (dx == 0 && dy == 1) {
-                $("#x" + x + "y" + y).addClass("headDown");
-            } else if (dx == 0 && dy == -1) {
-                $("#x" + x + "y" + y).addClass("headUp");
-            }
+        const oldPlayerState = oldGameState.activePlayers.find(oldPlayer => player.id == oldPlayer.id)
+        let lastX = oldPlayerState.x;
+        let lastY = oldPlayerState.y;
+        let lastDx = oldPlayerState.dx;
+        let lastDy = oldPlayerState.dy;
 
-            $("#x" + lastX + "y" + lastY).removeClass("head").removeClass("headRight").removeClass("headLeft").removeClass("headDown").removeClass("headUp");
-            if (dy == 0 && lastDy == 0) {
-                $("#x" + lastX + "y" + lastY).addClass("horizontal");
-            }
-            else if (dx == 0 && lastDx == 0) {
-                $("#x" + lastX + "y" + lastY).addClass("vertical");
-            }
-            else if (dx == 1 && dy == 0 && lastDx == 0 && lastDy == 1 ||
-                dx == 0 && dy == -1 && lastDx == -1 && lastDy == 0) {
-                $("#x" + lastX + "y" + lastY).addClass("downLeft");
-            }
-            else if (dx == 1 && dy == 0 && lastDx == 0 && lastDy == -1 ||
-                dx == 0 && dy == 1 && lastDx == -1 && lastDy == 0) {
-                $("#x" + lastX + "y" + lastY).addClass("downRight");
-            }
-            else if (dx == -1 && dy == 0 && lastDx == 0 && lastDy == -1 ||
-                dx == 0 && dy == 1 && lastDx == 1 && lastDy == 0) {
-                $("#x" + lastX + "y" + lastY).addClass("upRight");
-            }
-            else if (dx == -1 && dy == 0 && lastDx == 0 && lastDy == 1 ||
-                dx == 0 && dy == -1 && lastDx == 1 && lastDy == 0) {
-                $("#x" + lastX + "y" + lastY).addClass("upLeft");
-            }
+        $("#x" + x + "y" + y).attr("style", "--color: " + color);
+        $("#x" + x + "y" + y).addClass("head");
+        if (dx == 1 && dy == 0) {
+            $("#x" + x + "y" + y).addClass("headRight");
+        } else if (dx == -1 && dy == 0) {
+            $("#x" + x + "y" + y).addClass("headLeft");
+        } else if (dx == 0 && dy == 1) {
+            $("#x" + x + "y" + y).addClass("headDown");
+        } else if (dx == 0 && dy == -1) {
+            $("#x" + x + "y" + y).addClass("headUp");
+        }
+
+        $("#x" + lastX + "y" + lastY).removeClass("head").removeClass("headRight").removeClass("headLeft").removeClass("headDown").removeClass("headUp");
+        if (dy == 0 && lastDy == 0) {
+            $("#x" + lastX + "y" + lastY).addClass("horizontal");
+        }
+        else if (dx == 0 && lastDx == 0) {
+            $("#x" + lastX + "y" + lastY).addClass("vertical");
+        }
+        else if (dx == 1 && dy == 0 && lastDx == 0 && lastDy == 1 ||
+            dx == 0 && dy == -1 && lastDx == -1 && lastDy == 0) {
+            $("#x" + lastX + "y" + lastY).addClass("downLeft");
+        }
+        else if (dx == 1 && dy == 0 && lastDx == 0 && lastDy == -1 ||
+            dx == 0 && dy == 1 && lastDx == -1 && lastDy == 0) {
+            $("#x" + lastX + "y" + lastY).addClass("downRight");
+        }
+        else if (dx == -1 && dy == 0 && lastDx == 0 && lastDy == -1 ||
+            dx == 0 && dy == 1 && lastDx == 1 && lastDy == 0) {
+            $("#x" + lastX + "y" + lastY).addClass("upRight");
+        }
+        else if (dx == -1 && dy == 0 && lastDx == 0 && lastDy == 1 ||
+            dx == 0 && dy == -1 && lastDx == 1 && lastDy == 0) {
+            $("#x" + lastX + "y" + lastY).addClass("upLeft");
         }
     }
 }
@@ -129,12 +130,21 @@ export function drawMessages(gameState) {
     }
 }
 
-function isFrozen(playerState) {
-    return playerState.activePower ? playerState.activePower.name == "frozen" : false
-}
+export function drawPowerUp(oldGameState, newGameState) {
+    const oldPowerUp = oldGameState.boardPowerUp;
+    const newPowerUp = newGameState.boardPowerUp;
 
-function squareNotEmpty(gameBoard, x, y) {
-    return gameBoard[x][y] != 0
+    if (oldPowerUp == null && newPowerUp != null) {
+        // PowerUp added to board
+        if (newPowerUp.name == "frozen") {
+            $("#x" + newPowerUp.x + "y" + newPowerUp.y).addClass("powerup_frozen");
+        }
+    } else if (oldPowerUp != null && newPowerUp == null) {
+        // PowerUp removed from board
+        if (oldPowerUp.name == "frozen") {
+            $("#x" + oldPowerUp.x + "y" + oldPowerUp.y).removeClass("powerup_frozen");
+        }
+    }
 }
 
 export function clearOutput() {
