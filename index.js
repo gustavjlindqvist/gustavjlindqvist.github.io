@@ -28,7 +28,6 @@ class GameState {
         this.maxY = maxY
         this.selectablePlayers = []
         this.activePlayers = []
-        this.gameOver = false
         this.boardPowerUp = null
         this.messageBuffer = []
         this.stopGameLoop = false
@@ -51,7 +50,6 @@ class GameState {
     reset() {
         this.step = 0
         this.gameBoard = this.initialGameBoard(this.maxX, this.maxY)
-        this.gameOver = false
         this.boardPowerUp = null
         this.messageBuffer = []
         this.stopGameLoop = false
@@ -444,7 +442,6 @@ class GameState {
         const winners = this.checkForWinners(playersAliveBeforeMoves)
         if (winners.length > 0) {
             this.addWinnersToMessageBuffer(winners)
-            this.gameOver = true
         }
 
         // Update game board
@@ -471,9 +468,7 @@ class GameState {
     }
 
     pushToMessageBuffer(message) {
-        if (!this.gameOver) {
-            this.messageBuffer.push(message)
-        }
+       this.messageBuffer.push(message)
     }
 
     clone() {
