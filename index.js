@@ -210,6 +210,10 @@ class GameState {
         return playerState.activePower != null ? playerState.activePower.name == "frozen" : false
     }
 
+    squareIsEmpty(x, y) {
+        return this.gameBoard[x][y] == 0
+    }
+
     squareNotEmpty(x, y) {
         return this.gameBoard[x][y] != 0
     }
@@ -393,10 +397,9 @@ class GameState {
                 powerX = Math.round(Math.random() * this.maxX);
                 powerY = Math.round(Math.random() * this.maxY);
                 iteration -= 1;
-
             } while (this.squareNotEmpty(powerX, powerY) && iteration > 0);
 
-            if (iteration > 0) {
+            if (this.squareIsEmpty(powerX, powerY)) {
                 const chosenPower = allPowerups[0];
                 this.boardPowerUp = { name: chosenPower.name, x: powerX, y: powerY };
             }
@@ -449,13 +452,14 @@ class GameState {
             this.updateGameBoardForPlayer(activePlayer)
         }
         
-        // Add powerUp to gmae board
+        // Add powerUp to game board
         this.addPowerUpToGameBoard()
+
         this.step += 1
 
         // Increment step
         this.step += 1;
-        
+
         return this
     }
 
@@ -541,7 +545,6 @@ async function gameLoop(currentGameState, gameCanvasSocket) {
 
     currentGameState.emptyMessageBuffer()
 
-    
     // Eased simulation speed
     const lowestSliderValue = 1
     const highestSliderValue = 1000
