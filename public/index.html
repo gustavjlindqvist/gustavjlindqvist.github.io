@@ -291,11 +291,17 @@
             });
         });
 
-        socket.on('removeTails', (oldGameState, newGameState) => {
-            initBoard(newGameState.gameBoard)
-            drawPlayers(oldGameState, newGameState)
-            drawMessages(newGameState)
-        })
+        // socket.on('removeTails', (oldGameState, newGameState) => {
+        //     initBoard(newGameState.gameBoard)
+        //     drawPlayers(oldGameState, newGameState)
+        //     drawMessages(newGameState)
+        // })
+
+        // socket.on('redrawPlayers', (oldGameState, newGameState) => {
+        //     initBoard(newGameState.gameBoard)
+        //     drawPlayers(oldGameState, newGameState)
+        //     drawMessages(newGameState)
+        // })
 
         document.querySelector('#startBtn').addEventListener('click', () => {
             socket.emit('startGame')

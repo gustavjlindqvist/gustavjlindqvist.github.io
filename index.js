@@ -3,8 +3,11 @@ const bonjour = require('bonjour')();
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
-const { Server } = require("socket.io");
-const gameClientServer = new Server(server);
+const { Server } = require("socket.io")
+const gameClientServer = new Server(server, {
+    pingInterval: 1000,
+    pingTimeout: 1000
+});
 
 const { bots } = require('./bots');
 
@@ -12,6 +15,7 @@ var timer;
 var gameCanvasSocket;
 
 const gameClientsNameSpace = gameClientServer.of("/gameClient");
+const playingRoom = "playingRoom"
 
 const allPowerups = [
     {
@@ -25,7 +29,6 @@ const allPowerups = [
 
 class GameState {
     constructor(maxX, maxY, simulationSpeed) {
-        this.gameBoard
         this.step = 0
         this.availableColors = ["#d39", "#3d9", "#d93", "#39d", "#93d", "#9d3", "#7ff", "#f5f", "#7ff", "#ff7"]
         this.simulationSpeed = simulationSpeed
@@ -87,16 +90,27 @@ class GameState {
         return this
     }
 
+    removePlayerFromBoard(playerId) {
+        for (let x = 0; x <= this.maxX + 1; x++) {
+            for (let y = 0; y <= this.maxY + 1; y++) {
+                if (this.gameBoard[x][y] == playerId) {
+                    this.gameBoard[x][y] = 0
+                }
+            }
+        }
+    }
+
     addSelectableBots(bots) {
         this.selectablePlayers = this.selectablePlayers.concat(bots)
 
         return this
     }
 
-    addSelectablePlayer(name) {
+    addSelectablePlayer(name, socketId) {
         if (!this.selectablePlayers.map(player => player.name).includes(name)) {
             this.selectablePlayers.push({
-                name: name
+                name: name,
+                socketId: socketId
             })
         }
 
@@ -117,6 +131,14 @@ class GameState {
 
     addNumberOfPlayers(number) {
         this.addActivePlayers(Array(number).fill(this.selectablePlayers[0].name))
+    }
+
+    removePlayerWithSocketId(socketId) {
+        const playerId = this.activePlayers.find(player => player.socketId == socketId).id
+        this.activePlayers = this.activePlayers.filter(player => player.socketId != socketId)
+        this.selectablePlayers = this.selectablePlayers.filter(player => player.socketId != socketId)
+
+        this.removePlayerFromBoard(playerId)
     }
 
     removeNumberOfPlayers(number) {
@@ -168,6 +190,7 @@ class GameState {
             name: player.name,
             func: player.func != null ? player.func : null,
             id: this.activePlayers.length + 1,
+            socketId: player.socketId,
             x: x,
             y: y,
             dx: 0,
@@ -388,6 +411,13 @@ class GameState {
         // Save copy for later
         let messages = []
 
+        if (this.activePlayers.length == 0) {
+            this.pushToMessageBuffer("No players left")
+            this.stopGameLoop = true
+            this.gameOver = true
+            return
+        }
+
         //let lastPlayerState = JSON.parse(JSON.stringify(this.playerState));
         const playersAliveBeforeMoves = this.activePlayers.filter(player => player.isAlive)
 
@@ -445,7 +475,29 @@ class GameState {
     }
 }
 
-function startGame(initialGameState, gameCanvasSocket) {
+async function addActivePlayerSocketsToPlayingRoom(gameState) {
+    const connectedSockets = await gameClientsNameSpace.fetchSockets()
+    const activePlayerSocketIds = gameState.activePlayers.map(player => player.socketId)
+    const activePlayerSockets = connectedSockets.filter(socket => activePlayerSocketIds.includes(socket.id))
+
+    for (const activePlayerSocket of activePlayerSockets) {
+        activePlayerSocket.join(playingRoom)
+    }
+}
+
+async function removeDeadPlayersFromPlayingRoom(gameState) {
+    const playingSockets = await gameClientsNameSpace.in(playingRoom).fetchSockets()
+    const deadPlayerSocketIds = gameState.activePlayers.filter(player => player.isAlive == false).map(player => player.socketId)
+    const deadPlayingSockets = playingSockets.filter(socket => deadPlayerSocketIds.includes(socket.id))
+
+    for (const deadPlayingSocket of deadPlayingSockets) {
+        deadPlayingSocket.leave(playingRoom)
+    }
+}
+
+async function startGame(initialGameState, gameCanvasSocket) {
+    await addActivePlayerSocketsToPlayingRoom(initialGameState)
+
     initialGameState.pushToMessageBuffer("And the snakes are off... ");
     clearTimeout(timer);
     gameLoop(initialGameState, gameCanvasSocket)
@@ -455,7 +507,7 @@ async function getPlayerMoves(currentGameState) {
     const clientState = currentGameState.clientState()
 
     try {
-        const responses = await gameClientsNameSpace.timeout(1000).emitWithAck('clientMove', clientState);
+        const responses = await gameClientsNameSpace.in(playingRoom).timeout(1000).emitWithAck('clientMove', clientState);
 
         return responses.filter(response => response != null)
     } catch (e) {
@@ -467,7 +519,7 @@ async function getPlayerMoves(currentGameState) {
 
 async function gameLoop(currentGameState, gameCanvasSocket) {
     const playerMoves = await getPlayerMoves(currentGameState)
-    const bots = currentGameState.activePlayers.filter(player => player.func)
+    const bots = currentGameState.activePlayers.filter(player => player.func).filter(player => player.isAlive)
     const botsMoves = bots.map(bot => apply(bot, currentGameState))
 
     const allActivePlayerMoves = playerMoves.concat(botsMoves)
@@ -475,9 +527,7 @@ async function gameLoop(currentGameState, gameCanvasSocket) {
     const lastGameState = currentGameState.clone()
     currentGameState.gameStep(allActivePlayerMoves);
 
-    // const lastGameState = currentGameState.clone()
-    // currentGameState.eraseTails()
-    // socket.emit('removeTails', lastGameState, currentGameState)
+    await removeDeadPlayersFromPlayingRoom(currentGameState)
 
     if (gameCanvasSocket) {
         gameCanvasSocket.emit('updatedGameState', lastGameState, currentGameState);
@@ -544,6 +594,8 @@ gameClientServer.on('connection', (socket) => {
         currentGameState.replaceActivePlayer(index, name)
 
         callback(currentGameState)
+
+        console.log(currentGameState)
     })
 
     socket.on('setNumberOfPlayers', (numberOfPlayers, callback) => {
@@ -564,12 +616,22 @@ gameClientsNameSpace.on("connection", (socket) => {
 
             console.log(`${playerName} connected`)
 
-            currentGameState.addSelectablePlayer(playerName)
+            currentGameState.addSelectablePlayer(playerName, socket.id)
 
             if (gameCanvasSocket) {
                 gameCanvasSocket.emit('playerJoined', currentGameState)
             }
         }
+    })
+
+    socket.on('disconnect', () => {
+        const oldGameState = currentGameState.clone()
+
+        currentGameState.removePlayerWithSocketId(socket.id)
+
+        // if (gameCanvasSocket) {
+        //     gameCanvasSocket.emit('redrawPlayers', oldGameState, currentGameState)
+        // }
     })
 });
 
