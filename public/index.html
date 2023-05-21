@@ -88,6 +88,13 @@
             background: #779;
         }
 
+        button:disabled,
+        button[disabled]{
+        background-color: #cccccc;
+        color: #666666;
+        cursor: no-drop
+        }
+
         select {
             border: none;
             outline: none;
@@ -95,6 +102,13 @@
             color: white;
             padding: 5px 10px;
             margin-bottom: 5px;
+        }
+
+        select:disabled,
+        select[disabled]{
+            background-color: #cccccc;
+            color: #666666;
+            cursor: no-drop
         }
 
         .slidecontainer {
@@ -280,13 +294,14 @@
 
 
     <script type="module">
-        import { drawPlayerSelectors, drawInitialBoard, drawInitialPlayers, drawPlayers, drawMessages, drawPowerUp, drawClearOutput, drawSimulationSpeedValue } from './src/canvas.js'
+        import { drawPlayerSelectors, drawInitialBoard, drawInitialPlayers, drawPlayers, drawMessages, drawPowerUp, drawClearOutput, drawSimulationSpeedValue, drawGameUIEnabled } from './src/canvas.js'
         import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 
         const socket = io("localhost:3000");
 
-        document.querySelector('#resetBtn').addEventListener('click', () => {
-            socket.emit('resetGame', (gameState) => {
+        const resetButton = document.querySelector('#resetBtn')
+        resetButton.addEventListener('click', () => {
+            socket.emit('didPressResetGameButton', (gameState) => {
                 reinitializeGame(gameState)
             });
         });
@@ -303,8 +318,9 @@
         //     drawMessages(newGameState)
         // })
 
-        document.querySelector('#startBtn').addEventListener('click', () => {
-            socket.emit('startGame')
+        const startButton = document.querySelector('#startBtn')
+        startButton.addEventListener('click', () => {
+            socket.emit('didPressStartGameButton')
         });
 
         const nrOfPlayersSelector = document.getElementById("selectNrOfPlayers");
@@ -332,6 +348,14 @@
             drawPlayers(oldGameState, newGameState);
             drawPowerUp(oldGameState, newGameState);
             drawMessages(newGameState);
+        })
+
+        socket.addEventListener('didStartGame', () => {
+            drawGameUIEnabled(true)
+        })
+
+        socket.addEventListener('didResetGame', () => {
+            drawGameUIEnabled(false)
         })
 
         function setupPlayerSelectorListeners() {

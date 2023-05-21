@@ -503,6 +503,7 @@ async function removeDeadPlayersFromPlayingRoom(gameState) {
 async function startGame(initialGameState, gameCanvasSocket) {
     await addActivePlayerSocketsToPlayingRoom(initialGameState)
 
+    gameCanvasSocket.emit("didStartGame");
     initialGameState.pushToMessageBuffer("And the snakes are off... ");
     clearTimeout(timer);
     gameLoop(initialGameState, gameCanvasSocket)
@@ -592,16 +593,16 @@ gameClientServer.on('connection', (socket) => {
 
     socket.emit('renderInitialGameState', currentGameState);
 
-    socket.on('startGame', () => {
+    socket.on('didPressStartGameButton', () => {
         if (currentGameState.step == 0) {
             startGame(currentGameState, socket)
         }
     })
 
-    socket.on('resetGame', (callback) => {
+    socket.on('didPressResetGameButton', (callback) => {
         clearTimeout(timer);
         currentGameState.reset()
-
+        socket.emit('didResetGame');
         callback(currentGameState)
     })
 

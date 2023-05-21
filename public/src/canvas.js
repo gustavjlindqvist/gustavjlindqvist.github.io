@@ -157,6 +157,20 @@ export function drawClearOutput() {
     output.innerHTML = "";
 }
 
+export function drawGameUIEnabled(isDisabled) {
+    const startButton = document.querySelector('#startBtn')
+    startButton.disabled = isDisabled
+
+    const nrOfPlayersSelector = document.getElementById("selectNrOfPlayers");
+    nrOfPlayersSelector.disabled = isDisabled
+
+    const playerSelectors = Array.from(document.getElementsByClassName("activePlayerSelector"))
+    for (let index in playerSelectors) {
+        const playerSelector = playerSelectors[index]
+        playerSelector.disabled = isDisabled
+    }
+}
+
 function playersNameInColor(player) {
     return "<span style='color: " + player.color + "'>" + player.name + "</span>";
 }
