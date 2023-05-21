@@ -365,6 +365,10 @@ class GameState {
     }
 
     checkForFoundPowerup(activePlayer) {
+        if (!activePlayer.isAlive) {
+            return;
+        }
+        
         if (this.boardPowerUp) {
             if (this.boardPowerUp.x == activePlayer.x && this.boardPowerUp.y == activePlayer.y) {
                 this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " is " + this.boardPowerUp.name + " 🧊");
