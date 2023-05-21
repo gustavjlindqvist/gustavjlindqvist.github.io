@@ -1,7 +1,3 @@
-//-----------------
-// PLAYER FUNCTIONS
-//-----------------
-
 function randomFunc(me, otherPlayers, gameBoard, boardPowerUp) {
     let dx, dy;
     let maxIterations = 20;

@@ -402,17 +402,13 @@ class GameState {
     }
 
     gameStep(playerMoves) {
-        // Save copy for later
-        let messages = []
-
         if (this.activePlayers.length == 0) {
             this.pushToMessageBuffer("No players left")
             this.stopGameLoop = true
             this.gameOver = true
             return
         }
-
-        //let lastPlayerState = JSON.parse(JSON.stringify(this.playerState));
+        
         const playersAliveBeforeMoves = this.activePlayers.filter(player => player.isAlive)
       
         // Check powerups found or expired
