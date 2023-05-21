@@ -66,6 +66,11 @@ class GameState {
             player.dy = -1
             player.activePower = null
         })
+        
+        // Update game board with each player's starting position
+        for (const activePlayer of this.activePlayers) {
+            this.updateGameboard(activePlayer)
+        }
     }
 
     eraseTails() {
