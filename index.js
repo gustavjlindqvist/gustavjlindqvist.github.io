@@ -67,7 +67,7 @@ class GameState {
         
         // Update game board with each player's starting position
         for (const activePlayer of this.activePlayers) {
-            this.updateGameboard(activePlayer)
+            this.updateGameBoardForPlayer(activePlayer)
         }
     }
 
@@ -218,7 +218,7 @@ class GameState {
         return "<span style='color: " + activePlayer.color + "'>" + activePlayer.name + "</span>";
     }
 
-    handlePowerUpExpiry(activePlayer) {
+    checkForPowerUpExpiry(activePlayer) {
         if (this.isFrozen(activePlayer)) {
             const stepsSinceActive = this.step - activePlayer.activePower.step
             if (stepsSinceActive > 20) {
@@ -250,7 +250,7 @@ class GameState {
         return false
     }
 
-    handlePlayerMove(activePlayer, playerMoves) {
+    applyPlayerMove(activePlayer, playerMoves) {
         if (this.isFrozen(activePlayer)) {
             return
         }
@@ -353,7 +353,7 @@ class GameState {
         }
     }
 
-    updateGameboard(activePlayer) {
+    updateGameBoardForPlayer(activePlayer) {
         if (this.isFrozen(activePlayer)) {
             return;
         }
@@ -364,7 +364,7 @@ class GameState {
         this.gameBoard[activePlayer.x][activePlayer.y] = activePlayer.id
     }
 
-    checkPlayerFoundPowerup(activePlayer) {
+    checkForFoundPowerup(activePlayer) {
         if (this.boardPowerUp) {
             if (this.boardPowerUp.x == activePlayer.x && this.boardPowerUp.y == activePlayer.y) {
                 this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " is " + this.boardPowerUp.name + " 🧊");
@@ -379,7 +379,7 @@ class GameState {
         }
     }
 
-    addRandomPowerUpToBoardIfNeeded() {
+    addPowerUpToGameBoard() {
         const powerUpChance = Math.floor(Math.random() * 20);
         if (!this.boardPowerUp && powerUpChance == 0) {
             let iteration = 10;
@@ -408,24 +408,24 @@ class GameState {
             this.gameOver = true
             return
         }
-        
+
         const playersAliveBeforeMoves = this.activePlayers.filter(player => player.isAlive)
-      
-        // Check powerups found or expired
+        
+        // Check for powerups found or expired
         for (const activePlayer of this.activePlayers) {
-            this.checkPlayerFoundPowerup(activePlayer)
-            this.handlePowerUpExpiry(activePlayer)
+            this.checkForFoundPowerup(activePlayer)
+            this.checkForPowerUpExpiry(activePlayer)
         }
 
-        // Check for game end
+        // Check for game end if no players alive
         if (playersAliveBeforeMoves.length < 1) {
             this.stopGameLoop = true
             return
         }
 
-        // Make the move for each player
+        // Apply the move for each player
         for (const activePlayer of this.activePlayers) {
-            this.handlePlayerMove(activePlayer, playerMoves)
+            this.applyPlayerMove(activePlayer, playerMoves)
         }
 
         // Check for player deaths
@@ -440,18 +440,18 @@ class GameState {
             this.addWinnersToMessageBuffer(winners)
         }
 
-        // Update game board
+        // Update game board with new player position
         for (const activePlayer of this.activePlayers) {
-            this.updateGameboard(activePlayer)
+            this.updateGameBoardForPlayer(activePlayer)
         }
         
-        // Add powerUps to board
-        this.addRandomPowerUpToBoardIfNeeded()
+        // Add powerUp to gmae board
+        this.addPowerUpToGameBoard()
         this.step += 1
 
         // Increment step
         this.step += 1;
-
+        
         return this
     }
 
