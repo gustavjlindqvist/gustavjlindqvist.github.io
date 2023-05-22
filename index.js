@@ -48,27 +48,25 @@ class GameState {
     }
 
     reset() {
-        this.step = 0
-        this.gameBoard = this.initialGameBoard(this.maxX, this.maxY)
-        this.boardPowerUp = null
-        this.messageBuffer = []
-        this.stopGameLoop = false
+        this.step = 0;
+        this.gameBoard = this.initialGameBoard(this.maxX, this.maxY);
+        this.boardPowerUp = null;
+        this.messageBuffer = [];
+        this.stopGameLoop = false;
 
         this.activePlayers.forEach(player => {
-            const [x, y] = this.randomCoordinates()
+            
+            let [x, y] = this.randomEmptyCoordinates();
+            player.x = x;
+            player.y = y;
+            player.isAlive = true;
+            player.dx = 0;
+            player.dy = -1;
+            player.activePower = null;
 
-            player.x = x
-            player.y = y
-            player.isAlive = true
-            player.dx = 0
-            player.dy = -1
-            player.activePower = null
+            // Update game board with player's starting position
+            this.gameBoard[x][y] = player.id
         })
-        
-        // Update game board with each player's starting position
-        for (const activePlayer of this.activePlayers) {
-            this.updateGameBoardForPlayer(activePlayer)
-        }
     }
 
     eraseTails() {
@@ -155,17 +153,24 @@ class GameState {
         return this
     }
 
-    randomCoordinates() {
-        let x = Math.floor(Math.random() * this.maxX) + 1;
-        let y = Math.floor(Math.random() * this.maxY) + 1;
+    randomEmptyCoordinates() {
+        let iteration = 100;
+        let x = 0;
+        let y = 0;
+        do {
+            x = Math.floor(Math.random() * this.maxX) + 1;
+            y = Math.floor(Math.random() * this.maxY) + 1;
+            // console.log("Random coords it:", iteration, "x:", x, "y:", y, "board:", this.gameBoard[x][y]);
+            iteration -= 1;
+        } while (this.squareNotEmpty(x, y) && iteration > 0);
 
-        return [x, y]
+        return [x, y];
     }
 
     createActivePlayer(name) {
         const player = this.selectablePlayers.find(player => player.name == name)
 
-        const [x, y] = this.randomCoordinates()
+        const [x, y] = this.randomEmptyCoordinates()
 
         const activePlayerColors = this.activePlayers.map(player => player.color)
         const nonUsedColors = this.availableColors.filter(color => !activePlayerColors.includes(color))
@@ -403,20 +408,13 @@ class GameState {
             }
         }
 
+        // Create a chance of adding power up on this step
         const powerUpChance = Math.floor(Math.random() * 20);
         if (powerUpChance == 0) {
-            let iteration = 10;
-            let powerX = -1;
-            let powerY = -1;
-            do {
-                powerX = Math.round(Math.random() * this.maxX);
-                powerY = Math.round(Math.random() * this.maxY);
-                iteration -= 1;
-            } while (this.squareNotEmpty(powerX, powerY) && iteration > 0);
-
-            if (this.squareIsEmpty(powerX, powerY)) {
+            let [x, y] = this.randomEmptyCoordinates()
+            if (this.squareIsEmpty(x, y)) {
                 const chosenPower = allPowerups[0];
-                this.boardPowerUp = { name: chosenPower.name, emoji: chosenPower.emoji, x: powerX, y: powerY };
+                this.boardPowerUp = { name: chosenPower.name, emoji: chosenPower.emoji, x: x, y: y };
             }
         }
 
