@@ -218,8 +218,12 @@
 
         .powerup_frozen {
             animation: blinker 1s linear infinite;
-            background: white;
-            transform: rotate(45deg);
+        }
+        .powerup_frozen:after {
+            content: "❄️";
+            position: absolute;
+            top: -3.2px;
+            left: -2.2px;
         }
 
         .blink {

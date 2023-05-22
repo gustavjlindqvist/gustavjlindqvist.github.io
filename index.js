@@ -375,7 +375,7 @@ class GameState {
         
         if (this.boardPowerUp) {
             if (this.boardPowerUp.x == activePlayer.x && this.boardPowerUp.y == activePlayer.y) {
-                this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " is " + this.boardPowerUp.name + " 🧊");
+                this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " is " + this.boardPowerUp.name + " " + this.boardPowerUp.emoji);
 
                 activePlayer.activePower = {
                     step: this.step,
@@ -401,7 +401,7 @@ class GameState {
 
             if (this.squareIsEmpty(powerX, powerY)) {
                 const chosenPower = allPowerups[0];
-                this.boardPowerUp = { name: chosenPower.name, x: powerX, y: powerY };
+                this.boardPowerUp = { name: chosenPower.name, emoji: chosenPower.emoji, x: powerX, y: powerY };
             }
         }
 
