@@ -69,10 +69,10 @@ export function drawInitialPlayers(gameState) {
 }
 
 export function drawPlayers(oldGameState, newGameState) {
+
     for (const player of newGameState.activePlayers) {
 
-        const isFrozen = player.activePower ? player.activePower.name == "frozen" : false
-        if (isFrozen || !player.isAlive) {
+        if (playerIsFrozen(player) || !player.isAlive) {
             continue;
         }
         
@@ -126,6 +126,23 @@ export function drawPlayers(oldGameState, newGameState) {
     }
 }
 
+export function drawPlayersFrozen(oldGameState, newGameState) {
+    for (const newPlayer of newGameState.activePlayers) {
+        
+        const oldPlayer = oldGameState.activePlayers.find(oldPlayer => newPlayer.id == oldPlayer.id);
+        const isFrozen = playerIsFrozen(newPlayer);
+        const wasFrozen = playerIsFrozen(oldPlayer);
+
+        if (isFrozen && !wasFrozen) {
+            // console.log("Adding blink at", newPlayer.x, newPlayer.y)
+            $("#x" + newPlayer.x + "y" + newPlayer.y).addClass("blink");
+        } else if (wasFrozen && !isFrozen) {
+            // console.log("Removing blink at", oldPlayer.x, oldPlayer.y)
+            $("#x" + oldPlayer.x + "y" + oldPlayer.y).removeClass("blink");
+        }
+    }
+}
+
 export function drawMessages(gameState) {
     for (let message of gameState.messageBuffer) {
         const messageBox = document.getElementById("messageBox");
@@ -147,11 +164,13 @@ export function drawPowerUp(oldGameState, newGameState) {
     if (oldPowerUp == null && newPowerUp != null) {
         // PowerUp added to board
         if (newPowerUp.name == "frozen") {
+            // console.log("Powerup added to board", newPowerUp.x, newPowerUp.y)
             $("#x" + newPowerUp.x + "y" + newPowerUp.y).addClass("powerup_frozen");
         }
     } else if (oldPowerUp != null && newPowerUp == null) {
         // PowerUp removed from board
         if (oldPowerUp.name == "frozen") {
+            // console.log("Powerup removed from board", oldPowerUp.x, oldPowerUp.y)
             $("#x" + oldPowerUp.x + "y" + oldPowerUp.y).removeClass("powerup_frozen");
         }
     }
@@ -174,6 +193,12 @@ export function drawGameUIEnabled(isDisabled) {
     }
 }
 
+// HELPER FUNCTIONS
+
 function playersNameInColor(player) {
     return "<span style='color: " + player.color + "'>" + player.name + "</span>";
+}
+
+function playerIsFrozen(player) {
+    return player.activePower ? player.activePower.name == "frozen" : false;
 }
