@@ -374,23 +374,37 @@ class GameState {
             return;
         }
         
-        if (this.boardPowerUp) {
-            if (this.boardPowerUp.x == activePlayer.x && this.boardPowerUp.y == activePlayer.y) {
-                this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " is " + this.boardPowerUp.name + " " + this.boardPowerUp.emoji);
+        if (!this.boardPowerUp) {
+            return;
+        }
+            
+        if (this.boardPowerUp.x == activePlayer.x && this.boardPowerUp.y == activePlayer.y) {
+            this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " is " + this.boardPowerUp.name + " " + this.boardPowerUp.emoji);
 
-                activePlayer.activePower = {
-                    step: this.step,
-                    name: this.boardPowerUp.name
-                }
-
-                this.boardPowerUp = null;
+            activePlayer.activePower = {
+                step: this.step,
+                name: this.boardPowerUp.name
             }
+
+            this.boardPowerUp = null;
         }
     }
 
     addPowerUpToGameBoard() {
+        // Don't add a powerup if one already on board
+        if (this.boardPowerUp) {
+            return;
+        }
+        
+        // Don't add a powerup if one already active
+        for (const activePlayer of this.activePlayers) {
+            if (activePlayer.activePower) {
+                return;
+            }
+        }
+
         const powerUpChance = Math.floor(Math.random() * 20);
-        if (!this.boardPowerUp && powerUpChance == 0) {
+        if (powerUpChance == 0) {
             let iteration = 10;
             let powerX = -1;
             let powerY = -1;
@@ -455,9 +469,7 @@ class GameState {
         
         // Add powerUp to game board
         this.addPowerUpToGameBoard()
-
-        this.step += 1
-
+        
         // Increment step
         this.step += 1;
 
