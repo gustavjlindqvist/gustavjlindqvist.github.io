@@ -143,6 +143,20 @@ export function drawPlayersFrozen(oldGameState, newGameState) {
     }
 }
 
+export function drawCrashSquares(oldGameState, newGameState) {
+    const oldGameBoard = oldGameState.gameBoard;
+    const newGameBoard = newGameState.gameBoard;
+
+    for (let y = 1; y < newGameBoard[0].length - 1; y++) {
+        for (let x = 1; x < newGameBoard.length - 1; x++) {
+            if (newGameBoard[x][y] == -2 && oldGameBoard[x][y] == 0) {
+                // console.log("CRASH at", x, y);
+                $("#x" + x + "y" + y).addClass("crashSquare");
+            }
+        }
+    }
+}
+
 export function drawMessages(gameState) {
     for (let message of gameState.messageBuffer) {
         const messageBox = document.getElementById("messageBox");

@@ -230,6 +230,16 @@
             animation: blinker 1s linear infinite;
         }
 
+        .crashSquare {
+            background: darkgray;
+        }
+        .crashSquare:after {
+            content: "💥";
+            position: absolute;
+            top: -3.2px;
+            left: -2.5px;
+        }
+
         @keyframes blinker {
             50% {
                 opacity: 0;
@@ -298,7 +308,7 @@
 
 
     <script type="module">
-        import { drawPlayerSelectors, drawInitialBoard, drawInitialPlayers, drawPlayers, drawPlayersFrozen, drawMessages, drawClearMessages, drawPowerUp, drawSimulationSpeedValue, drawGameUIEnabled } from './src/canvas.js'
+        import { drawPlayerSelectors, drawInitialBoard, drawInitialPlayers, drawPlayers, drawPlayersFrozen, drawCrashSquares, drawMessages, drawClearMessages, drawPowerUp, drawSimulationSpeedValue, drawGameUIEnabled } from './src/canvas.js'
         import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 
         const socket = io("localhost:3000");
@@ -352,6 +362,7 @@
             drawPowerUp(oldGameState, newGameState);
             drawPlayers(oldGameState, newGameState);
             drawPlayersFrozen(oldGameState, newGameState);
+            drawCrashSquares(oldGameState, newGameState)
             drawMessages(newGameState);
         })
 

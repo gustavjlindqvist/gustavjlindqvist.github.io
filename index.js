@@ -319,6 +319,7 @@ class GameState {
                     this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " and " + this.playersNameInColor(otherPlayer) + " crashed into each other ☠️");
                     activePlayer.isAlive = false
                     otherPlayer.isAlive = false
+                    this.gameBoard[playerX][playerY] = -2;
                 }
 
             }
@@ -328,7 +329,7 @@ class GameState {
     checkForWinners(playersAliveBeforeMoves) {
         const playersAliveAfterMoves = this.activePlayers.filter(player => player.isAlive)
 
-        //If one player is still alive
+        // If one player is still alive
         if (playersAliveAfterMoves.length == 1 && playersAliveBeforeMoves.length > 1) {
             return playersAliveAfterMoves
         }
