@@ -159,14 +159,17 @@ export function drawPowerUp(oldGameState, newGameState) {
 
 export function drawGameUIEnabled(isDisabled) {
     const startButton = document.querySelector('#startBtn')
+    // @ts-ignore
     startButton.disabled = isDisabled
 
     const nrOfPlayersSelector = document.getElementById("selectNrOfPlayers");
+    // @ts-ignore
     nrOfPlayersSelector.disabled = isDisabled
 
     const playerSelectors = Array.from(document.getElementsByClassName("activePlayerSelector"))
     for (let index in playerSelectors) {
         const playerSelector = playerSelectors[index]
+        // @ts-ignore
         playerSelector.disabled = isDisabled
     }
 }
