@@ -17,12 +17,10 @@ struct PlayerState {
         guard let x = json["x"] as? Int,
               let y = json["y"] as? Int,
               let dx = json["dx"] as? Int,
-              let dy = json["dx"] as? Int,
+              let dy = json["dy"] as? Int,
               let name = json["name"] as? String else {
             return nil
         }
-        
-        //let activePower = json["activePower"] as? Json
         
         self.x = x
         self.y = y

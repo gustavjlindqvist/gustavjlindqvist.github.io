@@ -55,7 +55,7 @@ class GameState {
         this.stopGameLoop = false;
 
         this.activePlayers.forEach(player => {
-            
+
             let [x, y] = this.randomEmptyCoordinates();
             player.x = x;
             player.y = y;
@@ -370,7 +370,7 @@ class GameState {
         if (!activePlayer.isAlive) {
             return;
         }
-        
+
         this.gameBoard[activePlayer.x][activePlayer.y] = activePlayer.id
     }
 
@@ -378,11 +378,11 @@ class GameState {
         if (!activePlayer.isAlive) {
             return;
         }
-        
+
         if (!this.boardPowerUp) {
             return;
         }
-            
+
         if (this.boardPowerUp.x == activePlayer.x && this.boardPowerUp.y == activePlayer.y) {
             this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " is " + this.boardPowerUp.name + " " + this.boardPowerUp.emoji);
 
@@ -400,7 +400,7 @@ class GameState {
         if (this.boardPowerUp) {
             return;
         }
-        
+
         // Don't add a powerup if one already active
         for (const activePlayer of this.activePlayers) {
             if (activePlayer.activePower) {
@@ -430,7 +430,7 @@ class GameState {
         }
 
         const playersAliveBeforeMoves = this.activePlayers.filter(player => player.isAlive)
-        
+
         // Check for powerups found or expired
         for (const activePlayer of this.activePlayers) {
             this.checkForFoundPowerup(activePlayer)
@@ -464,10 +464,10 @@ class GameState {
         for (const activePlayer of this.activePlayers) {
             this.updateGameBoardForPlayer(activePlayer)
         }
-        
+
         // Add powerUp to game board
         this.addPowerUpToGameBoard()
-        
+
         // Increment step
         this.step += 1;
 
@@ -483,7 +483,7 @@ class GameState {
     }
 
     pushToMessageBuffer(message) {
-       this.messageBuffer.push(message)
+        this.messageBuffer.push(message)
     }
 
     clone() {
@@ -621,8 +621,6 @@ gameClientServer.on('connection', (socket) => {
         currentGameState.replaceActivePlayer(index, name)
 
         callback(currentGameState)
-
-        console.log(currentGameState)
     })
 
     socket.on('setNumberOfPlayers', (numberOfPlayers, callback) => {
