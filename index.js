@@ -660,7 +660,7 @@ gameClientsNameSpace.on("connection", (socket) => {
     })
 });
 
-bonjour.publish({ name: 'snakesOnAPlaneServer', type: 'snakesOnAPlane', port: 3000 })
+//bonjour.publish({ name: 'snakesOnAPlaneServer', type: 'snakesOnAPlane', port: 3000 })
 
 server.listen(3000, () => {
     console.log('listening on localhost:3000');

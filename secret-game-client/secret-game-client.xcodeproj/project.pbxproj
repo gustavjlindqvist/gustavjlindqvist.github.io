@@ -10,37 +10,18 @@
 		0312D4D12A0E59C80093D122 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312D4D02A0E59C80093D122 /* main.swift */; };
 		0312D4D92A0E5A730093D122 /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 0312D4D82A0E5A730093D122 /* SocketIO */; };
 		0312D4DB2A0E5B390093D122 /* SnakesOnAPlaneClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312D4DA2A0E5B390093D122 /* SnakesOnAPlaneClient.swift */; };
-		0358A87A2A123E5200F043BA /* SnakesOnAPlaneClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312D4DA2A0E5B390093D122 /* SnakesOnAPlaneClient.swift */; };
-		0358A87B2A123E5200F043BA /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312D4D02A0E59C80093D122 /* main.swift */; };
-		0358A87D2A123E5200F043BA /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 0358A8772A123E5200F043BA /* SocketIO */; };
-		03D03F582A17905000E3A536 /* ServiceBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03D03F572A17905000E3A536 /* ServiceBrowser.swift */; };
+		037C0A012A2212290043662C /* MyTactic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037C0A002A2212290043662C /* MyTactic.swift */; };
 		03ECB44C2A12890000DE24E4 /* ClientTactic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB44B2A12890000DE24E4 /* ClientTactic.swift */; };
-		03ECB44D2A12890000DE24E4 /* ClientTactic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB44B2A12890000DE24E4 /* ClientTactic.swift */; };
 		03ECB4502A12898700DE24E4 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB44F2A12898700DE24E4 /* GameState.swift */; };
-		03ECB4512A12898700DE24E4 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB44F2A12898700DE24E4 /* GameState.swift */; };
 		03ECB4532A12899A00DE24E4 /* PlayerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB4522A12899A00DE24E4 /* PlayerState.swift */; };
-		03ECB4542A12899A00DE24E4 /* PlayerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB4522A12899A00DE24E4 /* PlayerState.swift */; };
 		03ECB4562A1289AA00DE24E4 /* BoardPowerUpState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB4552A1289AA00DE24E4 /* BoardPowerUpState.swift */; };
-		03ECB4572A1289AA00DE24E4 /* BoardPowerUpState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB4552A1289AA00DE24E4 /* BoardPowerUpState.swift */; };
 		03ECB4592A128A9A00DE24E4 /* ActivePowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB4582A128A9A00DE24E4 /* ActivePowerUp.swift */; };
-		03ECB45A2A128A9A00DE24E4 /* ActivePowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB4582A128A9A00DE24E4 /* ActivePowerUp.swift */; };
 		03ECB45C2A128AD900DE24E4 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB45B2A128AD900DE24E4 /* Json.swift */; };
-		03ECB45D2A128AD900DE24E4 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB45B2A128AD900DE24E4 /* Json.swift */; };
 		03ECB45F2A1386B000DE24E4 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB45E2A1386B000DE24E4 /* Move.swift */; };
-		03ECB4602A1386B000DE24E4 /* Move.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB45E2A1386B000DE24E4 /* Move.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		0312D4CB2A0E59C80093D122 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
-		0358A87E2A123E5200F043BA /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -55,8 +36,7 @@
 		0312D4CD2A0E59C80093D122 /* secret-game-client */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "secret-game-client"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0312D4D02A0E59C80093D122 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		0312D4DA2A0E5B390093D122 /* SnakesOnAPlaneClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnakesOnAPlaneClient.swift; sourceTree = "<group>"; };
-		0358A8822A123E5200F043BA /* secret-game-client-2 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "secret-game-client-2"; sourceTree = BUILT_PRODUCTS_DIR; };
-		03D03F572A17905000E3A536 /* ServiceBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServiceBrowser.swift; sourceTree = "<group>"; };
+		037C0A002A2212290043662C /* MyTactic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTactic.swift; sourceTree = "<group>"; };
 		03ECB44B2A12890000DE24E4 /* ClientTactic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientTactic.swift; sourceTree = "<group>"; };
 		03ECB44F2A12898700DE24E4 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 		03ECB4522A12899A00DE24E4 /* PlayerState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerState.swift; sourceTree = "<group>"; };
@@ -75,14 +55,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		0358A87C2A123E5200F043BA /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0358A87D2A123E5200F043BA /* SocketIO in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -98,7 +70,6 @@
 			isa = PBXGroup;
 			children = (
 				0312D4CD2A0E59C80093D122 /* secret-game-client */,
-				0358A8822A123E5200F043BA /* secret-game-client-2 */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -107,7 +78,7 @@
 			isa = PBXGroup;
 			children = (
 				0312D4D02A0E59C80093D122 /* main.swift */,
-				03D03F572A17905000E3A536 /* ServiceBrowser.swift */,
+				037C0A002A2212290043662C /* MyTactic.swift */,
 				03ECB44E2A12895E00DE24E4 /* Models */,
 				0312D4DA2A0E5B390093D122 /* SnakesOnAPlaneClient.swift */,
 				03ECB44B2A12890000DE24E4 /* ClientTactic.swift */,
@@ -151,26 +122,6 @@
 			productReference = 0312D4CD2A0E59C80093D122 /* secret-game-client */;
 			productType = "com.apple.product-type.tool";
 		};
-		0358A8762A123E5200F043BA /* secret-game-client-2 */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 0358A87F2A123E5200F043BA /* Build configuration list for PBXNativeTarget "secret-game-client-2" */;
-			buildPhases = (
-				0358A8792A123E5200F043BA /* Sources */,
-				0358A87C2A123E5200F043BA /* Frameworks */,
-				0358A87E2A123E5200F043BA /* CopyFiles */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "secret-game-client-2";
-			packageProductDependencies = (
-				0358A8772A123E5200F043BA /* SocketIO */,
-			);
-			productName = "secret-game-client";
-			productReference = 0358A8822A123E5200F043BA /* secret-game-client-2 */;
-			productType = "com.apple.product-type.tool";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -203,7 +154,6 @@
 			projectRoot = "";
 			targets = (
 				0312D4CC2A0E59C80093D122 /* secret-game-client */,
-				0358A8762A123E5200F043BA /* secret-game-client-2 */,
 			);
 		};
 /* End PBXProject section */
@@ -221,24 +171,8 @@
 				03ECB44C2A12890000DE24E4 /* ClientTactic.swift in Sources */,
 				0312D4D12A0E59C80093D122 /* main.swift in Sources */,
 				03ECB4562A1289AA00DE24E4 /* BoardPowerUpState.swift in Sources */,
-				03D03F582A17905000E3A536 /* ServiceBrowser.swift in Sources */,
 				03ECB45C2A128AD900DE24E4 /* Json.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0358A8792A123E5200F043BA /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				03ECB45A2A128A9A00DE24E4 /* ActivePowerUp.swift in Sources */,
-				03ECB4602A1386B000DE24E4 /* Move.swift in Sources */,
-				03ECB4542A12899A00DE24E4 /* PlayerState.swift in Sources */,
-				0358A87A2A123E5200F043BA /* SnakesOnAPlaneClient.swift in Sources */,
-				03ECB4512A12898700DE24E4 /* GameState.swift in Sources */,
-				03ECB44D2A12890000DE24E4 /* ClientTactic.swift in Sources */,
-				0358A87B2A123E5200F043BA /* main.swift in Sources */,
-				03ECB4572A1289AA00DE24E4 /* BoardPowerUpState.swift in Sources */,
-				03ECB45D2A128AD900DE24E4 /* Json.swift in Sources */,
+				037C0A012A2212290043662C /* MyTactic.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -380,28 +314,6 @@
 			};
 			name = Release;
 		};
-		0358A8802A123E5200F043BA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = TPWEY3KE9V;
-				ENABLE_HARDENED_RUNTIME = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-			};
-			name = Debug;
-		};
-		0358A8812A123E5200F043BA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = TPWEY3KE9V;
-				ENABLE_HARDENED_RUNTIME = YES;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -423,27 +335,10 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0358A87F2A123E5200F043BA /* Build configuration list for PBXNativeTarget "secret-game-client-2" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				0358A8802A123E5200F043BA /* Debug */,
-				0358A8812A123E5200F043BA /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
 		0312D4D72A0E5A730093D122 /* XCRemoteSwiftPackageReference "socket" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/socketio/socket.io-client-swift";
-			requirement = {
-				branch = master;
-				kind = branch;
-			};
-		};
-		0358A8782A123E5200F043BA /* XCRemoteSwiftPackageReference "socket" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/socketio/socket.io-client-swift";
 			requirement = {
@@ -457,11 +352,6 @@
 		0312D4D82A0E5A730093D122 /* SocketIO */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 0312D4D72A0E5A730093D122 /* XCRemoteSwiftPackageReference "socket" */;
-			productName = SocketIO;
-		};
-		0358A8772A123E5200F043BA /* SocketIO */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 0358A8782A123E5200F043BA /* XCRemoteSwiftPackageReference "socket" */;
 			productName = SocketIO;
 		};
 /* End XCSwiftPackageProductDependency section */

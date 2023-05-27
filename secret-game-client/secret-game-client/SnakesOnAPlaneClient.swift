@@ -31,7 +31,7 @@ final class SnakesOnAPlaneClient<T: ClientTactic> {
     private let socket: SocketIOClient
     private let tactic: ClientTactic
     
-    init(socketUrlString: String, tactic: ClientTactic) {
+    init(socketUrlString: String, tactic: T) {
         manager = SocketManager(socketURL: URL(string: socketUrlString)!)
         socket = manager.socket(forNamespace: "/gameClient")
         self.tactic = tactic
