@@ -30,6 +30,7 @@ class GameState {
         this.boardPowerUp = null
         this.messageBuffer = []
         this.stopGameLoop = false
+        this.gameOver = false
     }
 
     initialGameBoard(maxX, maxY) {
@@ -125,15 +126,26 @@ class GameState {
     }
 
     removePlayerWithSocketId(socketId) {
-        const playerId = this.activePlayers.find(player => player.socketId == socketId).id
+        const player = this.activePlayers.find(player => player.socketId == socketId)
         this.activePlayers = this.activePlayers.filter(player => player.socketId != socketId)
         this.selectablePlayers = this.selectablePlayers.filter(player => player.socketId != socketId)
 
-        this.removePlayerFromBoard(playerId)
+        if (this.step > 0) {
+            this.pushToMessageBuffer(this.playersNameInColor(player) + " was removed from the game")
+
+            if (this.activePlayers.length == 1) {
+                this.addWinnersToMessageBuffer(this.activePlayers)
+            }
+        }
     }
 
     removeNumberOfPlayers(number) {
         this.activePlayers = this.activePlayers.slice(0, -number)
+        this.gameBoard = this.initialGameBoard(this.maxX, this.maxY)
+
+        for (const activePlayer of this.activePlayers) {
+            this.gameBoard[activePlayer.x][activePlayer.y] = activePlayer.id
+        }
     }
 
     setSimulationSpeed(speed) {
@@ -147,6 +159,7 @@ class GameState {
         newActivePlayer.id = playerAtIndex.id
 
         this.gameBoard[playerAtIndex.x][playerAtIndex.y] = 0
+        this.gameBoard[newActivePlayer.x][newActivePlayer.y] = newActivePlayer.id
         this.activePlayers[playerIndex] = newActivePlayer
 
         return this
@@ -178,7 +191,7 @@ class GameState {
         return {
             name: player.name,
             func: player.func != null ? player.func : null,
-            id: this.activePlayers.length + 1,
+            id: this.newPlayerId(),
             socketId: player.socketId,
             x: x,
             y: y,
@@ -187,6 +200,14 @@ class GameState {
             activePower: null,
             isAlive: true,
             color: color
+        }
+    }
+
+    newPlayerId() {
+        for (let i = 1; i < 20; i++) {
+            if (!this.activePlayers.map(player => player.id).includes(i)) {
+                return i
+            }
         }
     }
 
@@ -649,13 +670,11 @@ gameClientsNameSpace.on("connection", (socket) => {
     })
 
     socket.on('disconnect', () => {
-        const oldGameState = currentGameState.clone()
-
         currentGameState.removePlayerWithSocketId(socket.id)
 
-        // if (gameCanvasSocket) {
-        //     gameCanvasSocket.emit('redrawPlayers', oldGameState, currentGameState)
-        // }
+        if (gameCanvasSocket && currentGameState.step == 0) {
+            gameCanvasSocket.emit('playerDisconnected', currentGameState)
+        }
     })
 });
 

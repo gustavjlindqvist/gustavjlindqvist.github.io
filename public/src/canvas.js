@@ -75,7 +75,7 @@ export function drawPlayers(oldGameState, newGameState) {
         if (playerIsFrozen(player) || !player.isAlive) {
             continue;
         }
-        
+
         let x = player.x;
         let y = player.y;
         let dx = player.dx;
@@ -128,7 +128,7 @@ export function drawPlayers(oldGameState, newGameState) {
 
 export function drawPlayersFrozen(oldGameState, newGameState) {
     for (const newPlayer of newGameState.activePlayers) {
-        
+
         const oldPlayer = oldGameState.activePlayers.find(oldPlayer => newPlayer.id == oldPlayer.id);
         const isFrozen = playerIsFrozen(newPlayer);
         const wasFrozen = playerIsFrozen(oldPlayer);

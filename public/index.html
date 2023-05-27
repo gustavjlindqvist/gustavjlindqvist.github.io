@@ -328,11 +328,9 @@
         //     drawMessages(newGameState)
         // })
 
-        // socket.on('redrawPlayers', (oldGameState, newGameState) => {
-        //     drawInitialBoard(newGameState.gameBoard)
-        //     drawPlayers(oldGameState, newGameState)
-        //     drawMessages(newGameState)
-        // })
+        socket.on('playerDisconnected', (gameState) => {
+            reinitializeGame(gameState)
+        })
 
         const startButton = document.querySelector('#startBtn')
         startButton.addEventListener('click', () => {

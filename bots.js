@@ -108,32 +108,39 @@ function leftFunc(me, otherPlayers, gameBoard, boardPowerUp) {
 }
 
 function bullyFunc(me, otherPlayers, gameBoard, boardPowerUp) {
-    let x = me.x;
-    let y = me.y;
-    let best = 9999;
-    let target = 0;
+    if (otherPlayers.length > 0) {
+        let x = me.x;
+        let y = me.y;
+        let best = 9999;
+        let target = 0;
 
-    for (let p = 0; p < otherPlayers.length; p++) {
-        let d = Math.abs(otherPlayers[p].x - x) + Math.abs(otherPlayers[p].y - y);
-        if (d > 0 && d < best) {
-            best = d;
-            target = p;
+        for (let p = 0; p < otherPlayers.length; p++) {
+            let d = Math.abs(otherPlayers[p].x - x) + Math.abs(otherPlayers[p].y - y);
+            if (d > 0 && d < best) {
+                best = d;
+                target = p;
+            }
+        }
+
+        let x2 = otherPlayers[target].x;
+        let y2 = otherPlayers[target].y;
+        let dx = x2 - x;
+        let dy = y2 - y;
+        if (dx > 0 && Math.abs(dx) > Math.abs(dy) && gameBoard[x + 1][y] == 0) return { dx: 1, dy: 0 };
+        if (dx < 0 && Math.abs(dx) > Math.abs(dy) && gameBoard[x - 1][y] == 0) return { dx: -1, dy: 0 };
+        if (dy > 0 && Math.abs(dx) < Math.abs(dy) && gameBoard[x][y + 1] == 0) return { dx: 0, dy: 1 };
+        if (dy < 0 && Math.abs(dx) < Math.abs(dy) && gameBoard[x][y - 1] == 0) return { dx: 0, dy: -1 };
+        if (gameBoard[x + 1][y] == 0) return { dx: 1, dy: 0 };
+        if (gameBoard[x - 1][y] == 0) return { dx: -1, dy: 0 };
+        if (gameBoard[x][y + 1] == 0) return { dx: 0, dy: 1 };
+        if (gameBoard[x][y - 1] == 0) return { dx: 0, dy: -1 };
+        return { dx: me.dx, dy: me.dy };
+    } else {
+        return {
+            dx: 1,
+            dy: 0
         }
     }
-
-    let x2 = otherPlayers[target].x;
-    let y2 = otherPlayers[target].y;
-    let dx = x2 - x;
-    let dy = y2 - y;
-    if (dx > 0 && Math.abs(dx) > Math.abs(dy) && gameBoard[x + 1][y] == 0) return { dx: 1, dy: 0 };
-    if (dx < 0 && Math.abs(dx) > Math.abs(dy) && gameBoard[x - 1][y] == 0) return { dx: -1, dy: 0 };
-    if (dy > 0 && Math.abs(dx) < Math.abs(dy) && gameBoard[x][y + 1] == 0) return { dx: 0, dy: 1 };
-    if (dy < 0 && Math.abs(dx) < Math.abs(dy) && gameBoard[x][y - 1] == 0) return { dx: 0, dy: -1 };
-    if (gameBoard[x + 1][y] == 0) return { dx: 1, dy: 0 };
-    if (gameBoard[x - 1][y] == 0) return { dx: -1, dy: 0 };
-    if (gameBoard[x][y + 1] == 0) return { dx: 0, dy: 1 };
-    if (gameBoard[x][y - 1] == 0) return { dx: 0, dy: -1 };
-    return { dx: me.dx, dy: me.dy };
 }
 
 exports.bots = [
