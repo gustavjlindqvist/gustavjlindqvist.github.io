@@ -11,6 +11,7 @@
 		0312D4D92A0E5A730093D122 /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = 0312D4D82A0E5A730093D122 /* SocketIO */; };
 		0312D4DB2A0E5B390093D122 /* SnakesOnAPlaneClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312D4DA2A0E5B390093D122 /* SnakesOnAPlaneClient.swift */; };
 		037C0A012A2212290043662C /* MyTactic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037C0A002A2212290043662C /* MyTactic.swift */; };
+		037C0A052A2267BE0043662C /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037C0A042A2267BE0043662C /* Server.swift */; };
 		03ECB44C2A12890000DE24E4 /* ClientTactic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB44B2A12890000DE24E4 /* ClientTactic.swift */; };
 		03ECB4502A12898700DE24E4 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB44F2A12898700DE24E4 /* GameState.swift */; };
 		03ECB4532A12899A00DE24E4 /* PlayerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB4522A12899A00DE24E4 /* PlayerState.swift */; };
@@ -37,6 +38,7 @@
 		0312D4D02A0E59C80093D122 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		0312D4DA2A0E5B390093D122 /* SnakesOnAPlaneClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnakesOnAPlaneClient.swift; sourceTree = "<group>"; };
 		037C0A002A2212290043662C /* MyTactic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTactic.swift; sourceTree = "<group>"; };
+		037C0A042A2267BE0043662C /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
 		03ECB44B2A12890000DE24E4 /* ClientTactic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientTactic.swift; sourceTree = "<group>"; };
 		03ECB44F2A12898700DE24E4 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
 		03ECB4522A12899A00DE24E4 /* PlayerState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerState.swift; sourceTree = "<group>"; };
@@ -78,6 +80,7 @@
 			isa = PBXGroup;
 			children = (
 				0312D4D02A0E59C80093D122 /* main.swift */,
+				037C0A042A2267BE0043662C /* Server.swift */,
 				037C0A002A2212290043662C /* MyTactic.swift */,
 				03ECB44E2A12895E00DE24E4 /* Models */,
 				0312D4DA2A0E5B390093D122 /* SnakesOnAPlaneClient.swift */,
@@ -169,6 +172,7 @@
 				0312D4DB2A0E5B390093D122 /* SnakesOnAPlaneClient.swift in Sources */,
 				03ECB4502A12898700DE24E4 /* GameState.swift in Sources */,
 				03ECB44C2A12890000DE24E4 /* ClientTactic.swift in Sources */,
+				037C0A052A2267BE0043662C /* Server.swift in Sources */,
 				0312D4D12A0E59C80093D122 /* main.swift in Sources */,
 				03ECB4562A1289AA00DE24E4 /* BoardPowerUpState.swift in Sources */,
 				03ECB45C2A128AD900DE24E4 /* Json.swift in Sources */,
@@ -229,7 +233,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.1;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -283,7 +287,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.1;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;

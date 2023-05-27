@@ -7,8 +7,7 @@
 
 import Foundation
 
-let serverUrl = "http://mrtims.local:3000"
 let tactic = MyTactic()
-let client = SnakesOnAPlaneClient(socketUrlString: serverUrl, tactic: tactic)
+let client = SnakesOnAPlaneClient(server: .local, tactic: tactic)
 
 RunLoop.main.run()
