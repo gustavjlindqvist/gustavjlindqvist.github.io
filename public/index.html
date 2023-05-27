@@ -89,10 +89,10 @@
         }
 
         button:disabled,
-        button[disabled]{
-        background-color: #cccccc;
-        color: #666666;
-        cursor: no-drop
+        button[disabled] {
+            background-color: #cccccc;
+            color: #666666;
+            cursor: no-drop
         }
 
         select {
@@ -105,7 +105,7 @@
         }
 
         select:disabled,
-        select[disabled]{
+        select[disabled] {
             background-color: #cccccc;
             color: #666666;
             cursor: no-drop
@@ -219,6 +219,7 @@
         .powerup_frozen {
             animation: blinker 1s linear infinite;
         }
+
         .powerup_frozen:after {
             content: "❄️";
             position: absolute;
@@ -233,6 +234,7 @@
         .crashSquare {
             background: darkgray;
         }
+
         .crashSquare:after {
             content: "💥";
             position: absolute;
@@ -378,8 +380,12 @@
             const playerSelectors = Array.from(document.getElementsByClassName("activePlayerSelector"))
             for (let index in playerSelectors) {
                 const playerSelector = playerSelectors[index]
-                playerSelector.addEventListener("change", () => {
-                    socket.emit('replacePlayer', index, playerSelector.value, (gameState) => {
+                const newPlayerSelector = playerSelector.cloneNode(true)
+                newPlayerSelector.value = playerSelector.value
+                playerSelector.parentNode.replaceChild(newPlayerSelector, playerSelector)
+
+                newPlayerSelector.addEventListener("change", () => {
+                    socket.emit('replacePlayer', index, newPlayerSelector.value, (gameState) => {
                         drawInitialPlayers(gameState)
                     })
                 })
