@@ -162,7 +162,7 @@ class GameState {
         this.gameBoard[newActivePlayer.x][newActivePlayer.y] = newActivePlayer.id
         this.activePlayers[playerIndex] = newActivePlayer
 
-        return this
+        return playerAtIndex
     }
 
     randomEmptyCoordinates() {
@@ -244,7 +244,9 @@ class GameState {
     }
 
     playersNameInColor(activePlayer) {
-        return "<span style='color: " + activePlayer.color + "'>" + activePlayer.name + "</span>";
+        if (activePlayer) {
+            return "<span style='color: " + activePlayer.color + "'>" + activePlayer.name + "</span>";
+        }
     }
 
     checkForPowerUpExpiry(activePlayer) {
@@ -554,6 +556,17 @@ async function getPlayerMoves(currentGameState) {
     }
 }
 
+async function removeSocketFromPlayingRoom(socketId) {
+    if (socketId) {
+        const sockets = await gameClientsNameSpace.in(playingRoom).fetchSockets()
+        const socketToLeave = sockets.find(socket => socket.id == socketId)
+
+        if (socketToLeave) {
+            socketToLeave.leave(playingRoom)
+        }
+    }
+}
+
 async function gameLoop(currentGameState, gameCanvasSocket) {
     const playerMoves = await getPlayerMoves(currentGameState)
     const bots = currentGameState.activePlayers.filter(player => player.func).filter(player => player.isAlive)
@@ -638,7 +651,8 @@ gameClientServer.on('connection', (socket) => {
     })
 
     socket.on('replacePlayer', (index, name, callback) => {
-        currentGameState.replaceActivePlayer(index, name)
+        const oldPlayer = currentGameState.replaceActivePlayer(index, name)
+        removeSocketFromPlayingRoom(oldPlayer.socketId)
 
         callback(currentGameState)
     })
