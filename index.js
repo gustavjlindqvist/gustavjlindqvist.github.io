@@ -249,14 +249,14 @@ class GameState {
             return true
         }
 
-        if (activePlayer.activePower.name == "diagonal") {
-            if (dx == -1 && dy == -1 ||
-                dx == 1 && dy == -1 ||
-                dx == -1 && dy == 1 ||
-                dx == 1 && dy == 1) {
-                return true
-            }
-        }
+        // if (activePlayer.activePower.name == "diagonal") {
+        //     if (dx == -1 && dy == -1 ||
+        //         dx == 1 && dy == -1 ||
+        //         dx == -1 && dy == 1 ||
+        //         dx == 1 && dy == 1) {
+        //         return true
+        //     }
+        // }
 
         return false
     }
@@ -475,7 +475,7 @@ class GameState {
             this.checkForFoundPowerup(activePlayer)
             this.checkForPowerUpExpiry(activePlayer)
         }
-        
+
         // Check for game end if no players alive
         if (playersAliveBeforeMoves.length < 1) {
             this.stopGameLoop = true
