@@ -12,27 +12,8 @@ struct MyTactic: ClientTactic {
     let name = "Timas"
     
     //TODO: Implement next move tactic
-    func getNextMove(gameState: GameState) -> Move? {
-        let move: Move? = {
-            if gameState.myPlayer.dx == 1 {
-                return .down
-            } else if gameState.myPlayer.dy == 1 {
-                return .left
-            } else if gameState.myPlayer.dx == -1 {
-                return .up
-            } else if gameState.myPlayer.dy == -1 {
-                return .right
-            }
-            
-            return nil
-        }()
+    func getNextMove(gameState: GameState) -> (dx: Int, dy: Int)? {
         
-        let me = gameState.myPlayer
-        
-        if gameState.gameBoard[me.x + me.dx][me.y + me.dy] == 0 {
-            return nil
-        }
-        
-        return move
+        return nil
     }
 }

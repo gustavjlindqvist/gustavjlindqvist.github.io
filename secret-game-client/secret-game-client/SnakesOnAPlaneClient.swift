@@ -59,11 +59,10 @@ final class SnakesOnAPlaneClient<T: ClientTactic> {
                 return
             }
             
-            let (dx, dy) = move.asDxDy
             let response: Json = [
                 "name": self.tactic.name,
-                "dx": dx,
-                "dy": dy
+                "dx": move.dx,
+                "dy": move.dy
             ]
             
             ack.with(response)
