@@ -22,7 +22,7 @@ const powerupFeatureEnabled = true;
 class GameState {
     constructor(maxX, maxY, simulationSpeed) {
         this.step = 0
-        this.availableColors = ["#d39", "#3d9", "#d93", "#39d", "#93d", "#9d3", "#7ff", "#f5f", "#7ff", "#ff7"]
+        this.availableColors = ["#d39", "#3d9", "#d93", "#39d", "#93d", "#9d3", "#7ff", "#f5f", "#ff7"]
         this.simulationSpeed = simulationSpeed
         this.gameBoard = this.initialGameBoard(maxX, maxY)
         this.maxX = maxX
@@ -72,8 +72,8 @@ class GameState {
     }
 
     removePlayerFromBoard(playerId) {
-        for (let x = 0; x <= this.maxX + 1; x++) {
-            for (let y = 0; y <= this.maxY + 1; y++) {
+        for (let x = 1; x <= this.maxX; x++) {
+            for (let y = 1; y <= this.maxY; y++) {
                 if (this.gameBoard[x][y] == playerId) {
                     this.gameBoard[x][y] = 0
                 }
