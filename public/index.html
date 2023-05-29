@@ -227,6 +227,17 @@
             left: -2.2px;
         }
 
+        .powerup_eraser {
+            animation: blinker 1s linear infinite;
+        }
+
+        .powerup_eraser:after {
+            content: "🧽";
+            position: absolute;
+            top: -3.2px;
+            left: -2.2px;
+        }
+
         .blink {
             animation: blinker 1s linear infinite;
         }
@@ -310,7 +321,7 @@
 
 
     <script type="module">
-        import { drawPlayerSelectors, drawInitialBoard, drawInitialPlayers, drawPlayers, drawPlayersFrozen, drawCrashSquares, drawMessages, drawClearMessages, drawPowerUp, drawSimulationSpeedValue, drawGameUIEnabled } from './src/canvas.js'
+        import { drawPlayerSelectors, drawInitialBoard, drawInitialPlayers, drawPlayers, drawPlayersFrozen, drawEraseTail, drawCrashSquares, drawMessages, drawClearMessages, drawPowerUp, drawSimulationSpeedValue, drawGameUIEnabled } from './src/canvas.js'
         import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
 
         const socket = io("localhost:3000");
@@ -322,11 +333,9 @@
             });
         });
 
-        // socket.on('removeTails', (oldGameState, newGameState) => {
-        //     drawInitialBoard(newGameState.gameBoard)
-        //     drawPlayers(oldGameState, newGameState)
-        //     drawMessages(newGameState)
-        // })
+        socket.on('eraseTail', (gameState) => {
+            drawEraseTail(gameState)
+        })
 
         socket.on('playerDisconnected', (gameState) => {
             reinitializeGame(gameState)

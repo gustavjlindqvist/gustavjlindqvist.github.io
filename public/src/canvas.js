@@ -141,6 +141,36 @@ export function drawPlayersFrozen(oldGameState, newGameState) {
     }
 }
 
+export function drawEraseTail(gameState) {
+
+    let playerToErase = null;
+    for (const activePlayer of gameState.activePlayers) {
+        if (playerIsErased(activePlayer)) {
+            playerToErase = activePlayer;
+            break;
+        }
+    }
+
+    if (playerToErase == null) {
+        return
+    }
+
+    for (let y = 1; y < gameState.gameBoard[0].length - 1; y++) {
+        for (let x = 1; x < gameState.gameBoard.length - 1; x++) {
+            
+            if (gameState.gameBoard[x][y] == playerToErase.id) {
+                // Remove all snake classes apart from heads
+                $("#x" + x + "y" + y).removeClass("horizontal");
+                $("#x" + x + "y" + y).removeClass("vertical");
+                $("#x" + x + "y" + y).removeClass("downLeft");
+                $("#x" + x + "y" + y).removeClass("downRight");
+                $("#x" + x + "y" + y).removeClass("upLeft");
+                $("#x" + x + "y" + y).removeClass("upRight");
+            }
+        }
+    }
+}
+
 export function drawCrashSquares(oldGameState, newGameState) {
     const oldGameBoard = oldGameState.gameBoard;
     const newGameBoard = newGameState.gameBoard;
@@ -211,4 +241,8 @@ function playersNameInColor(player) {
 
 function playerIsFrozen(player) {
     return player.activePower ? player.activePower.name == "frozen" : false;
+}
+
+function playerIsErased(player) {
+    return player.activePower ? player.activePower.name == "eraser" : false;
 }

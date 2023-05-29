@@ -426,9 +426,9 @@ class GameState {
             this.boardPowerUp = null;
 
             // One-shot powerups
-            // if (activePlayer.activePower.name = "eraser") {
-            //     this.eraseTail(activePlayer);
-            // }
+            if (activePlayer.activePower.name == "eraser") {
+                this.eraseTail(activePlayer);
+            }
         }
     }
 
@@ -436,7 +436,7 @@ class GameState {
         if (activePlayer.activePower == null) {
             return;
         }
-
+        
         const stepsSinceActive = this.step - activePlayer.activePower.step;
         if (stepsSinceActive >= activePlayer.activePower.duration) {
             // console.log("Expiring powerup:", activePlayer.activePower.name);
@@ -445,15 +445,19 @@ class GameState {
     }
 
     eraseTail(activePlayer) {
+        // Draw the erase before we erase the state (the draw needs to know what to erase!)
+        gameCanvasSocket.emit("eraseTail", currentGameState);
+
         for (let x = 0; x <= this.maxX + 1; x++) {
             for (let y = 0; y <= this.maxY + 1; y++) {
-                if (this.gameBoard[x][y] == activePlayer) {
+                if (x == activePlayer.x && y == activePlayer.y) {
+                    continue;
+                }
+                if (this.gameBoard[x][y] == activePlayer.id) {
                     this.gameBoard[x][y] = 0
                 }
             }
-        }
-        
-        this.gameBoard[activePlayer.x][activePlayer.y] = activePlayer.id
+        }        
     }
 
     gameStep(playerMoves) {
