@@ -8,6 +8,6 @@
 import Foundation
 
 let tactic = MyTactic()
-let client = SnakesOnAPlaneClient(server: .local, tactic: tactic)
+let client = SnakesOnAPlaneClient(server: .remote, tactic: tactic)
 
 RunLoop.main.run()

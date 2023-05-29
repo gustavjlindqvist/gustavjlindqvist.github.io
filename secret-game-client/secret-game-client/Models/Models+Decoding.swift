@@ -1,19 +1,28 @@
 //
-//  PlayerState.swift
+//  Models+Decoding.swift
 //  secret-game-client
 //
-//  Created by timas on 2023-05-15.
+//  Created by timas on 2023-05-29.
 //
 
-struct PlayerState {
-    let x: Int
-    let y: Int
-    let dx: Int
-    let dy: Int
-    let id: Int
-    let name: String
-    let activePower: ActivePower?
-    
+import Foundation
+
+extension GameState {
+    init?(_ json: Json, name: String) {
+        guard let gameBoard = json["gameBoard"] as? [[Int]],
+              let playerStatesJson = json["playerStates"] as? [Json],
+              let playerStates = [PlayerState].init(playerStatesJson),
+              let myState = playerStates.first(where: { $0.name == name }) else {
+            return nil
+        }
+        
+        self.gameBoard = gameBoard
+        self.myPlayer = myState
+        self.otherPlayers = playerStates.filter { $0.name != name }
+    }
+}
+
+extension PlayerState {
     init?(_ json: Json) {
         guard let x = json["x"] as? Int,
               let y = json["y"] as? Int,
@@ -30,14 +39,6 @@ struct PlayerState {
         self.dx = dx
         self.dy = dy
         self.name = name
-        
-        guard let activePowerJson = json["activePower"] as? Json,
-              let activePower = ActivePower(activePowerJson) else {
-            self.activePower = nil
-            return
-        }
-        
-        self.activePower = activePower
     }
 }
 
@@ -55,3 +56,5 @@ extension [PlayerState] {
         self = players
     }
 }
+
+

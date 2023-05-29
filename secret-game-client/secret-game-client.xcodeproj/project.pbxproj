@@ -12,11 +12,9 @@
 		0312D4DB2A0E5B390093D122 /* SnakesOnAPlaneClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0312D4DA2A0E5B390093D122 /* SnakesOnAPlaneClient.swift */; };
 		037C0A012A2212290043662C /* MyTactic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037C0A002A2212290043662C /* MyTactic.swift */; };
 		037C0A052A2267BE0043662C /* Server.swift in Sources */ = {isa = PBXBuildFile; fileRef = 037C0A042A2267BE0043662C /* Server.swift */; };
+		03E6C69A2A24F06600679C3D /* Models+Decoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E6C6992A24F06600679C3D /* Models+Decoding.swift */; };
+		03E6C69C2A24F11100679C3D /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E6C69B2A24F11100679C3D /* Models.swift */; };
 		03ECB44C2A12890000DE24E4 /* ClientTactic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB44B2A12890000DE24E4 /* ClientTactic.swift */; };
-		03ECB4502A12898700DE24E4 /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB44F2A12898700DE24E4 /* GameState.swift */; };
-		03ECB4532A12899A00DE24E4 /* PlayerState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB4522A12899A00DE24E4 /* PlayerState.swift */; };
-		03ECB4562A1289AA00DE24E4 /* BoardPowerUpState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB4552A1289AA00DE24E4 /* BoardPowerUpState.swift */; };
-		03ECB4592A128A9A00DE24E4 /* ActivePowerUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB4582A128A9A00DE24E4 /* ActivePowerUp.swift */; };
 		03ECB45C2A128AD900DE24E4 /* Json.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03ECB45B2A128AD900DE24E4 /* Json.swift */; };
 /* End PBXBuildFile section */
 
@@ -38,11 +36,9 @@
 		0312D4DA2A0E5B390093D122 /* SnakesOnAPlaneClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnakesOnAPlaneClient.swift; sourceTree = "<group>"; };
 		037C0A002A2212290043662C /* MyTactic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTactic.swift; sourceTree = "<group>"; };
 		037C0A042A2267BE0043662C /* Server.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Server.swift; sourceTree = "<group>"; };
+		03E6C6992A24F06600679C3D /* Models+Decoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models+Decoding.swift"; sourceTree = "<group>"; };
+		03E6C69B2A24F11100679C3D /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		03ECB44B2A12890000DE24E4 /* ClientTactic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientTactic.swift; sourceTree = "<group>"; };
-		03ECB44F2A12898700DE24E4 /* GameState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
-		03ECB4522A12899A00DE24E4 /* PlayerState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerState.swift; sourceTree = "<group>"; };
-		03ECB4552A1289AA00DE24E4 /* BoardPowerUpState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BoardPowerUpState.swift; sourceTree = "<group>"; };
-		03ECB4582A128A9A00DE24E4 /* ActivePowerUp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivePowerUp.swift; sourceTree = "<group>"; };
 		03ECB45B2A128AD900DE24E4 /* Json.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Json.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -78,23 +74,21 @@
 			isa = PBXGroup;
 			children = (
 				0312D4D02A0E59C80093D122 /* main.swift */,
-				037C0A042A2267BE0043662C /* Server.swift */,
 				037C0A002A2212290043662C /* MyTactic.swift */,
-				03ECB44E2A12895E00DE24E4 /* Models */,
+				03E6C69D2A24F16400679C3D /* Models */,
+				037C0A042A2267BE0043662C /* Server.swift */,
 				0312D4DA2A0E5B390093D122 /* SnakesOnAPlaneClient.swift */,
 				03ECB44B2A12890000DE24E4 /* ClientTactic.swift */,
 			);
 			path = "secret-game-client";
 			sourceTree = "<group>";
 		};
-		03ECB44E2A12895E00DE24E4 /* Models */ = {
+		03E6C69D2A24F16400679C3D /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				03ECB44F2A12898700DE24E4 /* GameState.swift */,
-				03ECB4582A128A9A00DE24E4 /* ActivePowerUp.swift */,
-				03ECB4522A12899A00DE24E4 /* PlayerState.swift */,
+				03E6C69B2A24F11100679C3D /* Models.swift */,
+				03E6C6992A24F06600679C3D /* Models+Decoding.swift */,
 				03ECB45B2A128AD900DE24E4 /* Json.swift */,
-				03ECB4552A1289AA00DE24E4 /* BoardPowerUpState.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -163,16 +157,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				03ECB4592A128A9A00DE24E4 /* ActivePowerUp.swift in Sources */,
-				03ECB4532A12899A00DE24E4 /* PlayerState.swift in Sources */,
 				0312D4DB2A0E5B390093D122 /* SnakesOnAPlaneClient.swift in Sources */,
-				03ECB4502A12898700DE24E4 /* GameState.swift in Sources */,
+				03E6C69A2A24F06600679C3D /* Models+Decoding.swift in Sources */,
 				03ECB44C2A12890000DE24E4 /* ClientTactic.swift in Sources */,
 				037C0A052A2267BE0043662C /* Server.swift in Sources */,
 				0312D4D12A0E59C80093D122 /* main.swift in Sources */,
-				03ECB4562A1289AA00DE24E4 /* BoardPowerUpState.swift in Sources */,
 				03ECB45C2A128AD900DE24E4 /* Json.swift in Sources */,
 				037C0A012A2212290043662C /* MyTactic.swift in Sources */,
+				03E6C69C2A24F11100679C3D /* Models.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
