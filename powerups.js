@@ -1,7 +1,8 @@
 const powerups = [
     {
         name: "frozen",
-        emoji: "❄️"
+        emoji: "❄️",
+        duration: 20
     }
 ];
 

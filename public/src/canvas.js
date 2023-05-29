@@ -134,10 +134,8 @@ export function drawPlayersFrozen(oldGameState, newGameState) {
         const wasFrozen = playerIsFrozen(oldPlayer);
 
         if (isFrozen && !wasFrozen) {
-            // console.log("Adding blink at", newPlayer.x, newPlayer.y)
             $("#x" + newPlayer.x + "y" + newPlayer.y).addClass("blink");
         } else if (wasFrozen && !isFrozen) {
-            // console.log("Removing blink at", oldPlayer.x, oldPlayer.y)
             $("#x" + oldPlayer.x + "y" + oldPlayer.y).removeClass("blink");
         }
     }
@@ -150,7 +148,7 @@ export function drawCrashSquares(oldGameState, newGameState) {
     for (let y = 1; y < newGameBoard[0].length - 1; y++) {
         for (let x = 1; x < newGameBoard.length - 1; x++) {
             if (newGameBoard[x][y] == -2 && oldGameBoard[x][y] == 0) {
-                // console.log("CRASH at", x, y);
+                // console.log("Crash square added at", x, y);
                 $("#x" + x + "y" + y).addClass("crashSquare");
             }
         }
@@ -177,16 +175,14 @@ export function drawPowerUp(oldGameState, newGameState) {
 
     if (oldPowerUp == null && newPowerUp != null) {
         // PowerUp added to board
-        if (newPowerUp.name == "frozen") {
-            // console.log("Powerup added to board", newPowerUp.x, newPowerUp.y)
-            $("#x" + newPowerUp.x + "y" + newPowerUp.y).addClass("powerup_frozen");
-        }
+        // console.log("Powerup added to board", newPowerUp.name, newPowerUp.x, newPowerUp.y);
+        const className = "powerup_" + newPowerUp.name;
+        $("#x" + newPowerUp.x + "y" + newPowerUp.y).addClass(className);
     } else if (oldPowerUp != null && newPowerUp == null) {
         // PowerUp removed from board
-        if (oldPowerUp.name == "frozen") {
-            // console.log("Powerup removed from board", oldPowerUp.x, oldPowerUp.y)
-            $("#x" + oldPowerUp.x + "y" + oldPowerUp.y).removeClass("powerup_frozen");
-        }
+        // console.log("Powerup removed from board", oldPowerUp.x, oldPowerUp.y);
+        const className = "powerup_" + oldPowerUp.name;
+        $("#x" + oldPowerUp.x + "y" + oldPowerUp.y).removeClass(className);
     }
 }
 

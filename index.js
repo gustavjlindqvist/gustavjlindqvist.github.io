@@ -71,19 +71,6 @@ class GameState {
         })
     }
 
-    eraseTails() {
-        this.gameBoard = this.initialGameBoard(this.maxX, this.maxY)
-
-        for (const activePlayer of this.activePlayers) {
-            const x = activePlayer.x
-            const y = activePlayer.y
-
-            this.gameBoard[x][y] = activePlayer.id
-        }
-
-        return this
-    }
-
     removePlayerFromBoard(playerId) {
         for (let x = 0; x <= this.maxX + 1; x++) {
             for (let y = 0; y <= this.maxY + 1; y++) {
@@ -251,15 +238,6 @@ class GameState {
         }
     }
 
-    checkForPowerUpExpiry(activePlayer) {
-        if (this.isFrozen(activePlayer)) {
-            const stepsSinceActive = this.step - activePlayer.activePower.step
-            if (stepsSinceActive > 20) {
-                activePlayer.activePower = null
-            }
-        }
-    }
-
     isValidMove(activePlayer, playerMove) {
         const dx = playerMove.dx
         const dy = playerMove.dy
@@ -398,27 +376,6 @@ class GameState {
         this.gameBoard[activePlayer.x][activePlayer.y] = activePlayer.id
     }
 
-    checkForFoundPowerup(activePlayer) {
-        if (!activePlayer.isAlive) {
-            return;
-        }
-
-        if (!this.boardPowerUp) {
-            return;
-        }
-
-        if (this.boardPowerUp.x == activePlayer.x && this.boardPowerUp.y == activePlayer.y) {
-            this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " is " + this.boardPowerUp.name + " " + this.boardPowerUp.emoji);
-
-            activePlayer.activePower = {
-                step: this.step,
-                name: this.boardPowerUp.name
-            }
-
-            this.boardPowerUp = null;
-        }
-    }
-
     addPowerUpToGameBoard() {
         // Don't add a powerup if one already on board
         if (this.boardPowerUp) {
@@ -437,12 +394,66 @@ class GameState {
         if (powerUpChance == 0) {
             let [x, y] = this.randomEmptyCoordinates()
             if (this.squareIsEmpty(x, y)) {
-                const chosenPower = allPowerups[0];
-                this.boardPowerUp = { name: chosenPower.name, emoji: chosenPower.emoji, x: x, y: y };
+                // Choose random power up
+                const powerUpIndex = Math.floor(Math.random() * allPowerups.length);
+                const chosenPower = allPowerups[powerUpIndex];
+
+                this.boardPowerUp = { name: chosenPower.name, emoji: chosenPower.emoji, duration: chosenPower.duration, x: x, y: y };
             }
         }
 
         return this
+    }
+
+    checkForFoundPowerup(activePlayer) {
+        if (!activePlayer.isAlive) {
+            return;
+        }
+
+        if (!this.boardPowerUp) {
+            return;
+        }
+
+        if (this.boardPowerUp.x == activePlayer.x && this.boardPowerUp.y == activePlayer.y) {
+            this.pushToMessageBuffer(this.playersNameInColor(activePlayer) + " is " + this.boardPowerUp.name + " " + this.boardPowerUp.emoji);
+            // console.log("Player", activePlayer.name, "found powerup:", this.boardPowerUp.name);
+            activePlayer.activePower = {
+                step: this.step,
+                duration: this.boardPowerUp.duration,
+                name: this.boardPowerUp.name
+            }
+
+            this.boardPowerUp = null;
+
+            // One-shot powerups
+            // if (activePlayer.activePower.name = "eraser") {
+            //     this.eraseTail(activePlayer);
+            // }
+        }
+    }
+
+    checkForPowerUpExpiry(activePlayer) {
+        if (activePlayer.activePower == null) {
+            return;
+        }
+
+        const stepsSinceActive = this.step - activePlayer.activePower.step;
+        if (stepsSinceActive >= activePlayer.activePower.duration) {
+            // console.log("Expiring powerup:", activePlayer.activePower.name);
+            activePlayer.activePower = null
+        }
+    }
+
+    eraseTail(activePlayer) {
+        for (let x = 0; x <= this.maxX + 1; x++) {
+            for (let y = 0; y <= this.maxY + 1; y++) {
+                if (this.gameBoard[x][y] == activePlayer) {
+                    this.gameBoard[x][y] = 0
+                }
+            }
+        }
+        
+        this.gameBoard[activePlayer.x][activePlayer.y] = activePlayer.id
     }
 
     gameStep(playerMoves) {
