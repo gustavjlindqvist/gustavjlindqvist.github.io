@@ -13,6 +13,7 @@ struct MyTactic: ClientTactic {
     
     //TODO: Implement next move tactic
     func getNextMove(gameState: GameState) -> Direction? {
+        //Returning nil will make the snake continue in the direction it was going
         return nil
     }
 }
@@ -24,10 +25,16 @@ private extension GameState {
         gameObjectAt(x: x, y: y) == .empty
     }
     
-    func gameObjectAt(x: Int, y: Int) -> GameBoardObject {
-        let objectRepresenation = gameBoard[x][y]
+    func gameObjectNextToMyPlayer(inDirection direction: Direction) -> GameBoardObject {
+        let (dx, dy) = direction.dxdy
         
-        return GameBoardObject(from: objectRepresenation)
+        return gameObjectAt(x: myPlayer.x + dx, y: myPlayer.y + dy)
+    }
+    
+    func gameObjectAt(x: Int, y: Int) -> GameBoardObject {
+        let objectRepresentation = gameBoard[x][y]
+        
+        return GameBoardObject(from: objectRepresentation)
     }
     
     func player(withId id: Int) -> PlayerState? {

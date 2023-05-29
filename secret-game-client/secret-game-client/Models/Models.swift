@@ -8,27 +8,52 @@
 import Foundation
 
 struct GameState: Equatable {
+    ///2D array representation of gameboard, 42x42 tiles
     let gameBoard: [[Int]]
+
     let myPlayer: PlayerState
     let otherPlayers: [PlayerState]
 }
 
 struct PlayerState: Equatable {
+    ///Representation of the player on the board
+    let id: Int
+    
+    ///The players display name
+    let name: String
+    
     let x: Int
     let y: Int
-    let dx: Int
-    let dy: Int
-    let id: Int
-    let name: String
+    let isAlive: Bool
+    
+    ///Direction of the player in last step
+    let direction: Direction
 }
 
-enum Direction: Equatable  {
+enum Direction: Equatable, CaseIterable {
+    typealias DxDy = (dx: Int, dy: Int)
+    
     case up
     case down
     case right
     case left
     
-    var dxdy: (dx: Int, dy: Int) {
+    init?(dxDy: DxDy) {
+        switch dxDy {
+        case (0, -1):
+            self = .up
+        case (0, 1):
+            self = .down
+        case (1, 0):
+            self = .right
+        case (-1, 0):
+            self = .left
+        default:
+            return nil
+        }
+    }
+    
+    var dxdy: DxDy {
         switch self {
         case .up:
             return (0, -1)

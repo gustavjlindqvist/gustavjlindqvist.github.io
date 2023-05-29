@@ -29,6 +29,7 @@ extension PlayerState {
               let id = json["id"] as? Int,
               let dx = json["dx"] as? Int,
               let dy = json["dy"] as? Int,
+              let isAlive = json["isAlive"] as? Bool,
               let name = json["name"] as? String else {
             return nil
         }
@@ -36,9 +37,9 @@ extension PlayerState {
         self.id = id
         self.x = x
         self.y = y
-        self.dx = dx
-        self.dy = dy
+        self.direction = Direction(dxDy: (dx, dy))!
         self.name = name
+        self.isAlive = isAlive
     }
 }
 
