@@ -26,8 +26,8 @@ struct PlayerState: Equatable {
     let y: Int
     let isAlive: Bool
     
-    ///Direction of the player in last step
-    let direction: Direction
+    ///Move of the player in last step
+    let move: Direction
 }
 
 enum Direction: Equatable, CaseIterable {

@@ -37,7 +37,7 @@ extension PlayerState {
         self.id = id
         self.x = x
         self.y = y
-        self.direction = Direction(dxDy: (dx, dy))!
+        self.move = Direction(dxDy: (dx, dy))!
         self.name = name
         self.isAlive = isAlive
     }
