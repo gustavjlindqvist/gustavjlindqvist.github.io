@@ -8,7 +8,7 @@ const gameClientServer = new Server(server, {
     pingTimeout: 1000
 });
 
-const { bots } = require('./bots');
+const { getBots } = require('./bots');
 const { allPowerups } = require('./powerups');
 
 var timer;
@@ -16,6 +16,8 @@ var gameCanvasSocket;
 
 const gameClientsNameSpace = gameClientServer.of("/gameClient");
 const playingRoom = "playingRoom"
+
+const powerupFeatureEnabled = true;
 
 class GameState {
     constructor(maxX, maxY, simulationSpeed) {
@@ -458,7 +460,7 @@ class GameState {
             this.checkForFoundPowerup(activePlayer)
             this.checkForPowerUpExpiry(activePlayer)
         }
-
+        
         // Check for game end if no players alive
         if (playersAliveBeforeMoves.length < 1) {
             this.stopGameLoop = true
@@ -488,7 +490,9 @@ class GameState {
         }
 
         // Add powerUp to game board
-        this.addPowerUpToGameBoard()
+        if (powerupFeatureEnabled) {
+            this.addPowerUpToGameBoard()
+        }
 
         // Increment step
         this.step += 1;
@@ -619,7 +623,8 @@ function apply(bot, gameState) {
 }
 
 function initialGameState() {
-    return new GameState(40, 40, 600).addSelectableBots(bots).setNumberOfPlayers(2)
+    const selectableBots = getBots(powerupFeatureEnabled);
+    return new GameState(40, 40, 600).addSelectableBots(selectableBots).setNumberOfPlayers(2)
 }
 
 let currentGameState = initialGameState()

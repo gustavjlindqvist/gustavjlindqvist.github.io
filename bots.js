@@ -143,11 +143,9 @@ function bullyFunc(me, otherPlayers, gameBoard, boardPowerUp) {
     }
 }
 
-exports.bots = [
-    {
-        name: "Power hunter",
-        func: powerHunterFunc,
-    },
+function getBots(powerupFeatureEnabled) {
+
+    var bots = [
     {
         name: "Always right",
         func: rightFunc,
@@ -168,4 +166,16 @@ exports.bots = [
         name: "Random2",
         func: randomFunc,
     }
-]
+    ];
+
+    if (powerupFeatureEnabled) {
+        bots.push({
+            name: "Power hunter",
+            func: powerHunterFunc,
+        });
+    }
+
+    return bots;
+}
+
+exports.getBots = getBots;
