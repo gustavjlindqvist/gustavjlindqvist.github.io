@@ -7,15 +7,15 @@
 
 struct ActivePower {
     let name: String
-    let duration: Int
+    let activatedStep: Int
     
     init?(_ json: Json) {
         guard let name = json["name"] as? String,
-              let duration = json["step"] as? Int else {
+              let activatedStep = json["step"] as? Int else {
             return nil
         }
         
         self.name = name
-        self.duration = duration
+        self.activatedStep = activatedStep
     }
 }
