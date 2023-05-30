@@ -21,20 +21,18 @@ struct MyTactic: ClientTactic {
 // MARK: - Helper functions
 
 private extension GameState {
+    
     func isTileEmpty(x: Int, y: Int) -> Bool {
-        gameObjectAt(x: x, y: y) == .empty
+        gameBoard[x][y] == .empty
+    }
+    
+    func moveMyPlayer(inDirection direction: Direction) -> (x: Int, y: Int) {
+        (x: myPlayer.x + direction.dx, y: myPlayer.y + direction.dy)
     }
     
     func gameObjectNextToMyPlayer(inDirection direction: Direction) -> GameBoardObject {
-        let (dx, dy) = direction.dxdy
-        
-        return gameObjectAt(x: myPlayer.x + dx, y: myPlayer.y + dy)
-    }
-    
-    func gameObjectAt(x: Int, y: Int) -> GameBoardObject {
-        let objectRepresentation = gameBoard[x][y]
-        
-        return GameBoardObject(from: objectRepresentation)
+        let movedPosition = moveMyPlayer(inDirection: direction)
+        return gameBoard[movedPosition.x][movedPosition.y]
     }
     
     func player(withId id: Int) -> PlayerState? {

@@ -9,14 +9,14 @@ import Foundation
 
 extension GameState {
     init?(_ json: Json, name: String) {
-        guard let gameBoard = json["gameBoard"] as? [[Int]],
+        guard let gameBoardIntegers = json["gameBoard"] as? [[Int]],
               let playerStatesJson = json["playerStates"] as? [Json],
               let playerStates = [PlayerState].init(playerStatesJson),
               let myState = playerStates.first(where: { $0.name == name }) else {
             return nil
         }
         
-        self.gameBoard = gameBoard
+        self.gameBoard = gameBoardIntegers.asGameBoardObjects
         self.myPlayer = myState
         self.otherPlayers = playerStates.filter { $0.name != name }
     }
@@ -37,7 +37,7 @@ extension PlayerState {
         self.id = id
         self.x = x
         self.y = y
-        self.move = Direction(dxDy: (dx, dy))!
+        self.direction = Direction(dx: dx, dy: dy)!
         self.name = name
         self.isAlive = isAlive
     }
@@ -58,4 +58,42 @@ extension [PlayerState] {
     }
 }
 
+extension Array<[Int]> {
+    var asGameBoardObjects: [[GameBoardObject]] {
+        self.map { column in
+            column.map { integerRepresentation in
+                return .init(from: integerRepresentation)
+            }
+        }
+    }
+}
 
+extension GameBoardObject {
+    init(from objectRepresentation: Int) {
+        switch objectRepresentation {
+        case 0:
+            self = .empty
+        case -1:
+            self = .wall
+        default:
+            self = .player(id: objectRepresentation)
+        }
+    }
+}
+
+extension Direction {
+    init?(dx: Int, dy: Int) {
+        switch (dx, dy) {
+        case (0, -1):
+            self = .up
+        case (0, 1):
+            self = .down
+        case (1, 0):
+            self = .right
+        case (-1, 0):
+            self = .left
+        default:
+            return nil
+        }
+    }
+}
