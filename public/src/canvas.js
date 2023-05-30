@@ -72,7 +72,7 @@ export function drawPlayers(oldGameState, newGameState) {
 
     for (const player of newGameState.activePlayers) {
 
-        if (playerIsFrozen(player) || !player.isAlive) {
+        if (!player.isAlive) {
             continue;
         }
 
@@ -126,51 +126,6 @@ export function drawPlayers(oldGameState, newGameState) {
     }
 }
 
-export function drawPlayersFrozen(oldGameState, newGameState) {
-    for (const newPlayer of newGameState.activePlayers) {
-
-        const oldPlayer = oldGameState.activePlayers.find(oldPlayer => newPlayer.id == oldPlayer.id);
-        const isFrozen = playerIsFrozen(newPlayer);
-        const wasFrozen = playerIsFrozen(oldPlayer);
-
-        if (isFrozen && !wasFrozen) {
-            $("#x" + newPlayer.x + "y" + newPlayer.y).addClass("blink");
-        } else if (wasFrozen && !isFrozen) {
-            $("#x" + oldPlayer.x + "y" + oldPlayer.y).removeClass("blink");
-        }
-    }
-}
-
-export function drawEraseTail(gameState) {
-
-    let playerToErase = null;
-    for (const activePlayer of gameState.activePlayers) {
-        if (playerIsErased(activePlayer)) {
-            playerToErase = activePlayer;
-            break;
-        }
-    }
-
-    if (playerToErase == null) {
-        return
-    }
-
-    for (let y = 1; y < gameState.gameBoard[0].length - 1; y++) {
-        for (let x = 1; x < gameState.gameBoard.length - 1; x++) {
-            
-            if (gameState.gameBoard[x][y] == playerToErase.id) {
-                // Remove all snake classes apart from heads
-                $("#x" + x + "y" + y).removeClass("horizontal");
-                $("#x" + x + "y" + y).removeClass("vertical");
-                $("#x" + x + "y" + y).removeClass("downLeft");
-                $("#x" + x + "y" + y).removeClass("downRight");
-                $("#x" + x + "y" + y).removeClass("upLeft");
-                $("#x" + x + "y" + y).removeClass("upRight");
-            }
-        }
-    }
-}
-
 export function drawCrashSquares(oldGameState, newGameState) {
     const oldGameBoard = oldGameState.gameBoard;
     const newGameBoard = newGameState.gameBoard;
@@ -199,23 +154,6 @@ export function drawClearMessages() {
     messageBox.innerHTML = "";
 }
 
-export function drawPowerUp(oldGameState, newGameState) {
-    const oldPowerUp = oldGameState.boardPowerUp;
-    const newPowerUp = newGameState.boardPowerUp;
-
-    if (oldPowerUp == null && newPowerUp != null) {
-        // PowerUp added to board
-        // console.log("Powerup added to board", newPowerUp.name, newPowerUp.x, newPowerUp.y);
-        const className = "powerup_" + newPowerUp.name;
-        $("#x" + newPowerUp.x + "y" + newPowerUp.y).addClass(className);
-    } else if (oldPowerUp != null && newPowerUp == null) {
-        // PowerUp removed from board
-        // console.log("Powerup removed from board", oldPowerUp.x, oldPowerUp.y);
-        const className = "powerup_" + oldPowerUp.name;
-        $("#x" + oldPowerUp.x + "y" + oldPowerUp.y).removeClass(className);
-    }
-}
-
 export function drawGameUIEnabled(isDisabled) {
     const startButton = document.querySelector('#startBtn')
     // @ts-ignore
@@ -237,12 +175,4 @@ export function drawGameUIEnabled(isDisabled) {
 
 function playersNameInColor(player) {
     return "<span style='color: " + player.color + "'>" + player.name + "</span>";
-}
-
-function playerIsFrozen(player) {
-    return player.activePower ? player.activePower.name == "frozen" : false;
-}
-
-function playerIsErased(player) {
-    return player.activePower ? player.activePower.name == "eraser" : false;
 }

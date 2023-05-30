@@ -1,4 +1,4 @@
-function randomFunc(me, otherPlayers, gameBoard, boardPowerUp) {
+function randomFunc(me, otherPlayers, gameBoard) {
     let dx, dy;
     let maxIterations = 20;
     do {
@@ -27,7 +27,7 @@ function randomFunc(me, otherPlayers, gameBoard, boardPowerUp) {
     return { dx: dx, dy: dy };
 }
 
-function rightFunc(me, otherPlayers, gameBoard, boardPowerUp) {
+function rightFunc(me, otherPlayers, gameBoard) {
     let dx = 0, dy = 0;
     if (me.dx == 1) // right
         dy = 1;
@@ -42,57 +42,7 @@ function rightFunc(me, otherPlayers, gameBoard, boardPowerUp) {
     else return { dx: dx, dy: dy };
 }
 
-function powerHunterFunc(me, otherPlayers, gameBoard, boardPowerUp) {
-    let dx = me.dx;
-    let dy = me.dy;
-
-    // Try and move towards power up
-    if (boardPowerUp) {
-        const px = boardPowerUp.x;
-        const py = boardPowerUp.y;
-
-        const powerUpIsToRight = me.x < px;
-        const powerUpIsAbove = me.y < py;
-
-        // Moving vertically away from powerup, so turn horizontally to it
-        if ((me.dy == 1 && py <= me.y) || (me.dy == -1 && py >= me.y)) {
-            dx = powerUpIsToRight ? 1 : -1;
-            dy = 0;
-        }
-
-        // Moving horizontally way from powerup, so turn vertically to it
-        else if ((me.dx == 1 && px <= me.x) || (me.dx == -1 && px >= me.x)) {
-            dx = 0;
-            dy = powerUpIsAbove ? 1 : -1
-        }
-    }
-
-    // Check move is ok and try another if not
-    let iteration = 4;
-    while (gameBoard[me.x + dx][me.y + dy] != 0 && iteration > 0) {
-        if (dx == 1) { // right -> down
-            dx = 0;
-            dy = 1;
-        }
-        else if (dy == 1) { // down -> left
-            dx = -1;
-            dy = 0;
-        }
-        else if (dx == -1) { // left -> up
-            dx = 0;
-            dy = -1;
-        }
-        else if (dy == -1) { // up -> right
-            dx = 1;
-            dy = 0;
-        }
-        iteration -= 1;
-    }
-
-    return { dx: dx, dy: dy };
-}
-
-function leftFunc(me, otherPlayers, gameBoard, boardPowerUp) {
+function leftFunc(me, otherPlayers, gameBoard) {
     let dx = 0, dy = 0;
     if (me.dx == 1) // right
         dy = -1;
@@ -107,7 +57,7 @@ function leftFunc(me, otherPlayers, gameBoard, boardPowerUp) {
     else return { dx: dx, dy: dy };
 }
 
-function bullyFunc(me, otherPlayers, gameBoard, boardPowerUp) {
+function bullyFunc(me, otherPlayers, gameBoard) {
     if (otherPlayers.length > 0) {
         let x = me.x;
         let y = me.y;
@@ -143,37 +93,46 @@ function bullyFunc(me, otherPlayers, gameBoard, boardPowerUp) {
     }
 }
 
-function getBots(powerupFeatureEnabled) {
+function cinnamonRoll(me, otherPlayers, gameBoard) {
+    let dx = 0, dy = 0;
+    if (me.dx == 1) // right
+        dy = 1;
+    else if (me.dy == 1) // down
+        dx = -1;
+    else if (me.dx == -1) // left
+        dy = -1;
+    else if (me.dy == -1) // up
+        dx = 1;
+
+    if (gameBoard[me.x + dx][me.y + dy] == 0) return { dx: dx, dy: dy };
+    else if (gameBoard[me.x + me.dx][me.y + me.dy] == 0) return { dx: me.dx, dy: me.dy };
+    else return { dx: -dx, dy: -dy };
+}
+
+function getBots() {
 
     var bots = [
-    {
-        name: "Always right",
-        func: rightFunc,
-    },
-    {
-        name: "Bully",
-        func: bullyFunc,
-    },
-    {
-        name: "Always left",
-        func: leftFunc,
-    },
-    {
-        name: "Random",
-        func: randomFunc,
-    },
-    {
-        name: "Random2",
-        func: randomFunc,
-    }
+        {
+            name: "Random",
+            func: randomFunc,
+        },
+        {
+            name: "Righty",
+            func: rightFunc,
+        },
+        {
+            name: "Lefty",
+            func: leftFunc,
+        },
+        {
+            name: "Bully bot",
+            func: bullyFunc,
+        },
+        {
+            name: "Cinnamon roll",
+            func: cinnamonRoll,
+        }
     ];
-
-    if (powerupFeatureEnabled) {
-        bots.push({
-            name: "Power hunter",
-            func: powerHunterFunc,
-        });
-    }
 
     return bots;
 }
