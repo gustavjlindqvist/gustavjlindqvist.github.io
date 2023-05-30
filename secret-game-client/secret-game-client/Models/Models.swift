@@ -43,4 +43,25 @@ enum Direction: Equatable, CaseIterable {
     case down
     case right
     case left
+    
+    var dx: Int {
+        delta.dy
+    }
+    
+    var dy: Int {
+        delta.dy
+    }
+    
+    var delta: (dx: Int, dy: Int) {
+        switch self {
+        case .up:
+            return (0, -1)
+        case .down:
+            return (0, 1)
+        case .right:
+            return (1, 0)
+        case .left:
+            return (-1, 0)
+        }
+    }
 }

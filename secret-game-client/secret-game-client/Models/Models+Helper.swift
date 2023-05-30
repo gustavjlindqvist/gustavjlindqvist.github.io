@@ -7,34 +7,6 @@
 
 import Foundation
 
-extension Direction {
-    var dx: Int {
-        switch self {
-        case .up:
-            return 0
-        case .down:
-            return 0
-        case .right:
-            return 1
-        case .left:
-            return -1
-        }
-    }
-    
-    var dy: Int {
-        switch self {
-        case .up:
-            return -1
-        case .down:
-            return 1
-        case .right:
-            return 0
-        case .left:
-            return 0
-        }
-    }
-}
-
 extension GameBoardObject {
     var printable: String {
         switch self {
