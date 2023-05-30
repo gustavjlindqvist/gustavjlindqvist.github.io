@@ -12,9 +12,9 @@ struct MyTactic: ClientTactic {
     let name = "My Snake"
     
     //TODO: Implement next move tactic
-    func getNextMove(gameState: GameState) -> Direction? {
-        //Returning nil will make the snake continue in the direction it was going
-        return nil
+    func getNextMove(gameState: GameState) -> Direction {
+        // Just keep on going in same direction until you crash :)
+        return gameState.myPlayer.direction
     }
 }
 
