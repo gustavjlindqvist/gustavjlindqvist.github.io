@@ -54,11 +54,12 @@ class GameState {
         this.activePlayers.forEach(player => {
 
             let [x, y] = this.randomEmptyCoordinates()
+            let [dx, dy] = this.randomDirection()
             player.x = x
             player.y = y
             player.isAlive = true
-            player.dx = 0
-            player.dy = -1
+            player.dx = dx
+            player.dy = dy
 
             // Update game board with player's starting position
             this.gameBoard[x][y] = player.id
@@ -148,6 +149,12 @@ class GameState {
         return playerAtIndex
     }
 
+    randomDirection() {
+        let startDirection = [[0,1],[0,-1],[1,0],[-1,0]]
+        let d = Math.floor(Math.random() * 4)
+        return [startDirection[d][0], startDirection[d][1]]
+    }
+
     randomEmptyCoordinates() {
         let iteration = 100
         let x = 0
@@ -166,6 +173,7 @@ class GameState {
         const player = this.selectablePlayers.find(player => player.name == name)
 
         const [x, y] = this.randomEmptyCoordinates()
+        const [dx, dy] = this.randomDirection()
 
         const activePlayerColors = this.activePlayers.map(player => player.color)
         const nonUsedColors = this.availableColors.filter(color => !activePlayerColors.includes(color))
@@ -178,8 +186,8 @@ class GameState {
             socketId: player.socketId,
             x: x,
             y: y,
-            dx: 0,
-            dy: -1,
+            dx: dx,
+            dy: dy,
             isAlive: true,
             color: color
         }
@@ -206,11 +214,6 @@ class GameState {
 
     emptyMessageBuffer() {
         this.messageBuffer = []
-    }
-
-    randomDirection() {
-        const directions = [-1, 0, 1]
-        return directions[Math.floor(Math.random() * directions.length)]
     }
 
     squareIsEmpty(x, y) {

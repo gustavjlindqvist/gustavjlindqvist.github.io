@@ -55,9 +55,20 @@ export function drawInitialPlayers(gameState) {
     for (const player of gameState.activePlayers) {
         let y = player.y;
         let x = player.x;
+        let dx = player.dx;
+        let dy = player.dy;
         let color = player.color;
         $("#x" + x + "y" + y).attr("style", "--color:" + color);
-        $("#x" + x + "y" + y).addClass("head").addClass("headUp");
+        $("#x" + x + "y" + y).addClass("head");
+        if (dx == 1 && dy == 0) {
+            $("#x" + x + "y" + y).addClass("headRight");
+        } else if (dx == -1 && dy == 0) {
+            $("#x" + x + "y" + y).addClass("headLeft");
+        } else if (dx == 0 && dy == 1) {
+            $("#x" + x + "y" + y).addClass("headDown");
+        } else if (dx == 0 && dy == -1) {
+            $("#x" + x + "y" + y).addClass("headUp");
+        }
     }
     $("#startBtn").show();
     $("#result").css("color", "white");
