@@ -38,4 +38,16 @@ private extension GameState {
     func player(withId id: Int) -> PlayerState? {
         otherPlayers.first { $0.id ==  id }
     }
+    
+    func printGameBoard() {
+        print("\n")
+        
+        for row in gameBoard.transposed() {
+            let text = row
+                .map { String($0.printable) }
+                .joined(separator: "\t")
+            
+            print(text)
+        }
+    }
 }

@@ -47,3 +47,13 @@ extension GameBoardObject {
         }
     }
 }
+
+extension Array<[GameBoardObject]> {
+    
+    func transposed() -> [[GameBoardObject]] {
+        guard let firstRow = self.first else { return [] }
+        return firstRow.indices.map { index in
+            self.map{ $0[index] }
+        }
+    }
+}
