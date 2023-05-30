@@ -45,7 +45,7 @@ enum Direction: Equatable, CaseIterable {
     case left
     
     var dx: Int {
-        delta.dy
+        delta.dx
     }
     
     var dy: Int {
