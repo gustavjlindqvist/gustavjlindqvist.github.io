@@ -5,7 +5,10 @@ const server = http.createServer(app)
 const { Server } = require("socket.io")
 const gameClientServer = new Server(server, {
     pingInterval: 1000,
-    pingTimeout: 1000
+    pingTimeout: 1000,
+    cors: {
+        origin: "http://localhost:5173",
+      }
 })
 
 const { getBots } = require('./bots')
